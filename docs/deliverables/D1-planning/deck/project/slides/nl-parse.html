@@ -1,0 +1,46 @@
+<section id="nl-parse" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">AI job 1 · Deliverable 4</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Parsing natural-language descriptions</h2>
+</div>
+<div style="display:flex;gap:16px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600">Description</p>
+<p style="font-size:24px;color:#5F6873">from the user</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FCE9DD;border:2px solid #B04A1A;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600">Language model</p>
+<p style="font-size:24px;color:#8A3A14">+ format rules + examples</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600">Validator</p>
+<p style="font-size:24px;color:#5F6873">constraint checks</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600">Valid spec</p>
+<p style="font-size:24px;color:#5F6873">ready for the engine</p>
+</div>
+</div>
+<div style="display:flex;gap:24px">
+<p style="font-size:26px;color:#3F4A55;background:#EAE7DF;border-radius:8px;padding:12px 20px">Errors found → sent back to the model to fix</p>
+<p style="font-size:26px;color:#3F4A55;background:#EAE7DF;border-radius:8px;padding:12px 20px">Information missing → a question to the user</p>
+</div>
+<div style="display:flex;gap:32px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:36px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">User writes</p>
+<p style="font-size:28px;line-height:1.45;color:#16202B;font-style:italic">"Cells are off, firing or dying. Firing cells start dying, dying cells switch off. An off cell fires when exactly two neighbours fire."</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:36px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">System replies</p>
+<ul style="font-size:28px;line-height:1.45;color:#16202B;display:flex;flex-direction:column;gap:10px">
+<li>Which neighbours count: the 4 sides, or all 8?</li>
+<li>No edge rule given: using wrap-around. Change it?</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>The model only translates. The validator is ordinary code: it checks that every state used is declared, every state has a rule or a default, no two rules contradict, and that the required settings are present. Validation errors go back to the model; genuinely missing information becomes a question to the user, as in the Brian's Brain example here.</aside>
+</section>

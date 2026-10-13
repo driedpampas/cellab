@@ -1,0 +1,17 @@
+<section id="opt-questions" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Technical options · answering questions</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Options for answering the questions</h2>
+</div>
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:36%;text-align:left">Option</th><th style="width:32%;text-align:left">Advantages</th><th style="width:32%;text-align:left">Disadvantages</th></tr>
+<tr><td>Simulate up to a step limit</td><td>Trivial to write</td><td>Cannot prove "never"</td></tr>
+<tr style="background:#FCE9DD"><td><b>Store a hash of every state</b> (our choice)</td><td>Exact for questions 2, 3 and 5</td><td>Memory grows with cycle length</td></tr>
+<tr><td>Floyd or Brent cycle detection</td><td>Almost no memory</td><td>Slower, more complex</td></tr>
+<tr style="background:#FCE9DD"><td><b>Shortcuts from rule properties</b> (where possible)</td><td>Instant and exact</td><td>Only work for some rules</td></tr>
+<tr style="background:#FCE9DD"><td><b>Random rules: fixed seed or many seeds</b></td><td>Exact replay, or statistics</td><td>Statistics are approximate</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55;width:1500px"><b style="color:#16202B">Reason for our choice:</b> hashing is simple and exact. If a cycle is too long to keep in memory, we switch to Brent's method.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · highlighted rows = our choice</p>
+<aside>Floyd's and Brent's algorithms find cycles while remembering only a couple of states, at the cost of extra steps; they are the fallback for very long cycles. For random automata, a fixed seed makes a run reproducible so all five questions work; running many seeds turns the answers into probabilities, which connects to the Bayesian networks lab.</aside>
+</section>

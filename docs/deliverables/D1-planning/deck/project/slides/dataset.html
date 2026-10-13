@@ -1,0 +1,31 @@
+<section id="dataset" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">AI job 2 · Deliverable 3</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Building the dataset</h2>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#3F4A55">Each row is one simulation. The engine computes the true answers, so labels are exact and free.</p>
+<table style="font-size:24px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:8%;text-align:left">Rule</th><th style="width:28%;text-align:left">Start (16-cell ring)</th><th style="width:7%;text-align:center">N</th><th style="width:14%;text-align:center">1s after N</th><th style="width:17%;text-align:left">Stable?</th><th style="width:13%;text-align:center">Cycle from</th><th style="width:13%;text-align:center">Cycle length</th></tr>
+<tr><td>30</td><td style="font-family:'IBM Plex Mono', monospace">1010001000011000</td><td style="text-align:center">50</td><td style="text-align:center">9</td><td>no</td><td style="text-align:center">30</td><td style="text-align:center">4,144</td></tr>
+<tr><td>90</td><td style="font-family:'IBM Plex Mono', monospace">1000010000110010</td><td style="text-align:center">50</td><td style="text-align:center">0</td><td>yes, step 8</td><td style="text-align:center">8</td><td style="text-align:center">1</td></tr>
+<tr><td>110</td><td style="font-family:'IBM Plex Mono', monospace">0010000111111100</td><td style="text-align:center">50</td><td style="text-align:center">8</td><td>no</td><td style="text-align:center">50</td><td style="text-align:center">32</td></tr>
+<tr><td>184</td><td style="font-family:'IBM Plex Mono', monospace">0011111001010110</td><td style="text-align:center">50</td><td style="text-align:center">9</td><td>no</td><td style="text-align:center">3</td><td style="text-align:center">16</td></tr>
+<tr><td>250</td><td style="font-family:'IBM Plex Mono', monospace">0111110011001111</td><td style="text-align:center">50</td><td style="text-align:center">16</td><td>yes, step 1</td><td style="text-align:center">1</td><td style="text-align:center">1</td></tr>
+</table>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:30px;font-weight:600;line-height:1.2;color:#16202B">Large</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Generated on Colab, as many runs as training needs</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:30px;font-weight:600;line-height:1.2;color:#16202B">Balanced</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Equal shares per rule class and per answer</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:30px;font-weight:600;line-height:1.2;color:#16202B">Reproducible</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Generator code and seed committed with the data</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · rows computed with our prototype code</p>
+<aside>These five rows are real, computed by a short prototype. Notice how different they are: Rule 90 dies out completely at step 8, Rule 250 fills the ring at once, Rule 184 (traffic) circulates with period 16, and Rule 30 only starts repeating after 30 steps with a cycle of 4,144. Balance matters: if most runs stabilise, a model that always says "stable" looks accurate while learning nothing.</aside>
+</section>

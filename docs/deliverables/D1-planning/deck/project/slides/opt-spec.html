@@ -1,0 +1,16 @@
+<section id="opt-spec" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Technical options · representation</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Options for representing an automaton</h2>
+</div>
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:36%;text-align:left">Option</th><th style="width:32%;text-align:left">Advantages</th><th style="width:32%;text-align:left">Disadvantages</th></tr>
+<tr><td>A Python class per automaton</td><td>Fastest to write</td><td>Not general; no text input possible</td></tr>
+<tr style="background:#FCE9DD"><td><b>JSON spec with fixed rule types</b> (our choice)</td><td>General and easy to validate</td><td>Needs careful design for agents</td></tr>
+<tr><td>A small custom rule language</td><td>Very expressive</td><td>Needs its own grammar and interpreter</td></tr>
+<tr><td>Code written by a language model</td><td>Can express anything</td><td>Unsafe and cannot be validated</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55;width:1500px"><b style="color:#16202B">Reason for our choice:</b> the parser needs a clear target it can be checked against, and the engine must run new automata without new code.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · highlighted row = our choice</p>
+<aside>Each technical option slide follows the same pattern: the options we considered, their trade-offs, and what we chose and why. Here the key argument is that a structured spec can be validated, which is impossible if a language model writes simulation code directly.</aside>
+</section>

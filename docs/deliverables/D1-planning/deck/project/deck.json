@@ -1,0 +1,22 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-13T19:30:00Z"},
+  "lists": "css",
+  "title": "CelLab: Deliverable 1",
+  "order": ["cover", "goal", "pipeline", "ca-basics", "elementary", "fifteen", "difficulty", "scope", "spec", "opt-spec", "engine", "opt-engine", "initial-world", "storage", "questions", "cycles", "three-ways", "opt-questions", "nl-parse", "opt-nl", "dataset", "model", "encoding", "opt-ml", "metrics", "classes", "rule30", "opt-ui", "example", "architecture", "stack", "risks", "submission", "timeline", "closing"],
+  "sections": {
+    "intro": {"description": "What we are building and how the parts connect", "start": "cover"},
+    "automata": {"description": "How cellular automata work and what the 15 examples look like", "start": "ca-basics"},
+    "design": {"description": "Spec format, engine, initial world and storage, with the options considered", "start": "spec"},
+    "questions": {"description": "How the five questions are answered, with the options considered", "start": "questions"},
+    "ai": {"description": "Language parsing and answer prediction, with the options considered", "start": "nl-parse"},
+    "interface": {"description": "Interface options and a full example", "start": "opt-ui"},
+    "plan": {"description": "Components, tools, risks and timeline", "start": "architecture"}
+  },
+  "faces": {
+    "space-grotesk": {"family": "Space Grotesk", "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"},
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"},
+    "ibm-plex-mono": {"family": "IBM Plex Mono", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"}
+  },
+  "designSystems": []
+}

@@ -1,0 +1,25 @@
+<section id="elementary" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">The simplest family</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Elementary cellular automata</h2>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#3F4A55">One row of 0/1 cells. Each cell looks at left, itself and right: 8 patterns, each mapped to 0 or 1.</p>
+<table style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:22%;text-align:left">Pattern</th><th style="width:6%;text-align:center">111</th><th style="width:6%;text-align:center">110</th><th style="width:6%;text-align:center">101</th><th style="width:6%;text-align:center">100</th><th style="width:6%;text-align:center">011</th><th style="width:6%;text-align:center">010</th><th style="width:6%;text-align:center">001</th><th style="width:6%;text-align:center">000</th><th style="width:30%;text-align:left">Read as binary</th></tr>
+<tr><td>Rule 30</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">0</td><td style="color:#B04A1A">00011110 = 30</td></tr>
+<tr><td>Rule 58 (lab)</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">0</td><td style="text-align:center">1</td><td style="text-align:center">0</td><td style="color:#B04A1A">00111010 = 58</td></tr>
+</table>
+<p style="font-size:28px;color:#16202B">Lab example, Rule 58 with fixed 0 edges: <span style="color:#B04A1A">0 [0001100] 0 → 0011010</span></p>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:36px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:34px;font-weight:600;line-height:1.2;color:#16202B">Why 256</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">8 patterns, 2 choices each: 2⁸ = 256 rules. The 8 outputs, read as a binary number, are the rule's name.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:36px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:34px;font-weight:600;line-height:1.2;color:#16202B">Why it matters to us</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">A complete, small family. The 8 bits are a ready-made way to feed a rule into a neural network.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>Rule 58 is the example from our lab notes: 0001100 with fixed 0 edges becomes 0011010. Rule 30 is the one from the brief. Traffic, example 7 in the brief, is also an elementary rule: Rule 184.</aside>
+</section>

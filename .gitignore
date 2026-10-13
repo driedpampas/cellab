@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.claude/settings.local.json
+
+# AI conversation logs: kept locally, shared privately at submission
+docs/ai-logs/
+
+# private notes and local previews
+explanation.md
+.preview/

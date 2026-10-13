@@ -1,0 +1,64 @@
+<section id="pipeline" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Architecture at a glance</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">How the parts of the system connect</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">Main path</p>
+<div style="display:flex;gap:16px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">English description</p>
+<p style="font-size:24px;color:#5F6873">typed by the user</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FCE9DD;border:2px solid #B04A1A;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Parser and validator</p>
+<p style="font-size:24px;color:#8A3A14">AI: language model</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Automaton spec</p>
+<p style="font-size:24px;color:#5F6873">a JSON file</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Simulation engine</p>
+<p style="font-size:24px;color:#5F6873">ordinary code</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Exact answers</p>
+<p style="font-size:24px;color:#5F6873">+ stored generations</p>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">Prediction path</p>
+<div style="display:flex;gap:16px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Engine runs many simulations</p>
+<p style="font-size:24px;color:#5F6873">ordinary code</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Dataset</p>
+<p style="font-size:24px;color:#5F6873">inputs + true answers</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FCE9DD;border:2px solid #B04A1A;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Neural network</p>
+<p style="font-size:24px;color:#8A3A14">AI: trained on Colab</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:44px;height:24px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:24px">
+<p style="font-size:28px;font-weight:600;line-height:1.25">Predicted answers</p>
+<p style="font-size:24px;color:#5F6873">instant, accuracy measured</p>
+</div>
+</div>
+</div>
+<div style="background:#16202B;border-radius:12px;padding:24px 32px">
+<p style="font-size:28px;color:#F5F3EE"><b>Graphical interface</b> around everything: write the description · set parameters · view generations · ask questions</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · orange boxes are the AI components</p>
+<aside>The whole project on one slide. The two orange boxes are where AI is used: translating English into a spec, and predicting answers. Everything else is ordinary, exact code. The simulation also produces the training data for the network.</aside>
+</section>

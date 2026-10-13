@@ -1,0 +1,29 @@
+<section id="example" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Example</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Forest fire, from description to answers</h2>
+</div>
+<div style="display:flex;gap:20px;align-items:stretch;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#B04A1A;font-weight:600">1 · Description</p>
+<p style="font-size:26px;line-height:1.45;color:#16202B;font-style:italic">"Cells are empty, tree or fire. Fire burns out and leaves an empty cell. A tree catches fire if one of its four neighbours is burning."</p>
+<p style="font-size:24px;line-height:1.4;color:#5F6873">Start: the 4 × 5 grid from the brief</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#16202B;border-radius:16px;padding:32px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0894E;font-weight:600">2 · Spec (excerpt)</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3E8EC">"neighbourhood":<br>&#160;&#160;"von_neumann",<br>"edges": "fixed EMPTY",<br>"rules": [<br>&#160;{"from": "FIRE",<br>&#160;&#160;"to": "EMPTY"},<br>&#160;{"from": "TREE",<br>&#160;&#160;"to": "FIRE",<br>&#160;&#160;"if": "count(FIRE) >= 1"}]</p>
+</div>
+<div style="flex:1.3;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#B04A1A;font-weight:600">3 · Answers</p>
+<ul style="font-size:26px;line-height:1.4;color:#16202B;display:flex;flex-direction:column;gap:12px">
+<li>After 2 steps: 8 trees and 5 fires</li>
+<li>Stable from step 5: everything has burned</li>
+<li>Enters a cycle of length 1 (the empty grid)</li>
+<li>Trees after 3 steps: 2</li>
+<li>A grid with trees but no fire never occurs</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · answers computed with our prototype code</p>
+<aside>One example followed through the whole system. The description is parsed into the spec, the engine runs it on the starting grid from the brief, and the question engine answers all five questions. These answers are real: we ran this exact setup. The fire burns out completely at step 5, after which the grid never changes.</aside>
+</section>

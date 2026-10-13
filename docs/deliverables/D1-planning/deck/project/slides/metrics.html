@@ -1,0 +1,17 @@
+<section id="metrics" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Machine learning</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">How we will measure performance</h2>
+</div>
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:32%;text-align:left">Question</th><th style="width:22%;text-align:left">Model output</th><th style="width:46%;text-align:left">Metric</th></tr>
+<tr><td>State after N</td><td>A grid</td><td>Share of cells correct; share of grids fully correct</td></tr>
+<tr><td>When is it stable?</td><td>Yes/no + step</td><td>Accuracy and F1; average error in steps</td></tr>
+<tr><td>Does C occur?</td><td>Yes/no</td><td>Accuracy and F1</td></tr>
+<tr><td>Count of type X after N</td><td>A number</td><td>Average absolute error</td></tr>
+<tr><td>Does it enter a cycle?</td><td>Yes/no + length</td><td>Accuracy and F1; average error in length</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55;width:1560px">Every result is reported per rule class, on test data the model has never seen, next to the baselines: the most common answer, copying the start state, and gradient boosting.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>F1 is reported next to accuracy because the yes/no answers can be unbalanced: if most runs stabilise, accuracy alone rewards always saying yes. Reporting per rule class is what lets us test the hypothesis on the next slide. The parser has its own metrics, shown on the parsing options slide.</aside>
+</section>

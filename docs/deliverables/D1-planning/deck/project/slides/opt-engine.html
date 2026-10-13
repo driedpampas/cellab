@@ -1,0 +1,16 @@
+<section id="opt-engine" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Technical options · simulation</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Options for the simulation engine</h2>
+</div>
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:36%;text-align:left">Option</th><th style="width:32%;text-align:left">Advantages</th><th style="width:32%;text-align:left">Disadvantages</th></tr>
+<tr><td>Plain Python loops</td><td>Simple to write</td><td>Slow on large grids</td></tr>
+<tr style="background:#FCE9DD"><td><b>NumPy, neighbours counted by convolution</b> (our choice)</td><td>Fast, short code</td><td>Awkward for movement and agents</td></tr>
+<tr style="background:#FCE9DD"><td><b>Numba-compiled loops</b> (for agents)</td><td>Fast even with loops</td><td>Extra dependency</td></tr>
+<tr><td>An agent framework such as Mesa</td><td>Agents and scheduling built in</td><td>Too heavy for plain automata</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55;width:1500px"><b style="color:#16202B">Reason for our choice:</b> NumPy covers the synchronous mode, which most examples use; Numba covers movement and agents, where cells must be processed in order.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · highlighted rows = our choice</p>
+<aside>Counting neighbours as a convolution means one array operation per step instead of a loop over every cell, which is the standard fast way to simulate cellular automata in Python. Agents and movement need cells to be processed one at a time in a fixed order, so for those we compile loops with Numba.</aside>
+</section>

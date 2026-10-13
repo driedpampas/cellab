@@ -1,0 +1,33 @@
+<section id="rule30" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">The hard case</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Why Rule 30 is the hardest case</h2>
+</div>
+<div style="display:flex;gap:64px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">The Rule 30 Prize asks three open questions about its centre column:</p>
+<ol style="font-size:28px;line-height:1.45;color:#16202B;display:flex;flex-direction:column;gap:12px">
+<li>Does it ever become periodic?</li>
+<li>Are 0s and 1s equally frequent in the long run?</li>
+<li>Can cell n be computed faster than running n steps?</li>
+</ol>
+<p style="font-size:28px;line-height:1.45;color:#16202B;background:#FCE9DD;border-radius:12px;padding:20px 24px">Question 3 is the same as our "answer without running" idea, and it is still an open problem.</p>
+</div>
+<div style="width:700px;display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">Our test: a ring, one live cell</p>
+<table style="font-size:26px;color:#16202B;font-variant-numeric:tabular-nums">
+<tr style="background:#EAE7DF"><th style="width:30%;text-align:left">Ring width</th><th style="width:35%;text-align:right">Steps to cycle</th><th style="width:35%;text-align:right">Cycle length</th></tr>
+<tr><td>8</td><td style="text-align:right">1</td><td style="text-align:right">40</td></tr>
+<tr><td>12</td><td style="text-align:right">24</td><td style="text-align:right">102</td></tr>
+<tr><td>14</td><td style="text-align:right">0</td><td style="text-align:right">1,428</td></tr>
+<tr><td>16</td><td style="text-align:right">58</td><td style="text-align:right">6,016</td></tr>
+<tr><td>17</td><td style="text-align:right">56</td><td style="text-align:right">10,846</td></tr>
+<tr><td>19</td><td style="text-align:right">306</td><td style="text-align:right">247</td></tr>
+<tr><td>21</td><td style="text-align:right">1,720</td><td style="text-align:right">597</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.4;color:#5F6873">It must cycle on a finite ring, but the length jumps with no visible pattern.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · source: rule30prize.org; table computed with our prototype</p>
+<aside>Rule 30 is a tiny rule whose centre column looks random enough to have been used as a random number generator. Wolfram's prize offers money for any of these three problems; as far as we know they are still open. For us this means we will not promise a model that predicts Rule 30 far ahead. Instead we measure where prediction breaks and explain why. The table is our own: on a finite ring Rule 30 must eventually repeat, but how long that takes jumps around unpredictably.</aside>
+</section>

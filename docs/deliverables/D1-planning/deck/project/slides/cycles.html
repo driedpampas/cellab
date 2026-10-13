@@ -1,0 +1,51 @@
+<section id="cycles" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Cycle detection</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Detecting stable states and cycles</h2>
+</div>
+<div style="position:relative;width:1664px;height:300px">
+<svg aria-label="States t=0 to t=5 in a chain; t=5 leads back to t=2, forming a cycle of length 4 after a run-up of 2 steps" style="position:absolute;left:0;top:0;width:1664px;height:300px" width="1664" height="300" viewBox="0 0 1664 300" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5F6873"/></marker>
+<marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#B04A1A"/></marker>
+</defs>
+<circle cx="120" cy="100" r="56" fill="#EAE7DF" stroke="#8A939C" stroke-width="3"/>
+<circle cx="400" cy="100" r="56" fill="#EAE7DF" stroke="#8A939C" stroke-width="3"/>
+<circle cx="680" cy="100" r="56" fill="#FCE9DD" stroke="#B04A1A" stroke-width="3"/>
+<circle cx="960" cy="100" r="56" fill="#FCE9DD" stroke="#B04A1A" stroke-width="3"/>
+<circle cx="1240" cy="100" r="56" fill="#FCE9DD" stroke="#B04A1A" stroke-width="3"/>
+<circle cx="1520" cy="100" r="56" fill="#FCE9DD" stroke="#B04A1A" stroke-width="3"/>
+<line x1="182" y1="100" x2="334" y2="100" stroke="#5F6873" stroke-width="4" marker-end="url(#g)"/>
+<line x1="462" y1="100" x2="614" y2="100" stroke="#5F6873" stroke-width="4" marker-end="url(#g)"/>
+<line x1="742" y1="100" x2="894" y2="100" stroke="#5F6873" stroke-width="4" marker-end="url(#g)"/>
+<line x1="1022" y1="100" x2="1174" y2="100" stroke="#5F6873" stroke-width="4" marker-end="url(#g)"/>
+<line x1="1302" y1="100" x2="1454" y2="100" stroke="#5F6873" stroke-width="4" marker-end="url(#g)"/>
+<path d="M1520 158 C1520 262 680 262 680 166" fill="none" stroke="#B04A1A" stroke-width="4" marker-end="url(#o)"/>
+</svg>
+<p style="position:absolute;left:64px;top:80px;width:112px;text-align:center;font-family:'IBM Plex Mono', monospace;font-size:28px;font-weight:500">t=0</p>
+<p style="position:absolute;left:344px;top:80px;width:112px;text-align:center;font-family:'IBM Plex Mono', monospace;font-size:28px;font-weight:500">t=1</p>
+<p style="position:absolute;left:624px;top:80px;width:112px;text-align:center;font-family:'IBM Plex Mono', monospace;font-size:28px;font-weight:500">t=2</p>
+<p style="position:absolute;left:904px;top:80px;width:112px;text-align:center;font-family:'IBM Plex Mono', monospace;font-size:28px;font-weight:500">t=3</p>
+<p style="position:absolute;left:1184px;top:80px;width:112px;text-align:center;font-family:'IBM Plex Mono', monospace;font-size:28px;font-weight:500">t=4</p>
+<p style="position:absolute;left:1464px;top:80px;width:112px;text-align:center;font-family:'IBM Plex Mono', monospace;font-size:28px;font-weight:500">t=5</p>
+<p style="position:absolute;left:60px;top:176px;width:400px;text-align:center;font-size:26px;color:#5F6873">run-up: 2 steps</p>
+<p style="position:absolute;left:700px;top:246px;width:800px;text-align:center;font-size:26px;color:#8A3A14">step 6 = the state at step 2, so a cycle of length 4</p>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:600;line-height:1.2;color:#16202B">Q5 · Does it cycle?</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">The first repeat gives the run-up and the cycle length.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:600;line-height:1.2;color:#16202B">Q2 · When is it stable?</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Stable is simply a cycle of length 1.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:600;line-height:1.2;color:#16202B">Q3 · Does C ever occur?</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">If C has not appeared once the loop closes, it never will.</p>
+</div>
+</div>
+<p style="font-size:26px;color:#3F4A55">Implementation: a table from <i>state hash</i> to <i>step number</i>. One hash per step, not one grid.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>Run the automaton, and after each step store a fingerprint of the state with its step number. The moment a fingerprint is already in the table, we know everything: when the loop starts, how long it is, and that the future is just that loop forever. If the loop is longer than our step budget, we answer "not decided within N steps" rather than guess.</aside>
+</section>

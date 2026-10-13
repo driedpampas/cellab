@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/save_ai_log.py"
+          }
+        ]
+      }
+    ]
+  }
+}

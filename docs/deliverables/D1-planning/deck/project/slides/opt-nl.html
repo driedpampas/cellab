@@ -1,0 +1,17 @@
+<section id="opt-nl" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Technical options · language parsing</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Options for parsing the description</h2>
+</div>
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:36%;text-align:left">Option</th><th style="width:32%;text-align:left">Advantages</th><th style="width:32%;text-align:left">Disadvantages</th></tr>
+<tr style="background:#FCE9DD"><td><b>Keyword and grammar rules</b> (compared)</td><td>Local, predictable</td><td>Brittle to new phrasing</td></tr>
+<tr><td>Classic NLP with spaCy</td><td>Lightweight, local</td><td>Many hand-written rules</td></tr>
+<tr><td>Fine-tuned small T5 model</td><td>Local, trainable</td><td>Needs many training pairs</td></tr>
+<tr style="background:#FCE9DD"><td><b>Large model via an API</b> (compared)</td><td>Best quality, quick setup</td><td>Not local; costs money</td></tr>
+<tr style="background:#FCE9DD"><td><b>Small local model via Ollama</b> (compared)</td><td>Runs offline</td><td>Weaker on 8 GB of RAM</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55;width:1560px"><b style="color:#16202B">Plan:</b> compare the three highlighted options on the same held-out descriptions. We measure valid specs, correct behaviour on 100 random grids, and time per description.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1 · highlighted rows = the options we compare</p>
+<aside>All options share the same validator. "Correct behaviour" means our parsed spec and a hand-written reference spec produce identical runs on 100 random grids; this catches specs that are valid but wrong, such as "at least two" read as "exactly two". The API model is the quality baseline; the local model is the bonus the brief recommends. The local model can be fine-tuned on Colab using description → spec pairs.</aside>
+</section>

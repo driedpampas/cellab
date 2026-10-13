@@ -1,0 +1,29 @@
+<section id="engine" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">System design</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Update modes in the simulation engine</h2>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFAF7;border:1px solid #DDD9CF;border-top:6px solid #B04A1A;border-radius:16px;padding:40px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:#16202B">Synchronous</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">Every cell computes its next state from the old grid, all at once.</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;line-height:1.4;color:#5F6873">Rule 30, Brian's Brain, cyclic, fire, epidemic, voter, crystal, sandpile, diffusion</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFAF7;border:1px solid #DDD9CF;border-top:6px solid #4A7326;border-radius:16px;padding:40px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:#16202B">Ordered movement</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">Contents move to other cells in a fixed order, with a rule for collisions.</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;line-height:1.4;color:#5F6873">Traffic, falling sand</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFAF7;border:1px solid #DDD9CF;border-top:6px solid #16202B;border-radius:16px;padding:40px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:#16202B">Agents</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">The grid is the world. Agents with a position, direction or energy act in turn.</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;line-height:1.4;color:#5F6873">Langton's ant, predator–prey, Schelling, ecosystem</p>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#16202B">Shared by all three: grid storage, neighbourhoods, edges, seeds, cycle detection, saving.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>The four families from earlier map to three update modes; neighbour rules and numeric cells both use the synchronous mode. The hard design questions are in modes two and three: who moves first, and what happens when two things want the same cell. The brief leaves these open, so we will define and document them.</aside>
+</section>

@@ -1,0 +1,36 @@
+<section id="model" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">AI job 2 · the model</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Design of the neural network</h2>
+</div>
+<div style="display:flex;gap:24px;align-items:center">
+<div style="width:440px;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">Inputs</p>
+<ul style="font-size:28px;line-height:1.4;color:#16202B;display:flex;flex-direction:column;gap:8px">
+<li>Rule, as 8 bits</li>
+<li>Start state</li>
+<li>N, the number of steps</li>
+<li>Target configuration C</li>
+</ul>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:48px;height:26px"></x-shape>
+<div style="width:340px;display:flex;flex-direction:column;gap:12px;background:#FCE9DD;border:2px solid #B04A1A;border-radius:16px;padding:32px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:34px;font-weight:600;line-height:1.2;color:#16202B">Shared encoder</h3>
+<p style="font-size:26px;line-height:1.4;color:#8A3A14">Convolutional, because the rules are local</p>
+</div>
+<x-shape kind="arrow-right" style="background:#8A939C;width:48px;height:26px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:10px;padding:12px 20px">State after N <span style="color:#5F6873">· a grid</span></p>
+<p style="font-size:26px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:10px;padding:12px 20px">Count of type X <span style="color:#5F6873">· a number</span></p>
+<p style="font-size:26px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:10px;padding:12px 20px">Stable? <span style="color:#5F6873">· yes/no + when</span></p>
+<p style="font-size:26px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:10px;padding:12px 20px">Cycle? <span style="color:#5F6873">· yes/no + length</span></p>
+<p style="font-size:26px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:10px;padding:12px 20px">Does C occur? <span style="color:#5F6873">· yes/no</span></p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">Compared against</p>
+<p style="font-size:28px;line-height:1.4;color:#16202B">Five separate networks · always guessing the most common answer · copying the start state</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>This is the "answer all five in a single pass" idea from our notes: one encoder that reads the inputs once, then five small output heads. Whether one shared network beats five separate ones is itself part of the experiment. The baselines matter: a model is only interesting if it beats trivial strategies like always answering "yes".</aside>
+</section>

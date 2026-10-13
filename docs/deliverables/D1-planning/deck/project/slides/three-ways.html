@@ -1,0 +1,30 @@
+<section id="three-ways" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Answering questions</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">How the questions will be answered</h2>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:40px">
+<div style="display:flex"><p style="font-size:24px;background:#DDE8D3;color:#2F4A18;padding:6px 16px;border-radius:999px;font-weight:600">Exact · always works</p></div>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:#16202B">1 · Simulate</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">Run the engine and detect cycles. The ground truth for everything else.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:40px">
+<div style="display:flex"><p style="font-size:24px;background:#DDE8D3;color:#2F4A18;padding:6px 16px;border-radius:999px;font-weight:600">Exact · instant · sometimes</p></div>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:#16202B">2 · Use rule properties</h3>
+<ul style="font-size:26px;line-height:1.4;color:#3F4A55;display:flex;flex-direction:column;gap:10px">
+<li>Traffic keeps its cars, so the count never changes</li>
+<li>Crystals only grow, so they settle within (cells) steps</li>
+<li>Majority rules end in a fixed point or a 2-cycle</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:40px">
+<div style="display:flex"><p style="font-size:24px;background:#FCE9DD;color:#8A3A14;padding:6px 16px;border-radius:999px;font-weight:600">Approximate · instant</p></div>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:#16202B">3 · Predict with a model</h3>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55">Trained on simulated runs. Our "answer without running" experiment, with measured accuracy.</p>
+</div>
+</div>
+<p style="font-size:30px;color:#16202B">The interface shows which method gave each answer.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>This is our take on "answer the questions without running the automaton". Some answers can be proven from the rule itself: conserved quantities, rules that only go one way, and the known result (Goles and Olivos) that synchronous majority rules end in a fixed point or a 2-cycle. Everything else is either simulated exactly or predicted by the model, with its accuracy reported.</aside>
+</section>

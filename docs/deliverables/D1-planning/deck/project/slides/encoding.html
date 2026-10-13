@@ -1,0 +1,19 @@
+<section id="encoding" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Machine learning</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Encoding the data for the model</h2>
+</div>
+<table style="font-size:24px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:30%;text-align:left">Input</th><th style="width:70%;text-align:left">Encoding</th></tr>
+<tr><td><b>Grid with K cell types</b></td><td>K layers of 0/1 values, one layer per cell type</td></tr>
+<tr><td><b>Numeric cells</b></td><td>One layer with the value scaled to 0–1 (sandpile, diffusion)</td></tr>
+<tr><td><b>The rule</b></td><td>Elementary rules: the 8 output bits. 2D automata: one model per automaton</td></tr>
+<tr><td><b>Number of steps N</b></td><td>A scaled number given to the network next to the grid</td></tr>
+<tr><td><b>Target configuration C</b></td><td>Extra layers with the same shape as the grid</td></tr>
+<tr><td><b>Grid edges</b></td><td>Wrap-around padding for rings, zero padding for fixed edges</td></tr>
+<tr><td><b>Different grid sizes</b></td><td>Convolutions work on any size; counts are taken over the whole grid</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45;color:#3F4A55;width:1560px"><b style="color:#16202B">Beyond 1D:</b> after the elementary rules, we repeat the experiment on 2D automata such as forest fire and Brian's Brain.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>Encoding each cell type as its own layer of zeros and ones is the standard way to feed categories into a convolutional network, the same way an image has red, green and blue layers. Matching the padding to the automaton's edge rule means the network sees the same neighbourhoods the simulation does.</aside>
+</section>

@@ -1,0 +1,32 @@
+<section id="stack" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Tools and hardware</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Language, libraries and where things run</h2>
+</div>
+<div style="display:flex;gap:40px;flex:1">
+<div style="flex:1">
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:45%;text-align:left">Tool</th><th style="width:55%;text-align:left">Used for</th></tr>
+<tr><td><b>Python</b></td><td>The whole project</td></tr>
+<tr><td><b>NumPy</b>, <b>Numba</b></td><td>Simulation</td></tr>
+<tr><td><b>PyTorch</b></td><td>The neural network</td></tr>
+<tr><td><b>Ollama</b></td><td>Local language model</td></tr>
+<tr><td><b>Streamlit</b></td><td>Interface</td></tr>
+<tr><td><b>Git + GitHub</b></td><td>Code, data, AI logs</td></tr>
+</table>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:30px;font-weight:600;line-height:1.2;color:#16202B">Our laptops</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">No NVIDIA GPU, 8 GB and 20 GB of RAM. Simulation, interface, tests, running the trained model, local language models up to 3B / 7B parameters.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:30px;font-weight:600;line-height:1.2;color:#16202B">Google Colab GPU</h3>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Dataset generation, training, fine-tuning. Checkpoints saved to Google Drive after every epoch.</p>
+</div>
+</div>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Also considered: JavaScript (weak for ML), Java or C# (few ML libraries), C++ (slow to develop). Python has the libraries and runs on Colab.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 1</p>
+<aside>Both laptops have an Intel i7-1165G7 with integrated graphics, so anything that needs a GPU goes to Colab. Small language models run on a processor, slowly but well enough for short descriptions: about 1.5–3B parameters on the 8 GB laptop and up to 7B on the 20 GB one.</aside>
+</section>
