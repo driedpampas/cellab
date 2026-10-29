@@ -51,7 +51,9 @@ def validate(model: type[BaseModel], data, file: str | Path, prefix: str = ""):
         return model.model_validate(data)
     except ValidationError as error:
         lines = []
-        for problem in error.errors():
+        # Unknown fields first: a misspelled field usually also causes a "required" error.
+        problems = sorted(error.errors(), key=lambda problem: problem["type"] != "extra_forbidden")
+        for problem in problems:
             where = location(problem["loc"], prefix) or "(top level)"
             if problem["type"] == "missing":
                 message = "this field is required"
