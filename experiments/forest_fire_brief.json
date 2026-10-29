@@ -1,0 +1,18 @@
+{
+  "name": "Forest fire, grid from the brief",
+  "automaton": "../automata/forest_fire.json",
+  "initial": {
+    "type": "text",
+    "rows": ["TTTT.", "TT.TT", ".TFTT", "TTTTT"],
+    "legend": {"T": "TREE", "F": "FIRE", ".": "EMPTY"}
+  },
+  "steps": 8,
+  "max_steps": 1000,
+  "questions": [
+    {"ask": "state_after", "n": 2},
+    {"ask": "stable"},
+    {"ask": "occurs", "rows": ["T....", ".....", ".....", "....."]},
+    {"ask": "count_after", "n": 3, "value": "TREE"},
+    {"ask": "cycle"}
+  ]
+}

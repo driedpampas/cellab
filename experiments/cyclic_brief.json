@@ -1,0 +1,7 @@
+{
+  "name": "Cyclic automaton, grid from the brief",
+  "automaton": "../automata/cyclic.json",
+  "initial": {"type": "text", "rows": ["0011", "0221", "3321"]},
+  "steps": 10,
+  "questions": [{"ask": "state_after", "n": 1}, {"ask": "stable"}, {"ask": "cycle"}]
+}

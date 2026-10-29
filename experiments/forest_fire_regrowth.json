@@ -1,0 +1,14 @@
+{
+  "name": "Forest fire with regrowth",
+  "automaton": "../automata/forest_fire_regrowth.json",
+  "size": [100, 100],
+  "initial": {"type": "random", "weights": {"TREE": 0.55, "EMPTY": 0.45, "FIRE": 0.002}},
+  "seed": 7,
+  "steps": 200,
+  "max_steps": 500,
+  "questions": [
+    {"ask": "count_after", "n": 200, "value": "TREE"},
+    {"ask": "stable"},
+    {"ask": "cycle"}
+  ]
+}

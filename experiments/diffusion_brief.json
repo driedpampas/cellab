@@ -1,0 +1,7 @@
+{
+  "name": "Diffusion, grid from the brief",
+  "automaton": "../automata/diffusion.json",
+  "initial": {"type": "text", "rows": ["0 0 0", "0 100 0", "0 0 0"]},
+  "steps": 12,
+  "questions": [{"ask": "state_after", "n": 1}, {"ask": "stable"}, {"ask": "state_after", "n": 12}]
+}

@@ -9,3 +9,8 @@ docs/ai-logs/
 # private notes and local previews
 explanation.md
 .preview/
+
+# local environment and run outputs
+.venv/
+runs/
+*.egg-info/

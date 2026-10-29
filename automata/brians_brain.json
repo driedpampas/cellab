@@ -1,0 +1,14 @@
+{
+  "name": "Brian's Brain",
+  "description": "From the brief: a firing cell starts dying, a dying cell turns off, and an off cell fires when exactly two of its eight neighbours are firing.",
+  "dimensions": 2,
+  "states": ["OFF", "FIRING", "DYING"],
+  "neighbourhood": "moore",
+  "edges": {"type": "wrap"},
+  "rules": [
+    {"when": "self == FIRING", "then": "DYING"},
+    {"when": "self == DYING", "then": "OFF"},
+    {"when": "self == OFF and count(FIRING) == 2", "then": "FIRING"}
+  ],
+  "colors": {"OFF": "#16202b", "FIRING": "#f5f3ee", "DYING": "#378add"}
+}

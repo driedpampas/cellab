@@ -1,0 +1,12 @@
+{
+  "name": "Traffic, road from the brief",
+  "automaton": "../automata/traffic.json",
+  "initial": {"type": "text", "rows": [". . C . C C . . C ."], "legend": {".": "EMPTY", "C": "CAR"}},
+  "steps": 12,
+  "questions": [
+    {"ask": "state_after", "n": 1},
+    {"ask": "count_after", "n": 1000, "value": "CAR"},
+    {"ask": "cycle"},
+    {"ask": "occurs", "rows": ["CCCC......"]}
+  ]
+}

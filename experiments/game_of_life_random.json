@@ -1,0 +1,10 @@
+{
+  "name": "Game of Life from a random start",
+  "automaton": "../automata/game_of_life.json",
+  "size": [60, 60],
+  "initial": {"type": "random", "weights": {"DEAD": 0.7, "ALIVE": 0.3}},
+  "seed": 7,
+  "steps": 200,
+  "max_steps": 3000,
+  "questions": [{"ask": "cycle"}, {"ask": "stable"}]
+}

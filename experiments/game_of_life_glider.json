@@ -1,0 +1,12 @@
+{
+  "name": "Game of Life, one glider",
+  "automaton": "../automata/game_of_life.json",
+  "initial": {
+    "type": "text",
+    "rows": [".#..........", "..#.........", "###.........", "............", "............", "............",
+             "............", "............", "............", "............", "............", "............"],
+    "legend": {".": "DEAD", "#": "ALIVE"}
+  },
+  "steps": 48,
+  "questions": [{"ask": "cycle"}, {"ask": "count_after", "n": 1000, "value": "ALIVE"}, {"ask": "stable"}]
+}

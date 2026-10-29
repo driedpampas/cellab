@@ -1,0 +1,8 @@
+{
+  "name": "Crystal growth from one crystal",
+  "automaton": "../automata/crystal_growth.json",
+  "size": [81, 81],
+  "initial": {"type": "single", "value": "CRYSTAL", "background": "EMPTY"},
+  "steps": 40,
+  "questions": [{"ask": "count_after", "n": 40, "value": "CRYSTAL"}, {"ask": "stable"}]
+}

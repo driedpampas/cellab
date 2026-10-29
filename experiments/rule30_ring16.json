@@ -1,0 +1,16 @@
+{
+  "name": "Rule 30 on a ring of 16 cells",
+  "automaton": "../automata/elementary.json",
+  "parameters": {"rule": 30},
+  "size": [16],
+  "initial": {"type": "single", "value": 1, "background": 0},
+  "steps": 20,
+  "max_steps": 10000,
+  "store_generations": false,
+  "questions": [
+    {"ask": "cycle"},
+    {"ask": "stable"},
+    {"ask": "state_after", "n": 1000000},
+    {"ask": "occurs", "rows": ["0000000000000000"]}
+  ]
+}

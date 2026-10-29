@@ -1,0 +1,13 @@
+{
+  "name": "Traffic",
+  "description": "Basic traffic rule from the brief on a circular road: a car moves one cell forward (to the right) if that cell is empty, otherwise it stays.",
+  "dimensions": 1,
+  "states": ["EMPTY", "CAR"],
+  "neighbourhood": "elementary",
+  "edges": {"type": "wrap"},
+  "rules": [
+    {"when": "self == CAR and right == EMPTY", "then": "EMPTY"},
+    {"when": "self == EMPTY and left == CAR", "then": "CAR"}
+  ],
+  "colors": {"EMPTY": "#e3dfd4", "CAR": "#d85a30"}
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Rule 30",
+  "description": "Elementary cellular automaton from the project brief. Each cell reads (left, itself, right); the table gives the new value for each of the 8 patterns.",
+  "dimensions": 1,
+  "states": {"type": "integer", "min": 0, "max": 1},
+  "neighbourhood": "elementary",
+  "edges": {"type": "fixed", "value": 0},
+  "rules": [
+    {"table": {"111": 0, "110": 0, "101": 0, "100": 1, "011": 1, "010": 1, "001": 1, "000": 0}}
+  ],
+  "colors": {"0": "#f5f3ee", "1": "#16202b"}
+}

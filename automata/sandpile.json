@@ -1,0 +1,12 @@
+{
+  "name": "Sandpile",
+  "description": "From the brief: a cell with 4 or more grains topples, giving one grain to each of its four neighbours. All unstable cells topple at the same time; grains pushed over the edge are lost.",
+  "dimensions": 2,
+  "states": {"type": "integer", "min": 0},
+  "neighbourhood": "von_neumann",
+  "edges": {"type": "fixed", "value": 0},
+  "rules": [
+    {"then": "self - 4 * (self >= 4) + count(nb >= 4)"}
+  ],
+  "colors": {"0": "#f5f3ee", "1": "#efb04a", "2": "#d85a30", "3": "#7a2e12"}
+}

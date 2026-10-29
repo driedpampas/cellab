@@ -1,0 +1,15 @@
+{
+  "name": "Epidemic",
+  "description": "Deterministic version from the brief: a susceptible person is infected if at least 2 neighbours are infected; an infected person recovers after 3 turns (states INFECTED_1..3) and stays recovered.",
+  "dimensions": 2,
+  "states": ["SUSCEPTIBLE", "INFECTED_1", "INFECTED_2", "INFECTED_3", "RECOVERED"],
+  "neighbourhood": "moore",
+  "edges": {"type": "fixed", "value": "SUSCEPTIBLE"},
+  "rules": [
+    {"when": "self == SUSCEPTIBLE and count(nb == INFECTED_1 or nb == INFECTED_2 or nb == INFECTED_3) >= 2", "then": "INFECTED_1"},
+    {"when": "self == INFECTED_1", "then": "INFECTED_2"},
+    {"when": "self == INFECTED_2", "then": "INFECTED_3"},
+    {"when": "self == INFECTED_3", "then": "RECOVERED"}
+  ],
+  "colors": {"SUSCEPTIBLE": "#e3dfd4", "INFECTED_1": "#d85a30", "INFECTED_2": "#b04a1a", "INFECTED_3": "#7a2e12", "RECOVERED": "#2b5c99"}
+}

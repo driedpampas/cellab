@@ -1,0 +1,11 @@
+{
+  "name": "Rule 58, example from the lab notes",
+  "automaton": "../automata/elementary.json",
+  "parameters": {"rule": 58},
+  "initial": {"type": "text", "rows": ["0001100"]},
+  "steps": 10,
+  "questions": [
+    {"ask": "state_after", "n": 1},
+    {"ask": "cycle"}
+  ]
+}

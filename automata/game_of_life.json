@@ -1,0 +1,14 @@
+{
+  "name": "Game of Life",
+  "description": "Not in the brief's list: Conway's Game of Life, added to show that new automata need only a file. A dead cell with exactly 3 live neighbours is born; a live cell with 2 or 3 live neighbours survives.",
+  "dimensions": 2,
+  "states": ["DEAD", "ALIVE"],
+  "neighbourhood": "moore",
+  "edges": {"type": "wrap"},
+  "rules": [
+    {"when": "count(ALIVE) == 3", "then": "ALIVE"},
+    {"when": "self == ALIVE and count(ALIVE) == 2", "then": "ALIVE"}
+  ],
+  "otherwise": "DEAD",
+  "colors": {"DEAD": "#f5f3ee", "ALIVE": "#16202b"}
+}

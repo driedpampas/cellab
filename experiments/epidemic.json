@@ -1,0 +1,13 @@
+{
+  "name": "Epidemic from a few infected people",
+  "automaton": "../automata/epidemic.json",
+  "size": [80, 80],
+  "initial": {"type": "random", "weights": {"SUSCEPTIBLE": 0.96, "INFECTED_1": 0.04}},
+  "seed": 7,
+  "steps": 40,
+  "questions": [
+    {"ask": "count_after", "n": 10, "value": "RECOVERED"},
+    {"ask": "stable"},
+    {"ask": "count_after", "n": 1000, "value": "SUSCEPTIBLE"}
+  ]
+}

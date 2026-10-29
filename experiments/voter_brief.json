@@ -1,0 +1,7 @@
+{
+  "name": "Voter model, grid from the brief",
+  "automaton": "../automata/voter.json",
+  "initial": {"type": "text", "rows": ["AABA", "BBAA", "ABBB"]},
+  "steps": 6,
+  "questions": [{"ask": "state_after", "n": 1}, {"ask": "stable"}, {"ask": "count_after", "n": 5, "value": "A"}, {"ask": "cycle"}]
+}

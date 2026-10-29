@@ -1,0 +1,13 @@
+{
+  "name": "Voter model",
+  "description": "From the brief: every cell adopts the opinion held by the majority of its eight neighbours; a tie leaves it unchanged.",
+  "dimensions": 2,
+  "states": ["A", "B"],
+  "neighbourhood": "moore",
+  "edges": {"type": "wrap"},
+  "rules": [
+    {"when": "count(A) > count(B)", "then": "A"},
+    {"when": "count(B) > count(A)", "then": "B"}
+  ],
+  "colors": {"A": "#2b5c99", "B": "#efb04a"}
+}

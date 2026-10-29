@@ -1,0 +1,13 @@
+{
+  "name": "Crystal growth",
+  "description": "From the brief: an empty cell with exactly one crystal neighbour becomes crystal. Change 'needed' to grow different crystals.",
+  "dimensions": 2,
+  "states": ["EMPTY", "CRYSTAL"],
+  "neighbourhood": "von_neumann",
+  "edges": {"type": "fixed", "value": "EMPTY"},
+  "parameters": {"needed": 1},
+  "rules": [
+    {"when": "self == EMPTY and count(CRYSTAL) == needed", "then": "CRYSTAL"}
+  ],
+  "colors": {"EMPTY": "#16202b", "CRYSTAL": "#85b7eb"}
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Rule 30 from a single cell",
+  "automaton": "../automata/rule30.json",
+  "size": [63],
+  "initial": {"type": "single", "value": 1, "background": 0},
+  "steps": 31,
+  "max_steps": 20000,
+  "questions": [
+    {"ask": "state_after", "n": 5},
+    {"ask": "count_after", "n": 30, "value": 1},
+    {"ask": "stable"},
+    {"ask": "cycle"}
+  ]
+}

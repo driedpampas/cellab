@@ -1,0 +1,12 @@
+{
+  "name": "Sandpile, grid from the brief",
+  "automaton": "../automata/sandpile.json",
+  "initial": {"type": "text", "rows": ["0 1 2", "2 8 1", "1 2 0"]},
+  "steps": 5,
+  "questions": [
+    {"ask": "stable"},
+    {"ask": "state_after", "n": 3},
+    {"ask": "count_after", "n": 3, "value": 3},
+    {"ask": "cycle"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Brian's Brain from a random start",
+  "automaton": "../automata/brians_brain.json",
+  "size": [100, 100],
+  "initial": {"type": "random", "weights": {"OFF": 0.7, "FIRING": 0.3}},
+  "seed": 7,
+  "steps": 150,
+  "max_steps": 3000,
+  "questions": [{"ask": "cycle"}, {"ask": "stable"}, {"ask": "count_after", "n": 100, "value": "FIRING"}]
+}

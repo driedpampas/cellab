@@ -1,0 +1,13 @@
+{
+  "name": "Elementary rule",
+  "description": "Any of the 256 elementary rules, chosen by the parameter 'rule' (Wolfram numbering). Bit number 4*left + 2*self + right of the rule number is the new value.",
+  "dimensions": 1,
+  "states": {"type": "integer", "min": 0, "max": 1},
+  "neighbourhood": "elementary",
+  "edges": {"type": "wrap"},
+  "parameters": {"rule": 110},
+  "rules": [
+    {"then": "(rule >> (4 * left + 2 * self + right)) & 1"}
+  ],
+  "colors": {"0": "#f5f3ee", "1": "#16202b"}
+}

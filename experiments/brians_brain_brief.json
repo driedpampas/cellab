@@ -1,0 +1,16 @@
+{
+  "name": "Brian's Brain, grid from the brief",
+  "automaton": "../automata/brians_brain.json",
+  "initial": {
+    "type": "text",
+    "rows": ["..F..", ".F.F.", "....."],
+    "legend": {".": "OFF", "F": "FIRING", "D": "DYING"}
+  },
+  "steps": 6,
+  "questions": [
+    {"ask": "state_after", "n": 1},
+    {"ask": "count_after", "n": 2, "value": "FIRING"},
+    {"ask": "stable"},
+    {"ask": "cycle"}
+  ]
+}

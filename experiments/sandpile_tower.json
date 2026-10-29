@@ -1,0 +1,10 @@
+{
+  "name": "Sandpile, 3000 grains in the centre",
+  "automaton": "../automata/sandpile.json",
+  "size": [51, 51],
+  "initial": {"type": "single", "value": 3000, "background": 0},
+  "steps": 0,
+  "max_steps": 20000,
+  "checkpoint_every": 500,
+  "questions": [{"ask": "stable"}, {"ask": "count_after", "n": 100000, "value": 3}]
+}

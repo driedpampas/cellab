@@ -1,0 +1,15 @@
+{
+  "name": "Forest fire with regrowth",
+  "description": "The brief's stochastic extension: empty cells grow a tree with probability p, and a tree catches fire by itself (lightning) with probability f.",
+  "dimensions": 2,
+  "states": ["EMPTY", "TREE", "FIRE"],
+  "neighbourhood": "von_neumann",
+  "edges": {"type": "wrap"},
+  "parameters": {"p": 0.02, "f": 0.0002},
+  "rules": [
+    {"when": "self == FIRE", "then": "EMPTY"},
+    {"when": "self == TREE and (count(FIRE) >= 1 or random() < f)", "then": "FIRE"},
+    {"when": "self == EMPTY and random() < p", "then": "TREE"}
+  ],
+  "colors": {"EMPTY": "#e3dfd4", "TREE": "#4a7326", "FIRE": "#d85a30"}
+}

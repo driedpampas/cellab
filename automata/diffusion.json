@@ -1,0 +1,11 @@
+{
+  "name": "Diffusion",
+  "description": "From the brief: every cell becomes the average of itself and its four neighbours. Values are rounded to 2 decimals after every step, so the grid can settle exactly.",
+  "dimensions": 2,
+  "states": {"type": "real", "min": 0, "decimals": 2},
+  "neighbourhood": "von_neumann",
+  "edges": {"type": "wrap"},
+  "rules": [
+    {"then": "(self + sum(nb)) / 5"}
+  ]
+}

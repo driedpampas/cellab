@@ -1,0 +1,10 @@
+{
+  "name": "Rule 110 from a random row",
+  "automaton": "../automata/elementary.json",
+  "parameters": {"rule": 110},
+  "size": [120],
+  "initial": {"type": "random", "weights": {"0": 1, "1": 1}},
+  "seed": 7,
+  "steps": 100,
+  "questions": [{"ask": "count_after", "n": 100, "value": 1}]
+}
