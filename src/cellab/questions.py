@@ -116,7 +116,7 @@ class StateAfter(Question):
             return Answer(self.to_dict(), False, ctx.undecided(f"step {self.n} was not reached"))
         grid, source = found
         rows = format_grid(grid, ctx.states, ctx.legend)
-        text = f"After {self.n} steps:\n" + "\n".join(rows)
+        text = f"After {_steps(self.n)}:\n" + "\n".join(rows)
         result = {"step": self.n, "grid": rows}
         if source != self.n:
             text += f"\n(the run is in a cycle, so step {self.n} shows the same grid as step {source})"

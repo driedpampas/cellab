@@ -94,3 +94,11 @@ def test_render_makes_pictures(tmp_path):
     cells = np.array(picture.convert("L"))
     assert picture.height // picture.width == (run_1d.state.step + 1) // 63   # one row per generation
     assert cells.min() < 100 < cells.max()                                   # both colours are present
+
+
+def test_render_can_stop_at_a_given_step(tmp_path, capsys):
+    run, _ = run_experiment(example_experiment("rule30_triangle"), tmp_path)
+    assert run.state.step > 31                       # the questions kept the run going
+    assert main(["render", str(run.folder.path), "--out", str(tmp_path / "pics"), "--until", "31"]) == 0
+    picture = Image.open(tmp_path / "pics" / "spacetime.png")
+    assert picture.height * 63 == picture.width * 32   # 32 generations of 63 cells

@@ -73,6 +73,7 @@ def _parser() -> argparse.ArgumentParser:
     render = commands.add_parser("render", help="make PNG/GIF pictures of a run")
     render.add_argument("folder", type=Path)
     render.add_argument("--out", type=Path, help="folder for the pictures (default: the run folder)")
+    render.add_argument("--until", type=int, help="only draw generations 0..UNTIL")
     render.set_defaults(handler=_render)
     return parser
 
@@ -144,7 +145,7 @@ def _show(args) -> int:
 
 
 def _render(args) -> int:
-    for path in render_run(args.folder, args.out):
+    for path in render_run(args.folder, args.out, until=args.until):
         print(f"wrote {path}")
     return 0
 

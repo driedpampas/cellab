@@ -56,12 +56,15 @@ def cell_size(height: int, width: int, target: int = 480) -> int:
     return max(1, min(24, target // max(height, width)))
 
 
-def render_run(path: str | Path, out_dir: str | Path | None = None, frame_ms: int = 120) -> list[Path]:
-    """Make pictures of a run folder's stored generations. Returns the files written."""
+def render_run(path: str | Path, out_dir: str | Path | None = None, frame_ms: int = 120,
+               until: int | None = None) -> list[Path]:
+    """Make pictures of a run folder's stored generations (up to step `until`). Returns the files written."""
     folder = RunFolder(path)
     experiment = load_experiment(folder.file(RunFolder.EXPERIMENT))
     automaton = experiment.automaton
     generations = folder.read_all_generations(experiment.shape, automaton.states.dtype)
+    if until is not None:
+        generations = generations[: until + 1]
     out = Path(out_dir) if out_dir else folder.path
     out.mkdir(parents=True, exist_ok=True)
     paint = painter(automaton, generations)

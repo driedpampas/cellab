@@ -69,6 +69,13 @@ def test_count_after_uses_the_requested_value(tmp_path):
     assert answer_results(result)["count_after"] == {"step": 1000, "value": "CAR", "count": 4, "same_as_step": 10}
 
 
+def test_answers_use_singular_and_plural_correctly(tmp_path):
+    _, result = run_experiment(example_experiment("traffic_brief"), tmp_path)
+    texts = {answer.question["ask"]: answer.text for answer in result.answers}
+    assert texts["state_after"].startswith("After 1 step:")
+    assert texts["count_after"].startswith("After 1000 steps there are 4 cells")
+
+
 def test_answers_are_saved_in_the_run_folder(tmp_path):
     run, result = run_experiment(example_experiment("forest_fire_brief"), tmp_path)
     saved = run.folder.read_answers()
