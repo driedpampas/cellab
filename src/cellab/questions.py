@@ -198,7 +198,8 @@ class Cycle(Question):
         length = later - earlier
         result = {"cycle": True, "start": earlier, "length": length}
         if ctx.deterministic:
-            text = (f"Yes: from step {earlier} the grids repeat every {length} step(s) "
+            every = "every step" if length == 1 else f"every {length} steps"
+            text = (f"Yes: from step {earlier} the grids repeat {every} "
                     f"(step {later} is the same grid as step {earlier}).")
             if length == 1:
                 text += " A cycle of length 1 means the grid is stable."

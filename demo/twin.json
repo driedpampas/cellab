@@ -1,0 +1,17 @@
+{
+  "name": "twin demo",
+  "automaton": "../automata/forest_fire_regrowth.json",
+  "size": [
+    60,
+    60
+  ],
+  "initial": {
+    "type": "random",
+    "weights": {
+      "TREE": 0.6,
+      "EMPTY": 0.4,
+      "FIRE": 0.003
+    }
+  },
+  "steps": 8
+}

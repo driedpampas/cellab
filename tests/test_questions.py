@@ -74,6 +74,9 @@ def test_answers_use_singular_and_plural_correctly(tmp_path):
     texts = {answer.question["ask"]: answer.text for answer in result.answers}
     assert texts["state_after"].startswith("After 1 step:")
     assert texts["count_after"].startswith("After 1000 steps there are 4 cells")
+    _, result = run_experiment(example_experiment("forest_fire_brief"), tmp_path / "fire")
+    texts = {answer.question["ask"]: answer.text for answer in result.answers}
+    assert "the grids repeat every step (step 6" in texts["cycle"]
 
 
 def test_answers_are_saved_in_the_run_folder(tmp_path):

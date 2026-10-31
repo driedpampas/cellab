@@ -1,0 +1,31 @@
+{
+  "name": "Forest fire",
+  "description": "Deterministic forest fire from the project brief: fire burns out, and a tree catches fire if at least one of its four neighbours is burning.",
+  "dimensions": 2,
+  "states": [
+    "EMPTY",
+    "TREE",
+    "FIRE"
+  ],
+  "edges": {
+    "type": "fixed",
+    "value": "EMPTY"
+  },
+  "rules": [
+    {
+      "when": "self == FIRE",
+      "then": "EMPTY"
+    },
+    {
+      "when": "self == TREE and count(FIRE) >= 1",
+      "then": "FIRE"
+    }
+  ],
+  "otherwise": "self",
+  "colors": {
+    "EMPTY": "#e3dfd4",
+    "TREE": "#4a7326",
+    "FIRE": "#d85a30"
+  },
+  "neighborhood": "von_neumann"
+}

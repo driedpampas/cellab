@@ -165,7 +165,7 @@ Each command parses arguments and calls the library; there's no logic in `cli.py
 
 ## 6. Tests (`tests/`)
 
-Run them with `python -m pytest`; all 193 run in about 15 seconds.
+Run them with `python -m pytest`; all 195 run in about 15 seconds.
 
 | File | What it proves |
 |---|---|
