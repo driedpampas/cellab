@@ -1,6 +1,8 @@
 """Broken input files must be rejected before anything runs, with a message that
 names the file, the field, and the problem."""
 
+import json
+
 import pytest
 
 from cellab import load_automaton, load_experiment
@@ -99,6 +101,12 @@ def test_invalid_json_reports_line_and_column(tmp_path):
 def test_missing_file(tmp_path):
     with pytest.raises(InputFileError, match="file not found"):
         load_automaton(tmp_path / "nothing.json")
+
+
+def test_files_saved_with_a_bom_are_read(tmp_path):
+    path = tmp_path / "fire.json"
+    path.write_text(json.dumps(FOREST_FIRE), encoding="utf-8-sig")
+    assert load_automaton(path).states.names == tuple(FOREST_FIRE["states"])
 
 
 EXPERIMENT_CASES = [

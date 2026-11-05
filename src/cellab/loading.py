@@ -21,7 +21,7 @@ def read_json(path: str | Path) -> dict:
     if not path.is_file():
         raise InputFileError(path, "", "file not found")
     try:
-        text = path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8-sig")   # -sig: also accept the BOM Windows editors add
     except UnicodeDecodeError:
         raise InputFileError(path, "", "the file is not UTF-8 text") from None
     try:
