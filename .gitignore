@@ -3,12 +3,14 @@ __pycache__/
 .venv/
 .claude/settings.local.json
 
-# AI conversation logs: kept locally, shared privately at submission
-docs/ai-logs/
+# AI conversation logs: raw transcripts stay local; redacted copies in docs/ai-logs/public/ are published
+docs/ai-logs/*
+!docs/ai-logs/public/
 
 # private notes and local previews
 explanation.md
 .preview/
+.claude/launch.json
 
 # local environment and run outputs
 .venv/
