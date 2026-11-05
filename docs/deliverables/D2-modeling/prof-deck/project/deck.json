@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-31T12:00:00Z"},
+  "lists": "css",
+  "title": "CelLab: Deliverable 2",
+  "order": ["cover", "asked", "overview", "automaton-file", "experiment", "step", "storage", "resume-proof", "hashes", "randomness", "automata", "surprise", "correctness", "demo"],
+  "sections": {
+    "intro": {"description": "What Deliverable 2 asked for and how the system is organised", "start": "cover"},
+    "model": {"description": "How an automaton and an experiment are modelled and simulated", "start": "automaton-file"},
+    "state": {"description": "State storage, recovery, hashes and fixed randomness", "start": "storage"},
+    "results": {"description": "Automata implemented, correctness and the live demo", "start": "automata"}
+  },
+  "faces": {
+    "space-grotesk": {"family": "Space Grotesk", "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"},
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"},
+    "ibm-plex-mono": {"family": "IBM Plex Mono", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"}
+  },
+  "designSystems": []
+}

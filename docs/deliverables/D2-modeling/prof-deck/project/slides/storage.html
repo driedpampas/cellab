@@ -1,0 +1,16 @@
+<section id="storage" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">State storage and recovery</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">Saving the state and resuming a run</h2>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">Each run gets a folder</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:26px;line-height:1.6;color:#16202B">automaton.json<br>experiment.json<br><span style="color:#B04A1A">checkpoint.npz</span><br>fingerprints.bin<br>generations.bin<br>answers.json</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Ctrl+C, a crash or <b>--stop-at</b>: <b>cellab resume</b> continues from the last checkpoint.</p>
+</div>
+<img src="/_blob/fb417051306afe32438d0a5418d1243a" alt="Animation: checkpoints every 10 steps, a crash at step 25, the files cut back to the checkpoint at step 20, the run resumed and identical to an uninterrupted run" style="width:1000px;height:563px;object-fit:contain;border-radius:12px;border:1px solid #DDD9CF">
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 2 · the checkpoint holds the grid, step, seed and random generator state</p>
+<aside>Checkpoints are written atomically (to a temporary file, then renamed), so a crash never leaves a broken one. Generations and fingerprints are appended to fixed-size record files, so any step can be read back directly, and resuming simply cuts them back to the checkpoint. Resume refuses to continue if the automaton file in the folder was edited.</aside>
+</section>

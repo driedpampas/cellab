@@ -1,0 +1,21 @@
+<section id="correctness" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Correctness</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;letter-spacing:-1px;color:#16202B">How we checked that it is correct</h2>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:600;line-height:1;color:#B04A1A">195 tests</p>
+<ul style="font-size:26px;line-height:1.45;color:#3F4A55;display:flex;flex-direction:column;gap:10px">
+<li>Engine vs independent slow implementations, on random grids</li>
+<li>Known results: the brief’s examples, Rule 58 from the lab</li>
+<li>Same seed = same run; stop or crash + resume = uninterrupted</li>
+<li>Over 50 broken files, each rejected with the right message</li>
+<li>No automaton name appears in the engine’s code</li>
+</ul>
+</div>
+<img src="/_blob/a6267907015c0b69eb8d49e9d5393e98" alt="Recording of the full test run ending with 195 passed" style="width:860px;height:460px;object-fit:contain;border-radius:12px">
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6873">CelLab · Deliverable 2 · python -m pytest · about 12 seconds</p>
+<aside>The strongest check is the comparison with reference implementations: every example automaton is also written the slow, obvious way, with plain loops over cells and no shared code, and the engine must agree with it step by step on random grids. The known results include the forest fire, sandpile and Brian's Brain grids from the brief and the Rule 58 example from the lab.</aside>
+</section>
