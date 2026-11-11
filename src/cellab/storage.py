@@ -5,7 +5,8 @@
         experiment.json     copy of the experiment file, with the seed actually used
                             (its "automaton" field points to the copy next to it)
         checkpoint.npz      the run's state at the last checkpoint (see below)
-        fingerprints.bin    16 bytes per step, appended as the run goes
+        fingerprints.bin    16 bytes per step, appended as the run goes (32 for automata
+                            with layers: the whole state, then the grid alone)
         generations.bin     every generation, appended as the run goes (if stored)
         answers.json        the answers, written when the run finishes
         status.json         "running", "stopped" or "finished", and the step reached
@@ -132,11 +133,11 @@ class RunFolder:
             with open(path, "r+b") as handle:
                 handle.truncate(count * record_size)
 
-    def read_fingerprints(self, count: int) -> list[bytes]:
-        data = self.file(self.FINGERPRINTS).read_bytes()[: count * FINGERPRINT_SIZE]
-        if len(data) != count * FINGERPRINT_SIZE:
+    def read_fingerprints(self, count: int, record_size: int = FINGERPRINT_SIZE) -> list[bytes]:
+        data = self.file(self.FINGERPRINTS).read_bytes()[: count * record_size]
+        if len(data) != count * record_size:
             raise StorageError(f"{self.FINGERPRINTS} in {self.path} is shorter than the checkpoint says")
-        return [data[i:i + FINGERPRINT_SIZE] for i in range(0, len(data), FINGERPRINT_SIZE)]
+        return [data[i:i + record_size] for i in range(0, len(data), record_size)]
 
     def read_generation(self, step: int, shape: tuple[int, ...], dtype: np.dtype) -> np.ndarray:
         size = int(np.prod(shape)) * dtype.itemsize

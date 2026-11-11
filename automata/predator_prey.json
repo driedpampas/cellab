@@ -1,0 +1,32 @@
+{
+  "name": "Predator-prey",
+  "description": "From the brief. A rabbit moves to a random empty neighbouring cell; once it is 'breed_after' turns old it leaves a young rabbit in a neighbouring cell instead and starts counting again. A fox moves onto a neighbouring rabbit and eats it (gaining 'food_value' energy), otherwise it moves at random. Every turn costs a fox 1 energy, and a fox whose energy reaches 0 dies. 'age' counts a rabbit's turns, 'energy' is a fox's energy.",
+  "dimensions": 2,
+  "states": ["EMPTY", "RABBIT", "FOX"],
+  "layers": {"age": {"max": 255}, "energy": {"max": 255}},
+  "neighbourhood": "moore",
+  "edges": {"type": "wrap"},
+  "update": "agents",
+  "order": "random",
+  "parameters": {"breed_after": 3, "food_value": 4, "max_energy": 12},
+  "rules": [
+    {"when": "self == RABBIT",
+     "do": [
+       {"to": {"where": "nb == EMPTY and age >= breed_after"},
+        "here": {"age": 0}, "there": {"self": "RABBIT", "age": 0}},
+       {"to": {"where": "nb == EMPTY"},
+        "here": {"self": "EMPTY", "age": 0}, "there": {"self": "RABBIT", "age": "age + 1"}},
+       {"here": {"age": "min(age + 1, breed_after)"}}
+     ]},
+    {"when": "self == FOX",
+     "do": [
+       {"to": {"where": "nb == RABBIT"},
+        "here": {"self": "EMPTY", "energy": 0},
+        "there": {"self": "FOX", "age": 0, "energy": "min(energy - 1 + food_value, max_energy)"}},
+       {"to": {"where": "nb == EMPTY and energy > 1"},
+        "here": {"self": "EMPTY", "energy": 0}, "there": {"self": "FOX", "energy": "energy - 1"}},
+       {"here": {"self": "FOX if energy > 1 else EMPTY", "energy": "max(energy - 1, 0)"}}
+     ]}
+  ],
+  "colors": {"EMPTY": "#f5f3ee", "RABBIT": "#8a8780", "FOX": "#d85a30"}
+}

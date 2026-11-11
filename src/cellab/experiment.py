@@ -3,6 +3,7 @@
 An experiment names an automaton file and gives everything a run needs:
 
     size, initial         the grid and how the first generation is made
+                          (for automata with layers: also "initial.layers")
     steps                 how many generations to simulate (and show/store)
     seed                  for reproducible randomness (chosen and recorded if missing)
     max_steps             how far a run may go to answer the questions
@@ -25,9 +26,11 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .automaton import Automaton, load_automaton
 from .errors import InputFileError
+from .expressions import EvalContext, Expression, compile_expression
 from .grids import format_grid, parse_grid, parse_legend
 from .loading import read_json, validate
 from .questions import Cycle, CountAfter, Occurs, Question, Stable, StateAfter
+from .states import StateSpace, checked_values
 
 MAX_CELLS = 10_000_000
 
@@ -49,22 +52,22 @@ class _ExperimentFile(BaseModel):
     questions: list[dict[str, Any]] = Field(default_factory=list)
 
 
-class _TextStart(BaseModel):
+class _Start(BaseModel):
     model_config = ConfigDict(extra="forbid")
     type: str
+    layers: dict[str, Any] = Field(default_factory=dict)   # how each layer starts (default: all 0)
+
+
+class _TextStart(_Start):
     rows: list[str] = Field(min_length=1)
     legend: dict[str, Any] = Field(default_factory=dict)
 
 
-class _RandomStart(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    type: str
+class _RandomStart(_Start):
     weights: dict[str, float] = Field(min_length=1)
 
 
-class _SingleStart(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    type: str
+class _SingleStart(_Start):
     value: Any
     background: Any
     position: list[int] | None = None   # default: the centre
@@ -108,6 +111,7 @@ class Experiment:
     shape: tuple[int, ...]
     start: BaseModel                      # one of the _...Start models above
     start_grid: np.ndarray | None         # the parsed grid for "text" starts
+    layer_starts: dict[str, Any]          # layer name -> (start, parsed grid) or an Expression of the grid
     legend: dict[str, int | float]        # symbols for reading and printing grids
     steps: int
     seed: int | None
@@ -122,9 +126,13 @@ class Experiment:
         raw = dict(self.raw, steps=steps)
         return dataclasses.replace(self, steps=steps, max_steps=max(self.max_steps, steps), raw=raw)
 
-    def format(self, grid: np.ndarray) -> list[str]:
-        """A grid as text rows, with this experiment's symbols."""
-        return format_grid(grid, self.automaton.states, self.legend)
+    def format(self, state: np.ndarray) -> list[str]:
+        """A generation as text rows, with this experiment's symbols (layers follow the grid)."""
+        automaton = self.automaton
+        rows = format_grid(automaton.cells(state), automaton.states, self.legend)
+        for name, space in automaton.layers.items():
+            rows += [f"{name}:"] + format_grid(automaton.layer(state, name), space)
+        return rows
 
 
 def load_experiment(path: str | Path) -> Experiment:
@@ -144,22 +152,27 @@ def load_experiment(path: str | Path) -> Experiment:
     states, dims = automaton.states, automaton.dimensions
 
     # The initial world --------------------------------------------------
-    kind = model.initial.get("type")
-    if kind not in _STARTS:
-        fail("initial.type", f"must be one of: {', '.join(_STARTS)}")
-    start = validate(_STARTS[kind], model.initial, path, prefix="initial")
-
-    legend: dict[str, int | float] = {}
-    start_grid = None
-    if isinstance(start, _TextStart):
-        try:
-            legend = parse_legend(start.legend, states)
-            start_grid = parse_grid(start.rows, states, dims, legend)
-        except ValueError as error:
-            fail("initial", str(error))
-
+    start, start_grid, legend = _read_start(model.initial, states, dims, path, "initial", fail)
     shape = _resolve_shape(model.size, start_grid, dims, fail)
-    _check_start(start, states, shape, fail)
+    _check_start(start, states, shape, fail, "initial")
+
+    layer_starts: dict[str, Any] = {}
+    for name, raw in start.layers.items():
+        where = f"initial.layers.{name}"
+        if name not in automaton.layers:
+            known = ", ".join(automaton.layers) or "none"
+            fail(where, f"the automaton has no layer '{name}' (its layers: {known})")
+        if isinstance(raw, dict):                 # written like "initial" itself: text, random or single
+            layer_start, layer_grid, _ = _read_start(raw, automaton.layers[name], dims, path, where, fail)
+            if layer_start.layers:
+                fail(f"{where}.layers", "a layer has no layers of its own")
+            if layer_grid is not None and layer_grid.shape != shape:
+                fail(where, f"the rows make a {_size_text(layer_grid.shape)} grid, but the grid is {_size_text(shape)}")
+            _check_start(layer_start, automaton.layers[name], shape, fail, where)
+            layer_starts[name] = (layer_start, layer_grid)
+        else:                                     # a value computed from the initial grid
+            layer_starts[name] = compile_expression(raw, where, str(path), frozenset(automaton.constants) | {"self"},
+                                                    frozenset(states.names))
 
     # Run settings -------------------------------------------------------
     if model.steps > model.max_steps:
@@ -198,29 +211,64 @@ def load_experiment(path: str | Path) -> Experiment:
 
     return Experiment(
         name=model.name, automaton=automaton, shape=shape, start=start, start_grid=start_grid,
-        legend=legend, steps=model.steps, seed=model.seed, max_steps=model.max_steps,
+        layer_starts=layer_starts, legend=legend, steps=model.steps, seed=model.seed, max_steps=model.max_steps,
         store_generations=model.store_generations, checkpoint_every=model.checkpoint_every,
         questions=tuple(questions), source=path, raw=data,
     )
 
 
 def make_initial_grid(experiment: Experiment, rng: np.random.Generator) -> np.ndarray:
-    """Build generation 0. Random starts draw from the run's generator (first draw of the run)."""
-    states, shape, start = experiment.automaton.states, experiment.shape, experiment.start
+    """Build generation 0: the grid and, for automata with layers, the layers after it.
+    Random starts draw from the run's generator (the first draws of the run)."""
+    automaton, shape = experiment.automaton, experiment.shape
+    grid = _start_grid(experiment.start, experiment.start_grid, automaton.states, shape, rng)
+    if not automaton.layers:
+        return grid
+    state = np.zeros(automaton.state_shape(shape), dtype=automaton.state_dtype)
+    state[0] = grid
+    for number, (name, space) in enumerate(automaton.layers.items(), start=1):
+        spec = experiment.layer_starts.get(name)
+        if isinstance(spec, Expression):
+            ctx = EvalContext(state[0], None, (), automaton.dimensions, automaton.constants,
+                              automaton.states.constants(), rng, 0)
+            state[number] = space.finish_step(checked_values(spec.evaluate(ctx), space.kind, spec.where))
+        elif spec is not None:
+            state[number] = _start_grid(*spec, space, shape, rng)
+    return state
+
+
+def _start_grid(start, start_grid, space: StateSpace, shape, rng: np.random.Generator) -> np.ndarray:
     if isinstance(start, _TextStart):
-        return experiment.start_grid.copy()
+        return start_grid.copy()
     if isinstance(start, _RandomStart):
-        values = [states.parse(token) for token in start.weights]
+        values = [space.parse(token) for token in start.weights]
         weights = np.array(list(start.weights.values()), dtype=float)
         chosen = rng.choice(len(values), size=shape, p=weights / weights.sum())
-        return np.array(values, dtype=states.dtype)[chosen]
-    grid = np.full(shape, states.parse(start.background), dtype=states.dtype)
+        return np.array(values, dtype=space.dtype)[chosen]
+    grid = np.full(shape, space.parse(start.background), dtype=space.dtype)
     position = tuple(start.position) if start.position is not None else tuple(n // 2 for n in shape)
-    grid[position] = states.parse(start.value)
+    grid[position] = space.parse(start.value)
     return grid
 
 
 # ------------------------------------------------------------ helpers
+
+def _read_start(raw: dict, space: StateSpace, dims: int, path: Path, where: str, fail):
+    """Check the structure of an initial world (of the grid or of a layer).
+    Returns (the start model, the parsed grid of a "text" start or None, the legend)."""
+    kind = raw.get("type")
+    if kind not in _STARTS:
+        fail(f"{where}.type", f"must be one of: {', '.join(_STARTS)}")
+    start = validate(_STARTS[kind], raw, path, prefix=where)
+    legend, grid = {}, None
+    if isinstance(start, _TextStart):
+        try:
+            legend = parse_legend(start.legend, space)
+            grid = parse_grid(start.rows, space, dims, legend)
+        except ValueError as error:
+            fail(where, str(error))
+    return start, grid, legend
+
 
 def _override_parameters(automaton: Automaton, overrides: dict, fail) -> Automaton:
     if not overrides:
@@ -255,26 +303,26 @@ def _resolve_shape(size, start_grid, dims, fail) -> tuple[int, ...]:
     return shape
 
 
-def _check_start(start, states, shape, fail) -> None:
+def _check_start(start, states, shape, fail, where: str) -> None:
     if isinstance(start, _RandomStart):
         for token, weight in start.weights.items():
             try:
                 states.parse(token)
             except ValueError as error:
-                fail(f"initial.weights.{token}", str(error))
+                fail(f"{where}.weights.{token}", str(error))
             if weight < 0:
-                fail(f"initial.weights.{token}", "weights cannot be negative")
+                fail(f"{where}.weights.{token}", "weights cannot be negative")
         if sum(start.weights.values()) <= 0:
-            fail("initial.weights", "at least one weight must be above 0")
+            fail(f"{where}.weights", "at least one weight must be above 0")
     elif isinstance(start, _SingleStart):
         for label in ("value", "background"):
             try:
                 states.parse(getattr(start, label))
             except ValueError as error:
-                fail(f"initial.{label}", str(error))
+                fail(f"{where}.{label}", str(error))
         if start.position is not None:
             if len(start.position) != len(shape) or not all(0 <= p < n for p, n in zip(start.position, shape)):
-                fail("initial.position", f"must be inside the {_size_text(shape)} grid (counting from 0)")
+                fail(f"{where}.position", f"must be inside the {_size_text(shape)} grid (counting from 0)")
 
 
 def _size_text(shape: tuple[int, ...]) -> str:

@@ -1,0 +1,38 @@
+{
+  "name": "Artificial ecosystem",
+  "description": "From the brief. Grass grows on an empty cell with probability 'grow' per step. A rabbit moves onto neighbouring grass and eats it (gaining 'rabbit_gain' energy), otherwise it moves to an empty cell; a fox does the same with rabbits ('fox_gain'). Every turn costs an animal 1 energy and it dies at 0. An animal with more energy than its breeding threshold leaves a young one in a neighbouring cell and shares its energy with it. 'energy' is the animal's energy.",
+  "dimensions": 2,
+  "states": ["EMPTY", "GRASS", "RABBIT", "FOX"],
+  "layers": {"energy": {"max": 255}},
+  "neighbourhood": "moore",
+  "edges": {"type": "wrap"},
+  "update": "agents",
+  "order": "random",
+  "parameters": {"grow": 0.08, "rabbit_gain": 4, "rabbit_breed": 6, "fox_gain": 3, "fox_breed": 10, "max_energy": 30},
+  "rules": [
+    {"when": "self == RABBIT",
+     "do": [
+       {"to": {"where": "nb == EMPTY and energy > rabbit_breed"},
+        "here": {"energy": "energy // 2"}, "there": {"self": "RABBIT", "energy": "energy - energy // 2"}},
+       {"to": {"where": "nb == GRASS"},
+        "here": {"self": "EMPTY", "energy": 0},
+        "there": {"self": "RABBIT", "energy": "min(energy - 1 + rabbit_gain, max_energy)"}},
+       {"to": {"where": "nb == EMPTY and energy > 1"},
+        "here": {"self": "EMPTY", "energy": 0}, "there": {"self": "RABBIT", "energy": "energy - 1"}},
+       {"here": {"self": "RABBIT if energy > 1 else EMPTY", "energy": "max(energy - 1, 0)"}}
+     ]},
+    {"when": "self == FOX",
+     "do": [
+       {"to": {"where": "nb == EMPTY and energy > fox_breed"},
+        "here": {"energy": "energy // 2"}, "there": {"self": "FOX", "energy": "energy - energy // 2"}},
+       {"to": {"where": "nb == RABBIT"},
+        "here": {"self": "EMPTY", "energy": 0},
+        "there": {"self": "FOX", "energy": "min(energy - 1 + fox_gain, max_energy)"}},
+       {"to": {"where": "(nb == EMPTY or nb == GRASS) and energy > 1"},
+        "here": {"self": "EMPTY", "energy": 0}, "there": {"self": "FOX", "energy": "energy - 1"}},
+       {"here": {"self": "FOX if energy > 1 else EMPTY", "energy": "max(energy - 1, 0)"}}
+     ]},
+    {"when": "self == EMPTY and random() < grow", "then": "GRASS"}
+  ],
+  "colors": {"EMPTY": "#f5f3ee", "GRASS": "#7fb55a", "RABBIT": "#8a8780", "FOX": "#d85a30"}
+}

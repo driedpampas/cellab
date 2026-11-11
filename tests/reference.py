@@ -117,3 +117,45 @@ def diffusion(grid):                   # average of self and 4 neighbours, wrap,
     def new(r, c):
         return round((grid[r][c] + sum(neighbours(grid, r, c, VON_NEUMANN, wrap=True))) / 5, 2)
     return each_cell(grid, new)
+
+
+def langtons_ant(grid, position, heading, steps):
+    """0 WHITE, 1 BLACK; wrap-around; heading 0 north, 1 east, 2 south, 3 west.
+    Returns (grid, position, heading) after `steps` steps."""
+    grid = [list(row) for row in grid]
+    moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    r, c = position
+    for _ in range(steps):
+        heading = (heading + 1) % 4 if grid[r][c] == 0 else (heading + 3) % 4
+        grid[r][c] = 1 - grid[r][c]
+        r, c = (r + moves[heading][0]) % len(grid), (c + moves[heading][1]) % len(grid[0])
+    return grid, (r, c), heading
+
+
+def falling_sand(grid):
+    """0 EMPTY, 1 SAND, 2 ROCK, 3 WATER; rock beyond the grid; cells act from the bottom-right
+    to the top-left, each at most once, and a cell something moved into waits."""
+    grid = [list(row) for row in grid]
+    rows, cols = len(grid), len(grid[0])
+    old = [list(row) for row in grid]
+    arrived = set()
+
+    def at(r, c):
+        return grid[r][c] if 0 <= r < rows and 0 <= c < cols else 2
+
+    for r in reversed(range(rows)):
+        for c in reversed(range(cols)):
+            if (r, c) in arrived or old[r][c] not in (1, 3):
+                continue
+            me = old[r][c]
+            if me == 1:
+                options = [(r + 1, c)] if at(r + 1, c) in (0, 3) else \
+                          [p for p in ((r + 1, c - 1), (r + 1, c + 1)) if at(*p) == 0]
+            else:
+                options = [(r + 1, c)] if at(r + 1, c) == 0 else \
+                          [p for p in ((r, c - 1), (r, c + 1)) if at(*p) == 0]
+            if options:
+                tr, tc = options[0]
+                grid[r][c], grid[tr][tc] = at(tr, tc) if me == 1 and (tr, tc) == (r + 1, c) else 0, me
+                arrived.add((tr, tc))
+    return grid

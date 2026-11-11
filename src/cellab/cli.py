@@ -133,12 +133,13 @@ def _answers(args) -> int:
 def _show(args) -> int:
     folder = RunFolder(args.folder)
     experiment = load_experiment(folder.file(RunFolder.EXPERIMENT))
-    dtype = experiment.automaton.states.dtype
-    count = folder.records(RunFolder.GENERATIONS, int(_cells(experiment.shape)) * dtype.itemsize)
+    dtype = experiment.automaton.state_dtype
+    shape = experiment.automaton.state_shape(experiment.shape)
+    count = folder.records(RunFolder.GENERATIONS, int(_cells(shape)) * dtype.itemsize)
     if count == 0:
         raise CellabError(f"{folder.path} has no stored generations")
     step = count - 1 if args.step is None else args.step
-    grid = folder.read_generation(step, experiment.shape, dtype)
+    grid = folder.read_generation(step, shape, dtype)
     print(f"Step {step}:")
     print("\n".join(experiment.format(grid)))
     return 0

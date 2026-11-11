@@ -16,7 +16,7 @@ from .errors import CellabError, InputFileError, RuleError, StorageError
 from .experiment import Experiment, load_experiment, make_initial_grid
 from .runner import Run, RunResult, RunState
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "Automaton", "load_automaton", "step", "Experiment", "load_experiment", "make_initial_grid",

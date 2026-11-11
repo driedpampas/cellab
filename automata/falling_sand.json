@@ -1,0 +1,27 @@
+{
+  "name": "Falling sand",
+  "description": "From the brief: sand falls straight down, or else diagonally down-left, or else down-right, or else stays. Water falls down if it can and otherwise flows sideways. Rock never moves. Added to the brief: sand sinks through water (the two swap places). Cells act from the bottom row upwards, and beyond the grid there is rock.",
+  "dimensions": 2,
+  "states": ["EMPTY", "SAND", "ROCK", "WATER"],
+  "neighbourhood": "moore",
+  "edges": {"type": "fixed", "value": "ROCK"},
+  "update": "agents",
+  "order": "reverse",
+  "rules": [
+    {"when": "self == SAND",
+     "do": [
+       {"to": {"among": ["south"], "where": "nb == EMPTY or nb == WATER", "choose": "first"},
+        "here": {"self": "nb"}, "there": {"self": "SAND"}},
+       {"to": {"among": ["south_west", "south_east"], "where": "nb == EMPTY", "choose": "first"},
+        "here": {"self": "EMPTY"}, "there": {"self": "SAND"}}
+     ]},
+    {"when": "self == WATER",
+     "do": [
+       {"to": {"among": ["south"], "where": "nb == EMPTY", "choose": "first"},
+        "here": {"self": "EMPTY"}, "there": {"self": "WATER"}},
+       {"to": {"among": ["west", "east"], "where": "nb == EMPTY", "choose": "first"},
+        "here": {"self": "EMPTY"}, "there": {"self": "WATER"}}
+     ]}
+  ],
+  "colors": {"EMPTY": "#f5f3ee", "SAND": "#e0a83a", "ROCK": "#5f6873", "WATER": "#378add"}
+}

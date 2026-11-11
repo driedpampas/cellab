@@ -1,0 +1,17 @@
+{
+  "name": "Langton's ant, first 200 steps",
+  "automaton": "../automata/langtons_ant.json",
+  "size": [21, 21],
+  "initial": {
+    "type": "single", "value": "WHITE", "background": "WHITE",
+    "layers": {"ant": {"type": "single", "value": 1, "background": 0}}
+  },
+  "steps": 200,
+  "max_steps": 2000,
+  "questions": [
+    {"ask": "state_after", "n": 4},
+    {"ask": "count_after", "n": 200, "value": "BLACK"},
+    {"ask": "stable"},
+    {"ask": "cycle"}
+  ]
+}

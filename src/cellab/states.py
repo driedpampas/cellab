@@ -109,6 +109,22 @@ class StateSpace:
         return work.astype(self.dtype)
 
 
+def checked_values(values, kind: str, where: str) -> np.ndarray:
+    """Check values a rule produced before they are stored: numbers only, whole unless `kind` is real."""
+    values = np.asarray(values)
+    if kind == "real":
+        if np.isnan(values).any():
+            raise RuleError(f"{where}: produced a value that is not a number (NaN)")
+        return values
+    if values.dtype.kind == "f":
+        if not np.all(np.isfinite(values)) or not np.all(values == np.floor(values)):
+            bad = values[~(np.isfinite(values) & (values == np.floor(values)))].flat[0]
+            raise RuleError(f"{where}: produced {bad:g}, which is not a whole number "
+                            "(use // instead of /, or round())")
+        return values.astype(np.int64)
+    return values
+
+
 def _plain(number) -> str:
     """Show a number without NumPy decoration (7 rather than np.int64(7))."""
     number = float(number)
@@ -161,3 +177,19 @@ def state_space_from_file(raw) -> StateSpace:
         return StateSpace(kind=kind, minimum=low, maximum=high, decimals=decimals)
 
     raise ValueError("must be a list of state names or an object like {\"type\": \"integer\"}")
+
+
+def layer_space_from_file(raw) -> StateSpace:
+    """Build the StateSpace of a layer: whole numbers from `min` (default 0) to an optional `max`.
+
+    Accepted form: {} or {"min": 0, "max": 20}. Raises ValueError with a readable message.
+    """
+    if not isinstance(raw, dict):
+        raise ValueError("must be an object like {\"max\": 20} (or {} for any whole number from 0)")
+    unknown = set(raw) - {"min", "max"}
+    if unknown:
+        raise ValueError(f"unknown field(s) {', '.join(sorted(unknown))}; allowed: max, min")
+    space = state_space_from_file({"type": "integer", "min": raw.get("min", 0), "max": raw.get("max")})
+    if space.minimum > 0 or (space.maximum is not None and space.maximum < 0):
+        raise ValueError("the range must include 0 (the value of a layer where nothing is stored)")
+    return space

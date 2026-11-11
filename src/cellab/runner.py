@@ -42,7 +42,7 @@ from .storage import RecordWriter, RunFolder
 class RunState:
     """Everything that changes while a run goes on. A checkpoint saves exactly this."""
     step: int
-    grid: np.ndarray
+    grid: np.ndarray                         # the current generation (with its layers, if any)
     initial: np.ndarray
     seed: int
     rng: np.random.Generator
@@ -96,8 +96,9 @@ class Run:
             raise StorageError(f"{folder.file(RunFolder.AUTOMATON)} was changed after the run started; "
                                "continuing would mix two different automata. Start a new run instead.")
         count = saved["step"] + 1                 # steps 0..step are saved
-        history = History.rebuild(folder.read_fingerprints(count))
-        folder.truncate(RunFolder.FINGERPRINTS, FINGERPRINT_SIZE, count)
+        record_size = FINGERPRINT_SIZE * (2 if experiment.automaton.layers else 1)
+        history = History.rebuild(folder.read_fingerprints(count, record_size))
+        folder.truncate(RunFolder.FINGERPRINTS, record_size, count)
         if experiment.store_generations:
             folder.truncate(RunFolder.GENERATIONS, saved["grid"].nbytes, count)
         state = RunState(step=saved["step"], grid=saved["grid"], initial=saved["initial"], seed=saved["seed"],
@@ -149,10 +150,11 @@ class Run:
 
     def _record(self, writers: dict[str, RecordWriter]) -> None:
         """Fingerprint the current grid and store what needs storing."""
-        state = self.state
+        state, automaton = self.state, self.experiment.automaton
         fp = fingerprint(state.grid)
-        state.history.record(fp)
-        writers["fingerprints"].append(fp)
+        grid_fp = fingerprint(automaton.cells(state.grid)) if automaton.layers else None
+        state.history.record(fp, grid_fp)
+        writers["fingerprints"].append(fp + (grid_fp or b""))
         if "generations" in writers:
             writers["generations"].append(state.grid.tobytes())
         if any(state.step in q.capture_steps() for q in self.experiment.questions):
@@ -197,7 +199,7 @@ class Run:
     def answers(self) -> list[Answer]:
         context = AnswerContext(
             history=self.state.history, captured=self.state.captured, grid_at=self.grid_at,
-            states=self.experiment.automaton.states, legend=self.experiment.legend,
+            describe=self.experiment.format, cells=self.experiment.automaton.cells,
             deterministic=self.experiment.automaton.deterministic, max_steps=self.experiment.max_steps,
         )
         return [question.answer(context) for question in self.experiment.questions]

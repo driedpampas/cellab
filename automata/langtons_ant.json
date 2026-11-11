@@ -1,0 +1,22 @@
+{
+  "name": "Langton's ant",
+  "description": "From the brief: an ant walks on a white and black grid. On a white cell it turns right, on a black cell it turns left; either way it flips the cell's colour and moves one cell forward. The 'ant' layer marks where an ant is and 'heading' which way it faces (0 north, 1 east, 2 south, 3 west: the order of the neighbourhood below).",
+  "dimensions": 2,
+  "states": ["WHITE", "BLACK"],
+  "layers": {"ant": {"max": 1}, "heading": {"max": 3}},
+  "neighbourhood": [[-1, 0], [0, 1], [1, 0], [0, -1]],
+  "edges": {"type": "wrap"},
+  "update": "agents",
+  "order": "reading",
+  "rules": [
+    {"when": "ant == 1 and self == WHITE",
+     "do": {"to": {"where": "direction == (heading + 1) % 4", "choose": "first"},
+            "here": {"self": "BLACK", "ant": 0, "heading": 0},
+            "there": {"ant": 1, "heading": "(heading + 1) % 4"}}},
+    {"when": "ant == 1 and self == BLACK",
+     "do": {"to": {"where": "direction == (heading + 3) % 4", "choose": "first"},
+            "here": {"self": "WHITE", "ant": 0, "heading": 0},
+            "there": {"ant": 1, "heading": "(heading + 3) % 4"}}}
+  ],
+  "colors": {"WHITE": "#f5f3ee", "BLACK": "#16202b", "ant": "#d85a30"}
+}

@@ -22,8 +22,6 @@ from typing import Callable
 import numpy as np
 
 from .fingerprints import History, fingerprint
-from .grids import format_grid
-from .states import StateSpace
 
 RANDOM_NOTE = "the rules use random numbers, so this is not a guarantee about later steps"
 
@@ -34,8 +32,8 @@ class AnswerContext:
     history: History
     captured: dict[int, np.ndarray]            # grids kept during the run, by step
     grid_at: Callable[[int], np.ndarray]       # any earlier grid (read back or recomputed)
-    states: StateSpace
-    legend: dict[str, int | float]
+    describe: Callable[[np.ndarray], list[str]]   # a generation as text rows (grid, then layers)
+    cells: Callable[[np.ndarray], np.ndarray]     # the grid of cell states inside a generation
     deterministic: bool
     max_steps: int
 
@@ -115,7 +113,7 @@ class StateAfter(Question):
         if found is None:
             return Answer(self.to_dict(), False, ctx.undecided(f"step {self.n} was not reached"))
         grid, source = found
-        rows = format_grid(grid, ctx.states, ctx.legend)
+        rows = ctx.describe(grid)
         text = f"After {_steps(self.n)}:\n" + "\n".join(rows)
         result = {"step": self.n, "grid": rows}
         if source != self.n:
@@ -146,7 +144,7 @@ class CountAfter(Question):
         if found is None:
             return Answer(self.to_dict(), False, ctx.undecided(f"step {self.n} was not reached"))
         grid, source = found
-        count = int(np.count_nonzero(grid == self.value))
+        count = int(np.count_nonzero(ctx.cells(grid) == self.value))
         text = f"After {_steps(self.n)} there {_cells(count)} with value {self.value_text}."
         result = {"step": self.n, "value": self.value_text, "count": count}
         if source != self.n:
@@ -224,12 +222,12 @@ class Occurs(Question):
         return {"ask": self.ask, "rows": self.rows}
 
     def resolved(self, history, deterministic):
-        return self.fingerprint in history.first_seen or (deterministic and history.cycle is not None)
+        return self.fingerprint in history.grid_seen or (deterministic and history.cycle is not None)
 
     def answer(self, ctx):
         history = ctx.history
-        if self.fingerprint in history.first_seen:
-            step = history.first_seen[self.fingerprint]
+        if self.fingerprint in history.grid_seen:
+            step = history.grid_seen[self.fingerprint]
             return Answer(self.to_dict(), True, f"Yes, first at step {step}.", {"occurs": True, "first_step": step})
         if ctx.deterministic and history.cycle is not None:
             _, later = history.repeat

@@ -81,6 +81,7 @@ class GridViews:
     def __init__(self, grid: np.ndarray, radius: int, edge_mode: str, edge_value):
         self.shape = grid.shape
         self.radius = radius
+        self.edge_mode = edge_mode
         if edge_mode == "wrap":
             self.padded = np.pad(grid, radius, mode="wrap")
         else:

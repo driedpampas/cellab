@@ -15,6 +15,11 @@ Names an expression can use
     <state names>           as declared in "states" (named states only)
     <parameter names>       as declared in "parameters"
     nb                      only inside an aggregate: "each neighbour in turn"
+    <layer names>           the cell's value in that layer (automata with "layers")
+    nb.<layer>              the neighbour's value in that layer
+
+Where a rule chooses another cell (agents.py), `nb` and `nb.<layer>` also stand
+for that cell, and `direction` for its number in the list it was chosen from.
 
 Functions
     count(x)                how many neighbours make x true; count(NAME) means count(nb == NAME)
@@ -43,7 +48,7 @@ from .neighbourhood import DIRECTIONS, GridViews
 AGGREGATES = ("count", "sum", "mean", "min", "max")
 FUNCTIONS = ("random", "abs", "floor", "round", "min", "max")
 DIRECTION_NAMES = tuple(name for names in DIRECTIONS.values() for name in names)
-RESERVED_NAMES = frozenset({"self", "step", "nb", "True", "False", *AGGREGATES, *FUNCTIONS, *DIRECTION_NAMES})
+RESERVED_NAMES = frozenset({"self", "step", "nb", "direction", "True", "False", *AGGREGATES, *FUNCTIONS, *DIRECTION_NAMES})
 
 _BINARY = {
     ast.Add: np.add, ast.Sub: np.subtract, ast.Mult: np.multiply, ast.Div: np.true_divide,
@@ -58,7 +63,7 @@ _COMPARE = {
 _UNARY = (ast.Not, ast.USub, ast.UAdd, ast.Invert)
 _ALLOWED_NODES = (
     ast.Expression, ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Compare, ast.IfExp,
-    ast.Call, ast.Name, ast.Constant, ast.Load, ast.And, ast.Or,
+    ast.Call, ast.Name, ast.Attribute, ast.Constant, ast.Load, ast.And, ast.Or,
     *_BINARY, *_COMPARE, *_UNARY,
 )
 
@@ -74,21 +79,27 @@ class Expression:
     tree: ast.expr      # the parsed and checked syntax tree
     uses_random: bool   # True if it calls random()
 
-    def evaluate(self, ctx: "EvalContext"):
-        """Evaluate for every cell at once. Returns an array (or a single number)."""
+    def evaluate(self, ctx: "EvalContext", nb: dict | None = None):
+        """Evaluate for every cell at once. Returns an array (or a single number).
+
+        `nb` is only given where a rule has chosen another cell: that cell's values.
+        """
         try:
             with np.errstate(divide="raise", invalid="raise", over="raise", under="ignore"):
-                return _evaluate(self.tree, ctx, None)
+                return _evaluate(self.tree, ctx, nb)
         except (ArithmeticError, TypeError, ValueError) as error:
             raise RuleError(f"{self.where} ('{self.text}'): {error}") from None
 
 
 def compile_expression(text, where: str, file: str, names: frozenset[str],
-                       state_names: frozenset[str] = frozenset()) -> Expression:
+                       state_names: frozenset[str] = frozenset(), layers: frozenset[str] = frozenset(),
+                       other_cell: bool = False) -> Expression:
     """Parse and check one expression from a file.
 
     `names` are all the names the expression may use; `state_names` are the
-    declared state names (needed for the count(NAME) shorthand).
+    declared state names (needed for the count(NAME) shorthand); `layers` are
+    the layer names usable as nb.<layer>. `other_cell` is True where the rule
+    has chosen another cell, so `nb` and `direction` can be used directly.
     Raises InputFileError naming the file and the field.
     """
     if isinstance(text, bool):
@@ -103,7 +114,7 @@ def compile_expression(text, where: str, file: str, names: frozenset[str],
     except SyntaxError as error:
         raise InputFileError(file, where, f"'{text}' is not a valid expression ({error.msg})") from None
 
-    checker = _Checker(text=text, where=where, file=file, names=names, state_names=state_names)
+    checker = _Checker(text, where, file, names, state_names, layers, other_cell)
     checker.check(tree, inside_aggregate=False)
     return Expression(text=text, where=where, tree=tree, uses_random=checker.uses_random)
 
@@ -111,9 +122,9 @@ def compile_expression(text, where: str, file: str, names: frozenset[str],
 class _Checker:
     """Walks a parsed expression and rejects anything outside the rule language."""
 
-    def __init__(self, text, where, file, names, state_names):
+    def __init__(self, text, where, file, names, state_names, layers, other_cell):
         self.text, self.where, self.file = text, where, file
-        self.names, self.state_names = names, state_names
+        self.names, self.state_names, self.layers, self.other_cell = names, state_names, layers, other_cell
         self.uses_random = False
 
     def fail(self, message: str):
@@ -125,6 +136,12 @@ class _Checker:
             return
         if not isinstance(node, _ALLOWED_NODES):
             self.fail(f"{type(node).__name__} is not allowed in rules")
+        if isinstance(node, ast.Attribute):
+            if not (isinstance(node.value, ast.Name) and node.value.id == "nb"):
+                self.fail("a dot is only used as nb.<layer> (a neighbour's value in a layer)")
+            if node.attr not in self.layers:
+                known = ", ".join(sorted(self.layers)) or "this automaton has none"
+                self.fail(f"unknown layer '{node.attr}' (layers: {known})")
         if isinstance(node, ast.Constant) and (isinstance(node.value, str) or not isinstance(node.value, (int, float))):
             self.fail("only numbers and True/False can be written literally (write state names without quotes)")
         if isinstance(node, ast.Name):
@@ -134,8 +151,12 @@ class _Checker:
 
     def check_name(self, name: str, inside_aggregate: bool) -> None:
         if name == "nb":
-            if not inside_aggregate:
+            if not inside_aggregate and not self.other_cell:
                 self.fail("'nb' can only be used inside count(), sum(), mean(), min() or max()")
+            return
+        if name == "direction":
+            if not self.other_cell:
+                self.fail("'direction' can only be used where a rule chooses another cell (\"to\")")
             return
         if name not in self.names:
             by_lower = {known.lower(): known for known in sorted(self.names)}
@@ -181,9 +202,11 @@ class EvalContext:
     """Everything an expression can read while one step is computed."""
 
     def __init__(self, grid: np.ndarray, views: GridViews, neighbour_offsets, dimensions: int,
-                 constants: dict[str, float], state_values: dict[str, int], rng, step: int):
+                 constants: dict[str, float], state_values: dict[str, int], rng, step: int,
+                 layers: dict[str, np.ndarray] | None = None):
         self.grid = grid                          # current values (wide type, see engine.py)
         self.views = views
+        self.layers = layers or {}                # extra values per cell, by layer name
         self.neighbour_offsets = neighbour_offsets
         self.directions = DIRECTIONS[dimensions]
         self.constants = constants                # state names and parameters
@@ -203,21 +226,30 @@ class EvalContext:
             return self.step
         if name in self.directions:
             return self.views.at(self.directions[name])
+        if name in self.layers:
+            return self.layers[name]
         return self.constants[name]
 
-    def neighbours(self) -> list[np.ndarray]:
-        """The neighbourhood, as one shifted grid per neighbour (computed once per step)."""
+    def neighbours(self) -> list[dict[str, np.ndarray]]:
+        """The neighbourhood: for each neighbour, the shifted grid ("self") and the shifted
+        layers (computed once per step). Beyond fixed edges a layer holds 0."""
         if self._neighbours is None:
-            self._neighbours = [self.views.at(offset) for offset in self.neighbour_offsets]
+            views = {"self": self.views, **{name: GridViews(layer, self.views.radius, self.views.edge_mode, 0)
+                                            for name, layer in self.layers.items()}}
+            self._neighbours = [{name: view.at(offset) for name, view in views.items()}
+                                for offset in self.neighbour_offsets]
         return self._neighbours
 
 
 def _evaluate(node: ast.AST, ctx: EvalContext, nb):
-    """Evaluate a checked syntax tree. `nb` is the current neighbour inside an aggregate."""
+    """Evaluate a checked syntax tree. `nb` holds the values of the neighbour being looked at
+    (inside an aggregate) or of the chosen cell: {"self": ..., "<layer>": ...}."""
     if isinstance(node, ast.Constant):
         return node.value
     if isinstance(node, ast.Name):
-        return nb if node.id == "nb" else ctx.value_of(node.id)
+        return nb["self"] if node.id == "nb" else ctx.value_of(node.id)
+    if isinstance(node, ast.Attribute):
+        return nb[node.attr]
     if isinstance(node, ast.BinOp):
         return _BINARY[type(node.op)](_evaluate(node.left, ctx, nb), _evaluate(node.right, ctx, nb))
     if isinstance(node, ast.UnaryOp):
@@ -271,7 +303,7 @@ def _aggregate(name: str, arg: ast.expr, ctx: EvalContext):
     """count/sum/mean/min/max of `arg` evaluated once per neighbour."""
     if name == "count" and isinstance(arg, ast.Name) and arg.id in ctx.state_values:
         target = ctx.state_values[arg.id]                       # count(NAME) shorthand
-        per_neighbour = [neighbour == target for neighbour in ctx.neighbours()]
+        per_neighbour = [neighbour["self"] == target for neighbour in ctx.neighbours()]
     else:
         per_neighbour = [np.broadcast_to(_evaluate(arg, ctx, neighbour), ctx.shape)
                          for neighbour in ctx.neighbours()]

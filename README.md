@@ -45,10 +45,10 @@ Each run gets a self-contained folder in `runs/` with copies of its input files 
 | Folder | Contents |
 | --- | --- |
 | `src/cellab/` | The library and the `cellab` command |
-| `automata/` | Automaton files: 10 of the brief's 15 automata (all that update cells in place; the other 5 move agents around), plus Game of Life and any elementary rule |
+| `automata/` | Automaton files: all 15 automata from the brief (10 update cells in place, 5 use the agents mode for things that move), plus Game of Life and any elementary rule |
 | `experiments/` | Experiment files, using the brief's starting grids where it gives them |
 | `demo/` | Script and input files for the live demo of Deliverable 2 |
-| `tests/` | 197 tests (`python -m pytest`) |
+| `tests/` | 258 tests (`python -m pytest`) |
 | `docs/` | File formats, code guide, deliverables, requirements |
 | `docs/ai-logs/public/` | AI conversation logs, with personal details removed |
 

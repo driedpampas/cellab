@@ -1,0 +1,17 @@
+{
+  "name": "Langton's ant until the highway",
+  "automaton": "../automata/langtons_ant.json",
+  "size": [80, 80],
+  "initial": {
+    "type": "single", "value": "WHITE", "background": "WHITE",
+    "layers": {"ant": {"type": "single", "value": 1, "background": 0}}
+  },
+  "steps": 11000,
+  "max_steps": 11000,
+  "store_generations": false,
+  "checkpoint_every": 1000,
+  "questions": [
+    {"ask": "count_after", "n": 11000, "value": "BLACK"},
+    {"ask": "cycle"}
+  ]
+}

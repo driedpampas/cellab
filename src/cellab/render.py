@@ -5,7 +5,8 @@
 
 Colours come from the automaton's optional "colors" field. Values without a
 colour get one from a default palette (named states) or a light-to-dark shade
-(numbers, scaled between the smallest and largest value in the run).
+(numbers, scaled between the smallest and largest value in the run). A layer
+with a colour is drawn on top of the grid wherever it is not 0.
 """
 
 from pathlib import Path
@@ -62,12 +63,19 @@ def render_run(path: str | Path, out_dir: str | Path | None = None, frame_ms: in
     folder = RunFolder(path)
     experiment = load_experiment(folder.file(RunFolder.EXPERIMENT))
     automaton = experiment.automaton
-    generations = folder.read_all_generations(experiment.shape, automaton.states.dtype)
+    states = folder.read_all_generations(automaton.state_shape(experiment.shape), automaton.state_dtype)
     if until is not None:
-        generations = generations[: until + 1]
+        states = states[: until + 1]
+    generations = automaton.cells(states)
     out = Path(out_dir) if out_dir else folder.path
     out.mkdir(parents=True, exist_ok=True)
-    paint = painter(automaton, generations)
+    paint_cells = painter(automaton, generations)
+
+    def paint(grids: np.ndarray, layers_from: np.ndarray = states) -> np.ndarray:
+        rgb = paint_cells(grids)
+        for name, colour in automaton.layer_colors.items():
+            rgb[automaton.layer(layers_from, name) != 0] = colour
+        return rgb
     written = []
 
     if automaton.dimensions == 1:
@@ -77,14 +85,14 @@ def render_run(path: str | Path, out_dir: str | Path | None = None, frame_ms: in
         return [out / "spacetime.png"]
 
     cell = cell_size(*experiment.shape)
-    for name, grid in (("first.png", generations[0]), ("last.png", generations[-1])):
-        to_image(paint(grid), cell).save(out / name)
+    for name, k in (("first.png", 0), ("last.png", len(generations) - 1)):
+        to_image(paint(generations[k], states[k]), cell).save(out / name)
         written.append(out / name)
 
-    chosen = generations
+    chosen = np.arange(len(generations))
     if len(generations) > MAX_GIF_FRAMES:
-        chosen = generations[np.linspace(0, len(generations) - 1, MAX_GIF_FRAMES).astype(int)]
-    frames = [to_image(paint(grid), cell) for grid in chosen]
+        chosen = np.linspace(0, len(generations) - 1, MAX_GIF_FRAMES).astype(int)
+    frames = [to_image(paint(generations[k], states[k]), cell) for k in chosen]
     frames[0].save(out / "run.gif", save_all=True, append_images=frames[1:], duration=frame_ms, loop=0)
     written.append(out / "run.gif")
     return written

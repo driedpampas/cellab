@@ -1,0 +1,17 @@
+{
+  "name": "Schelling segregation",
+  "description": "From the brief: every agent of group A or B looks at its eight neighbours. It is happy if at least the share 'similar' (40%) of the occupied ones belong to its own group. An unhappy agent moves to an empty cell chosen at random anywhere on the grid.",
+  "dimensions": 2,
+  "states": ["EMPTY", "A", "B"],
+  "neighbourhood": "moore",
+  "edges": {"type": "wrap"},
+  "update": "agents",
+  "order": "random",
+  "parameters": {"similar": 0.4},
+  "rules": [
+    {"when": "self != EMPTY and count(nb == self) < similar * count(nb != EMPTY)",
+     "do": {"to": {"among": "anywhere", "where": "nb == EMPTY"},
+            "here": {"self": "EMPTY"}, "there": {"self": "self"}}}
+  ],
+  "colors": {"EMPTY": "#f5f3ee", "A": "#2b5c99", "B": "#efa027"}
+}

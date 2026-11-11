@@ -1,0 +1,32 @@
+{
+  "name": "Falling sand with rock and water",
+  "automaton": "../automata/falling_sand.json",
+  "initial": {
+    "type": "text",
+    "legend": {".": "EMPTY", "s": "SAND", "#": "ROCK", "w": "WATER"},
+    "rows": [
+      "....ssssssss....",
+      "....ssssssss....",
+      ".....ssssss.....",
+      "................",
+      "..ww........ww..",
+      "..ww........ww..",
+      "####...##...####",
+      "................",
+      "................",
+      "......#..#......",
+      "................",
+      "#..............#",
+      "#..............#",
+      "#..............#"
+    ]
+  },
+  "steps": 40,
+  "max_steps": 500,
+  "questions": [
+    {"ask": "stable"},
+    {"ask": "cycle"},
+    {"ask": "count_after", "n": 40, "value": "SAND"},
+    {"ask": "state_after", "n": 40}
+  ]
+}

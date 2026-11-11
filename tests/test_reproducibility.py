@@ -192,3 +192,12 @@ def test_a_finished_run_can_be_extended(tmp_path):
 def test_opening_something_that_is_not_a_run_folder(tmp_path):
     with pytest.raises(StorageError, match="not a run folder"):
         Run.open(tmp_path)
+
+
+def test_fingerprints_of_earlier_versions_are_unchanged(tmp_path):
+    """The numbers shown in the Deliverable 2 slides and demo must stay true as the engine grows."""
+    from cellab import load_experiment
+    run = Run.start(load_experiment(ROOT / "demo" / "twin.json"), runs_dir=tmp_path, seed=42)
+    run.advance()
+    fingerprints = [fp.hex()[:16] for fp in run.state.history.fingerprints]   # as printed by --trace
+    assert (fingerprints[0], fingerprints[8]) == ("46f060264b4732cb", "48e711909969d86c")

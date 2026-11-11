@@ -1,0 +1,17 @@
+{
+  "name": "Predator-prey from a random start",
+  "automaton": "../automata/predator_prey.json",
+  "size": [30, 30],
+  "initial": {
+    "type": "random", "weights": {"EMPTY": 0.8, "RABBIT": 0.16, "FOX": 0.04},
+    "layers": {"energy": "6 if self == FOX else 0"}
+  },
+  "seed": 7,
+  "steps": 100,
+  "max_steps": 100,
+  "questions": [
+    {"ask": "count_after", "n": 100, "value": "RABBIT"},
+    {"ask": "count_after", "n": 100, "value": "FOX"},
+    {"ask": "stable"}
+  ]
+}
