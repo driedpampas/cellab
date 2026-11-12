@@ -238,8 +238,10 @@ def load_dataset(path: str | Path) -> tuple[dict[str, np.ndarray], dict]:
 
 # ------------------------------------------------------------ questions and answers in words
 
-def question_answer_pairs(arrays: dict[str, np.ndarray], meta: dict, limit: int | None = None) -> Iterator[dict]:
-    """The dataset as questions and answers in words, sample by sample (the five questions of the brief)."""
+def question_answer_pairs(arrays: dict[str, np.ndarray], meta: dict, limit: int | None = None,
+                          every: int = 1) -> Iterator[dict]:
+    """The dataset as questions and answers in words, sample by sample (the five questions of the brief).
+    `every` takes only each so-manieth sample; `limit` stops after that many samples."""
     from .states import StateSpace
     info, spec = meta["automaton"], meta["spec"]
     names = tuple(info["state_names"])
@@ -250,8 +252,8 @@ def question_answer_pairs(arrays: dict[str, np.ndarray], meta: dict, limit: int 
     def grid_text(grid) -> str:
         return " / ".join(format_grid(grid, states))
 
-    count = len(arrays["seed"]) if limit is None else min(limit, len(arrays["seed"]))
-    for i in range(count):
+    chosen = range(0, len(arrays["seed"]), every)
+    for i in chosen if limit is None else chosen[:limit]:
         setting = meta["settings"][arrays["setting"][i]]
         initial = arrays["initial"][i]
         context = {"sample": i, "automaton": info["name"], "parameters": setting, "seed": int(arrays["seed"][i]),
@@ -285,13 +287,13 @@ def question_answer_pairs(arrays: dict[str, np.ndarray], meta: dict, limit: int 
             yield pair("occurs", f"Does the configuration {grid_text(arrays['queries'][i, q])} ever occur?", answer)
 
 
-def write_question_answer_pairs(dataset: str | Path, out: str | Path, limit: int | None = None) -> int:
+def write_question_answer_pairs(dataset: str | Path, out: str | Path, limit: int | None = None, every: int = 1) -> int:
     """Write the questions and answers as JSON lines (compressed if `out` ends in .gz). Returns how many."""
     arrays, meta = load_dataset(dataset)
     opener = gzip.open if str(out).endswith(".gz") else open
     written = 0
     with opener(out, "wt", encoding="utf-8") as handle:
-        for pair in question_answer_pairs(arrays, meta, limit):
+        for pair in question_answer_pairs(arrays, meta, limit, every):
             handle.write(json.dumps(pair) + "\n")
             written += 1
     return written

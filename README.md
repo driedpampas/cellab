@@ -64,7 +64,7 @@ The datasets are described in [docs/DATASETS.md](docs/DATASETS.md), the experime
 | `ml/` | The neural networks: models, training, evaluation (needs PyTorch) |
 | `notebooks/` | The Colab notebook that trains the networks |
 | `demo/` | Script and input files for the live demo of Deliverable 2 |
-| `tests/` | 258 tests (`python -m pytest`) |
+| `tests/` | 293 tests (`python -m pytest`) |
 | `docs/` | File formats, code guide, deliverables, requirements |
 | `docs/ai-logs/public/` | AI conversation logs, with personal details removed |
 

@@ -1,7 +1,7 @@
 # Deliverable 3: dataset and neural-network experiment
 
-**Status:** everything is built and tested except the training runs themselves, which need a GPU.
-They are one notebook away: [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb).
+**Status:** everything is built and tested. The one-step network is trained (result below); the larger
+training runs need a GPU and are one notebook away: [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb).
 
 ## What was asked
 From the lab schedule: *a dataset of generations, and a neural-network or reinforcement-learning
@@ -43,11 +43,25 @@ the automaton. To be handed in: the question/answer sets used for training.
 gets worse with N on class 3 (chaotic) rules, because nothing shorter than the simulation is known
 for them; StepNet stays exact because it does the simulation.
 
-**What a small check already showed.** On a laptop, on a reduced dataset (30 runs per rule, about one
-minute of training), StepNet predicted **every cell correctly 64 steps ahead, also for the unseen
-rule families, Rule 30 included**: it has learned to read a rule table, not to memorise rules. This
-was a check that the method works, not a result to report; the reported numbers come from the full
-training runs.
+## First result (one-step network, trained on the laptop)
+
+The one-step network is small enough to train without a GPU: 10,434 parameters, 12 epochs, 26 seconds.
+
+| Tested on | Runs | Cells correct at N = 64 | Grids completely correct at N = 64 | Copying the start (cells) |
+|---|---|---|---|---|
+| Seen rules, unseen runs (16 cells) | 4,360 | 100% | 100% | 66.6% |
+| **Unseen rule families** (16 cells) | 7,600 | 100% | 100% | 65.7% |
+| Seen rules, 32 cells | 654 | 100% | 100% | 66.4% |
+| Unseen rule families, 32 cells | 1,140 | 100% | 100% | 64.8% |
+
+The same holds at every N from 1 to 64 and in every Wolfram class. The network was trained on single
+steps of 74 of the 88 rule families and then simulates the other 14, **Rule 30's included**, without a
+single wrong cell, also on rows twice as wide. So it has not memorised rules: it has learned to read a
+rule table, which is the whole content of an elementary automaton. Numbers and picture:
+[`results/step_elementary/`](results/step_elementary/metrics.json), [`results/step_elementary_on_w32/`](results/step_elementary_on_w32/metrics.json).
+
+This is the first half of the experiment's answer: a network can replace the simulator exactly, but it
+then does the same N steps. Whether the steps can be skipped is what the five-questions network measures.
 
 ## Encoding (as planned in Deliverable 1)
 

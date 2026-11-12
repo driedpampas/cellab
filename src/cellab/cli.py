@@ -89,6 +89,7 @@ def _parser() -> argparse.ArgumentParser:
     qa.add_argument("dataset", type=Path)
     qa.add_argument("--out", type=Path, help="output file; end it in .gz to compress (default: next to the dataset)")
     qa.add_argument("--limit", type=int, help="only the first LIMIT samples")
+    qa.add_argument("--every", type=int, default=1, help="only every EVERY-th sample (default: all)")
     qa.set_defaults(handler=_qa)
     return parser
 
@@ -176,7 +177,7 @@ def _dataset(args) -> int:
 
 def _qa(args) -> int:
     out = args.out or args.dataset.with_name(args.dataset.stem + "_qa.jsonl.gz")
-    print(f"wrote {write_question_answer_pairs(args.dataset, out, args.limit):,} questions and answers to {out}")
+    print(f"wrote {write_question_answer_pairs(args.dataset, out, args.limit, args.every):,} questions and answers to {out}")
     return 0
 
 

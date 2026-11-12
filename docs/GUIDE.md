@@ -193,7 +193,7 @@ Each command parses arguments and calls the library; there's no logic in `cli.py
 
 ## 6. Tests (`tests/`)
 
-Run them with `python -m pytest`; all 258 run in about 40 seconds.
+Run them with `python -m pytest`; all 293 run in about 75 seconds (35 of them need PyTorch and are skipped without it).
 
 | File | What it proves |
 |---|---|

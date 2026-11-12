@@ -1,0 +1,178 @@
+{
+  "name": "epidemic_16",
+  "description": "16 x 16 grid, random starts of several densities. ",
+  "made_by": "cellab 0.3.0",
+  "samples": 3000,
+  "spec": {
+    "name": "epidemic_16",
+    "description": "16 x 16 grid, random starts of several densities. ",
+    "automaton": "../automata/epidemic.json",
+    "size": [
+      16,
+      16
+    ],
+    "settings": {},
+    "initials": [
+      {
+        "type": "random",
+        "weights": {
+          "SUSCEPTIBLE": 90,
+          "INFECTED_1": 10
+        }
+      },
+      {
+        "type": "random",
+        "weights": {
+          "SUSCEPTIBLE": 80,
+          "INFECTED_1": 10,
+          "INFECTED_2": 5,
+          "RECOVERED": 5
+        }
+      },
+      {
+        "type": "random",
+        "weights": {
+          "SUSCEPTIBLE": 95,
+          "INFECTED_1": 5
+        }
+      }
+    ],
+    "samples_per_setting": 3000,
+    "horizons": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "max_steps": 1000,
+    "occurs_queries": 2,
+    "seed": 2026
+  },
+  "settings": [
+    {}
+  ],
+  "automaton": {
+    "name": "Epidemic",
+    "file": "epidemic.json",
+    "sha256": "4da97f68e2caa8f02489046ca00184095602fb1b3cf4637fbcf63a0e2ca7c136",
+    "dimensions": 2,
+    "deterministic": true,
+    "state_names": [
+      "SUSCEPTIBLE",
+      "INFECTED_1",
+      "INFECTED_2",
+      "INFECTED_3",
+      "RECOVERED"
+    ],
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "layers": [],
+    "edges": "fixed"
+  },
+  "seed_of_sample": "2026 * 1000003 + sample number",
+  "arrays": {
+    "setting": {
+      "shape": [
+        3000
+      ],
+      "type": "int32",
+      "meaning": "which entry of 'settings' (in the .json file) the sample uses"
+    },
+    "seed": {
+      "shape": [
+        3000
+      ],
+      "type": "int64",
+      "meaning": "the sample's own seed: rerun it with this seed to get exactly this sample"
+    },
+    "initial": {
+      "shape": [
+        3000,
+        16,
+        16
+      ],
+      "type": "uint8",
+      "meaning": "generation 0 (for automata with layers: the grid first, then the layers)"
+    },
+    "states": {
+      "shape": [
+        3000,
+        6,
+        16,
+        16
+      ],
+      "type": "uint8",
+      "meaning": "the grid after each horizon N: states[sample, horizon number]"
+    },
+    "counts": {
+      "shape": [
+        3000,
+        6,
+        5
+      ],
+      "type": "int32",
+      "meaning": "how many cells hold each state value after each horizon: counts[sample, horizon number, value]"
+    },
+    "steps_run": {
+      "shape": [
+        3000
+      ],
+      "type": "int64",
+      "meaning": "how many steps the run was simulated"
+    },
+    "cycle_start": {
+      "shape": [
+        3000
+      ],
+      "type": "int64",
+      "meaning": "the first step of the cycle the run enters, or -1 if none was found within max_steps"
+    },
+    "cycle_length": {
+      "shape": [
+        3000
+      ],
+      "type": "int64",
+      "meaning": "the length of that cycle (1 means the grid is stable), or -1"
+    },
+    "stable_from": {
+      "shape": [
+        3000
+      ],
+      "type": "int64",
+      "meaning": "the first step from which the grid did not change any more, or -1"
+    },
+    "queries": {
+      "shape": [
+        3000,
+        2,
+        16,
+        16
+      ],
+      "type": "uint8",
+      "meaning": "configurations C for the question 'does C ever occur?': queries[sample, query number]"
+    },
+    "occurs": {
+      "shape": [
+        3000,
+        2
+      ],
+      "type": "int8",
+      "meaning": "the answer for each query: 1 yes, 0 never (certain), -1 not seen within the run but not certain"
+    },
+    "occurs_step": {
+      "shape": [
+        3000,
+        2
+      ],
+      "type": "int32",
+      "meaning": "the first step at which the query occurs, or -1"
+    }
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "name": "diffusion_16",
+  "description": "16 x 16 grid, random starts of several densities. Decimal values; a single hot cell or random heat.",
+  "made_by": "cellab 0.3.0",
+  "samples": 1000,
+  "spec": {
+    "name": "diffusion_16",
+    "description": "16 x 16 grid, random starts of several densities. Decimal values; a single hot cell or random heat.",
+    "automaton": "../automata/diffusion.json",
+    "size": [
+      16,
+      16
+    ],
+    "settings": {},
+    "initials": [
+      {
+        "type": "random",
+        "weights": {
+          "0": 6,
+          "10": 1,
+          "50": 1
+        }
+      },
+      {
+        "type": "single",
+        "value": 100,
+        "background": 0
+      },
+      {
+        "type": "random",
+        "weights": {
+          "0": 1,
+          "20": 1
+        }
+      }
+    ],
+    "samples_per_setting": 1000,
+    "horizons": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "max_steps": 1000,
+    "occurs_queries": 2,
+    "seed": 2026
+  },
+  "settings": [
+    {}
+  ],
+  "automaton": {
+    "name": "Diffusion",
+    "file": "diffusion.json",
+    "sha256": "e2f20890c973cf6b41c0f0a700c25e115822bc2400f7190cda77a1c485c6368d",
+    "dimensions": 2,
+    "deterministic": true,
+    "state_names": [],
+    "values": null,
+    "layers": [],
+    "edges": "wrap"
+  },
+  "seed_of_sample": "2026 * 1000003 + sample number",
+  "arrays": {
+    "setting": {
+      "shape": [
+        1000
+      ],
+      "type": "int32",
+      "meaning": "which entry of 'settings' (in the .json file) the sample uses"
+    },
+    "seed": {
+      "shape": [
+        1000
+      ],
+      "type": "int64",
+      "meaning": "the sample's own seed: rerun it with this seed to get exactly this sample"
+    },
+    "initial": {
+      "shape": [
+        1000,
+        16,
+        16
+      ],
+      "type": "float64",
+      "meaning": "generation 0 (for automata with layers: the grid first, then the layers)"
+    },
+    "states": {
+      "shape": [
+        1000,
+        6,
+        16,
+        16
+      ],
+      "type": "float64",
+      "meaning": "the grid after each horizon N: states[sample, horizon number]"
+    },
+    "steps_run": {
+      "shape": [
+        1000
+      ],
+      "type": "int64",
+      "meaning": "how many steps the run was simulated"
+    },
+    "cycle_start": {
+      "shape": [
+        1000
+      ],
+      "type": "int64",
+      "meaning": "the first step of the cycle the run enters, or -1 if none was found within max_steps"
+    },
+    "cycle_length": {
+      "shape": [
+        1000
+      ],
+      "type": "int64",
+      "meaning": "the length of that cycle (1 means the grid is stable), or -1"
+    },
+    "stable_from": {
+      "shape": [
+        1000
+      ],
+      "type": "int64",
+      "meaning": "the first step from which the grid did not change any more, or -1"
+    },
+    "queries": {
+      "shape": [
+        1000,
+        2,
+        16,
+        16
+      ],
+      "type": "float64",
+      "meaning": "configurations C for the question 'does C ever occur?': queries[sample, query number]"
+    },
+    "occurs": {
+      "shape": [
+        1000,
+        2
+      ],
+      "type": "int8",
+      "meaning": "the answer for each query: 1 yes, 0 never (certain), -1 not seen within the run but not certain"
+    },
+    "occurs_step": {
+      "shape": [
+        1000,
+        2
+      ],
+      "type": "int32",
+      "meaning": "the first step at which the query occurs, or -1"
+    }
+  }
+}
