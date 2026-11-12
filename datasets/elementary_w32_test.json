@@ -1,0 +1,52 @@
+{
+  "name": "elementary_w32_test",
+  "description": "A test set on a wider ring (32 cells) for the question 'does a model trained on 16 cells work on other sizes?'. With 2^32 possible rows the cycles of chaotic rules cannot be found, so only the answers after N steps are complete.",
+  "automaton": "../automata/elementary.json",
+  "size": [
+    32
+  ],
+  "settings": {
+    "rule": {
+      "range": [
+        0,
+        255
+      ]
+    }
+  },
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "0": 1,
+        "1": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "0": 3,
+        "1": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "0": 1,
+        "1": 3
+      }
+    }
+  ],
+  "samples_per_setting": 30,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "max_steps": 64,
+  "occurs_queries": 2,
+  "seed": 2026
+}

@@ -1,0 +1,43 @@
+{
+  "name": "diffusion_16",
+  "description": "16 x 16 grid, random starts of several densities. Decimal values; a single hot cell or random heat.",
+  "automaton": "../automata/diffusion.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "0": 6,
+        "10": 1,
+        "50": 1
+      }
+    },
+    {
+      "type": "single",
+      "value": 100,
+      "background": 0
+    },
+    {
+      "type": "random",
+      "weights": {
+        "0": 1,
+        "20": 1
+      }
+    }
+  ],
+  "samples_per_setting": 1000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

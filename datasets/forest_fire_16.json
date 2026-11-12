@@ -1,0 +1,55 @@
+{
+  "name": "forest_fire_16",
+  "description": "16 x 16 grid, random starts of several densities. The deterministic forest fire of the brief; every run burns out, so all answers are exact.",
+  "automaton": "../automata/forest_fire.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "TREE": 60,
+        "EMPTY": 38,
+        "FIRE": 2
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "TREE": 80,
+        "EMPTY": 18,
+        "FIRE": 2
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "TREE": 45,
+        "EMPTY": 50,
+        "FIRE": 5
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "TREE": 70,
+        "EMPTY": 29,
+        "FIRE": 1
+      }
+    }
+  ],
+  "samples_per_setting": 3000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

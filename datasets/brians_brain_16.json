@@ -1,0 +1,45 @@
+{
+  "name": "brians_brain_16",
+  "description": "16 x 16 grid, random starts of several densities. ",
+  "automaton": "../automata/brians_brain.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "OFF": 7,
+        "FIRING": 3
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "OFF": 5,
+        "FIRING": 3,
+        "DYING": 2
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "OFF": 9,
+        "FIRING": 1
+      }
+    }
+  ],
+  "samples_per_setting": 3000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

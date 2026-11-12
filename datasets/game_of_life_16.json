@@ -1,0 +1,51 @@
+{
+  "name": "game_of_life_16",
+  "description": "16 x 16 grid, random starts of several densities. Runs are followed for up to 1,000 steps to find their cycle.",
+  "automaton": "../automata/game_of_life.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "DEAD": 1,
+        "ALIVE": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "DEAD": 3,
+        "ALIVE": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "DEAD": 6,
+        "ALIVE": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "DEAD": 2,
+        "ALIVE": 1
+      }
+    }
+  ],
+  "samples_per_setting": 3000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

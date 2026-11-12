@@ -34,6 +34,18 @@ cellab render runs/<...>                                                    # fi
 
 Each run gets a self-contained folder in `runs/` with copies of its input files (including the seed used), checkpoints, fingerprints, generations and answers.
 
+## Datasets and neural networks (Deliverable 3)
+
+```bash
+cellab dataset datasets/elementary_w16.json --workers 4     # generate a dataset into data/
+cellab qa data/elementary_w16.npz --limit 100               # the same as questions and answers in words
+pip install -r requirements-ml.txt                          # PyTorch, only needed for the networks
+python -m ml.train step data/elementary_w16.npz --out results/step --epochs 40
+python -m ml.evaluate step data/elementary_w16.npz results/step/best.pt --out results/step
+```
+
+The datasets are described in [docs/DATASETS.md](docs/DATASETS.md), the experiment in [docs/deliverables/D3-dataset/README.md](docs/deliverables/D3-dataset/README.md). Training is meant to run on a GPU: open [notebooks/D3_train_on_colab.ipynb](notebooks/D3_train_on_colab.ipynb) in Google Colab.
+
 ## Documentation
 
 - [docs/FILE_FORMATS.md](docs/FILE_FORMATS.md): how to write automaton and experiment files, including the rule language.
@@ -47,6 +59,10 @@ Each run gets a self-contained folder in `runs/` with copies of its input files 
 | `src/cellab/` | The library and the `cellab` command |
 | `automata/` | Automaton files: all 15 automata from the brief (10 update cells in place, 5 use the agents mode for things that move), plus Game of Life and any elementary rule |
 | `experiments/` | Experiment files, using the brief's starting grids where it gives them |
+| `datasets/` | Dataset files: which runs each machine-learning dataset consists of |
+| `data/` | The generated datasets (`.npz` arrays and their `.json` descriptions) |
+| `ml/` | The neural networks: models, training, evaluation (needs PyTorch) |
+| `notebooks/` | The Colab notebook that trains the networks |
 | `demo/` | Script and input files for the live demo of Deliverable 2 |
 | `tests/` | 258 tests (`python -m pytest`) |
 | `docs/` | File formats, code guide, deliverables, requirements |

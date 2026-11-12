@@ -245,3 +245,42 @@ More examples are in `automata/`: `falling_sand.json` (preferences and swapping)
 For automata with layers, `stable` and `cycle` compare whole states (grid and layers), while `count_after` and `occurs` look at the grid of states.
 
 A question that `max_steps` was not enough to settle is answered "Not decided". For automata with random rules, answers about stability and cycles say that they are not guarantees.
+
+---
+
+## Dataset file
+
+Describes a machine-learning dataset: many short runs of one automaton with their exact answers.
+`cellab dataset <file>` writes `data/<name>.npz` (the arrays) and `data/<name>.json` (what each array means).
+
+```json
+{
+  "name": "elementary_w16",
+  "description": "Optional free text.",
+  "automaton": "../automata/elementary.json",
+  "size": [16],
+  "settings": {"rule": {"range": [0, 255]}},
+  "initials": [{"type": "random", "weights": {"0": 1, "1": 1}},
+               {"type": "random", "weights": {"0": 3, "1": 1}}],
+  "samples_per_setting": 200,
+  "horizons": [1, 2, 4, 8, 16, 32, 64],
+  "max_steps": 70000,
+  "occurs_queries": 2,
+  "seed": 2026
+}
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `name` | yes | Name of the output files. |
+| `automaton` | yes | Path to the automaton file, relative to this file. |
+| `size` | yes | The grid, as in an experiment. |
+| `settings` | no | Parameter values to go through: a list (`[30, 110]`) or `{"range": [first, last]}` per parameter. All combinations are used. Without it there is one setting. |
+| `initials` | yes | One or more initial worlds, written as in an experiment; the samples of a setting take them in turn. |
+| `samples_per_setting` | yes | Runs per setting. |
+| `horizons` | yes | The N values for "after N steps", increasing, starting at 1 if a one-step network is to be trained. |
+| `max_steps` | yes | How far a deterministic run is followed to find its cycle. Runs with random rules stop at the largest horizon. |
+| `occurs_queries` | no | "Does C occur?" queries per run (default 2). |
+| `seed` | no | Sample k is run with seed `seed * 1,000,003 + k`. |
+
+`cellab qa data/<name>.npz` writes the same dataset as questions and answers in words (JSON lines).

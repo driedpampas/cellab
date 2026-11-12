@@ -1,0 +1,65 @@
+{
+  "name": "langtons_ant_16",
+  "description": "16 x 16 grid, random starts of several densities. One ant in the centre, heading north, on a random or a white grid. 16 x 16 cells with an ant have far too many states to find a cycle, so cycle answers are mostly 'unknown'.",
+  "automaton": "../automata/langtons_ant.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "WHITE": 1,
+        "BLACK": 1
+      },
+      "layers": {
+        "ant": {
+          "type": "single",
+          "value": 1,
+          "background": 0
+        }
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "WHITE": 1,
+        "BLACK": 0
+      },
+      "layers": {
+        "ant": {
+          "type": "single",
+          "value": 1,
+          "background": 0
+        }
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "WHITE": 4,
+        "BLACK": 1
+      },
+      "layers": {
+        "ant": {
+          "type": "single",
+          "value": 1,
+          "background": 0
+        }
+      }
+    }
+  ],
+  "samples_per_setting": 1500,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 2000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

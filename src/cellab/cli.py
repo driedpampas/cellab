@@ -6,6 +6,8 @@
     cellab answers RUN_FOLDER           print a finished run's answers
     cellab show   RUN_FOLDER [--step K] print one stored generation
     cellab render RUN_FOLDER            make PNG/GIF pictures of a run
+    cellab dataset DATASET_FILE         generate a machine-learning dataset
+    cellab qa     DATASET.npz           write a dataset as questions and answers in words
 """
 
 import argparse
@@ -15,6 +17,7 @@ from pathlib import Path
 
 from . import __version__
 from .automaton import load_automaton
+from .dataset import build_dataset, write_question_answer_pairs
 from .errors import CellabError
 from .experiment import load_experiment
 from .render import render_run
@@ -75,6 +78,18 @@ def _parser() -> argparse.ArgumentParser:
     render.add_argument("--out", type=Path, help="folder for the pictures (default: the run folder)")
     render.add_argument("--until", type=int, help="only draw generations 0..UNTIL")
     render.set_defaults(handler=_render)
+
+    dataset = commands.add_parser("dataset", help="generate a machine-learning dataset from a dataset file")
+    dataset.add_argument("spec", type=Path)
+    dataset.add_argument("--out", type=Path, default=Path("data"), help="folder for the .npz and .json (default: data)")
+    dataset.add_argument("--workers", type=int, default=1, help="processes to use (default: 1)")
+    dataset.set_defaults(handler=_dataset)
+
+    qa = commands.add_parser("qa", help="write a dataset as questions and answers in words (JSON lines)")
+    qa.add_argument("dataset", type=Path)
+    qa.add_argument("--out", type=Path, help="output file; end it in .gz to compress (default: next to the dataset)")
+    qa.add_argument("--limit", type=int, help="only the first LIMIT samples")
+    qa.set_defaults(handler=_qa)
     return parser
 
 
@@ -148,6 +163,20 @@ def _show(args) -> int:
 def _render(args) -> int:
     for path in render_run(args.folder, args.out, until=args.until):
         print(f"wrote {path}")
+    return 0
+
+
+def _dataset(args) -> int:
+    def progress(done: int, total: int) -> None:
+        print(f"{done}/{total} settings done", flush=True)
+    path = build_dataset(args.spec, args.out, args.workers, progress)
+    print(f"wrote {path} and {path.with_suffix('.json')}")
+    return 0
+
+
+def _qa(args) -> int:
+    out = args.out or args.dataset.with_name(args.dataset.stem + "_qa.jsonl.gz")
+    print(f"wrote {write_question_answer_pairs(args.dataset, out, args.limit):,} questions and answers to {out}")
     return 0
 
 

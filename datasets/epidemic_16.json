@@ -1,0 +1,46 @@
+{
+  "name": "epidemic_16",
+  "description": "16 x 16 grid, random starts of several densities. ",
+  "automaton": "../automata/epidemic.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "SUSCEPTIBLE": 90,
+        "INFECTED_1": 10
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "SUSCEPTIBLE": 80,
+        "INFECTED_1": 10,
+        "INFECTED_2": 5,
+        "RECOVERED": 5
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "SUSCEPTIBLE": 95,
+        "INFECTED_1": 5
+      }
+    }
+  ],
+  "samples_per_setting": 3000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

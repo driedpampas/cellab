@@ -1,0 +1,39 @@
+{
+  "name": "forest_fire_regrowth_16",
+  "description": "16 x 16 grid, random starts of several densities. Random rules (regrowth and lightning): each sample is one seeded realisation, so targets are noisy by nature.",
+  "automaton": "../automata/forest_fire_regrowth.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "TREE": 60,
+        "EMPTY": 39,
+        "FIRE": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "TREE": 30,
+        "EMPTY": 69,
+        "FIRE": 1
+      }
+    }
+  ],
+  "samples_per_setting": 2000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 32,
+  "occurs_queries": 2,
+  "seed": 2026
+}

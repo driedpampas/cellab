@@ -1,0 +1,44 @@
+{
+  "name": "crystal_growth_16",
+  "description": "16 x 16 grid, random starts of several densities. A few seed crystals on an empty grid.",
+  "automaton": "../automata/crystal_growth.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 40,
+        "CRYSTAL": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 15,
+        "CRYSTAL": 1
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 100,
+        "CRYSTAL": 1
+      }
+    }
+  ],
+  "samples_per_setting": 3000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

@@ -1,0 +1,49 @@
+{
+  "name": "falling_sand_16",
+  "description": "16 x 16 grid, random starts of several densities. Deterministic: sand settles; water keeps moving in a short cycle.",
+  "automaton": "../automata/falling_sand.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 60,
+        "SAND": 25,
+        "ROCK": 10,
+        "WATER": 5
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 70,
+        "SAND": 20,
+        "ROCK": 10
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 50,
+        "SAND": 20,
+        "ROCK": 10,
+        "WATER": 20
+      }
+    }
+  ],
+  "samples_per_setting": 1500,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 1000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

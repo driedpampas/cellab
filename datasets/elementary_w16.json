@@ -1,0 +1,18 @@
+{
+  "name": "elementary_w16",
+  "description": "All 256 elementary rules on a ring of 16 cells: 200 runs per rule from random rows of different densities. With 16 cells there are 65,536 possible rows, so every run is followed until its cycle is found and all five questions have exact answers.",
+  "automaton": "../automata/elementary.json",
+  "size": [16],
+  "settings": {"rule": {"range": [0, 255]}},
+  "initials": [
+    {"type": "random", "weights": {"0": 1, "1": 1}},
+    {"type": "random", "weights": {"0": 3, "1": 1}},
+    {"type": "random", "weights": {"0": 1, "1": 3}},
+    {"type": "random", "weights": {"0": 1, "1": 1}}
+  ],
+  "samples_per_setting": 200,
+  "horizons": [1, 2, 4, 8, 16, 32, 64],
+  "max_steps": 70000,
+  "occurs_queries": 2,
+  "seed": 2026
+}

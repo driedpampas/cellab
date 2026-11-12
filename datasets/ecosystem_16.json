@@ -1,0 +1,47 @@
+{
+  "name": "ecosystem_16",
+  "description": "16 x 16 grid, random starts of several densities. Random moves and growth: each sample is one seeded realisation.",
+  "automaton": "../automata/ecosystem.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 35,
+        "GRASS": 50,
+        "RABBIT": 12,
+        "FOX": 3
+      },
+      "layers": {
+        "energy": "6 if self == RABBIT else (10 if self == FOX else 0)"
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 50,
+        "GRASS": 30,
+        "RABBIT": 15,
+        "FOX": 5
+      },
+      "layers": {
+        "energy": "5 if self == RABBIT else (8 if self == FOX else 0)"
+      }
+    }
+  ],
+  "samples_per_setting": 1000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 32,
+  "occurs_queries": 2,
+  "seed": 2026
+}

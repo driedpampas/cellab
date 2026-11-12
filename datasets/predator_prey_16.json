@@ -1,0 +1,45 @@
+{
+  "name": "predator_prey_16",
+  "description": "16 x 16 grid, random starts of several densities. Random moves: each sample is one seeded realisation.",
+  "automaton": "../automata/predator_prey.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 80,
+        "RABBIT": 15,
+        "FOX": 5
+      },
+      "layers": {
+        "energy": "6 if self == FOX else 0"
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "EMPTY": 60,
+        "RABBIT": 30,
+        "FOX": 10
+      },
+      "layers": {
+        "energy": "4 if self == FOX else 0"
+      }
+    }
+  ],
+  "samples_per_setting": 1000,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 32,
+  "occurs_queries": 2,
+  "seed": 2026
+}

@@ -56,7 +56,10 @@ Each layer only uses the layers above it. The engine never reads files, the load
 | `storage.py` | Run folders: copies of the inputs, atomic checkpoints, append-only record files. | `RunFolder`, `RecordWriter` |
 | `runner.py` | The loop: start, step, fingerprint, store, checkpoint, stop on Ctrl+C, resume, answer. | `Run`, `RunState`, `RunResult` |
 | `render.py` | PNG, GIF and 1D space-time pictures of a run. | `render_run` |
-| `cli.py` | The `cellab` command: `check`, `run`, `resume`, `answers`, `show`, `render`. | `main` |
+| `dataset.py` | Machine-learning datasets: runs every sample with the engine and collects the exact answers; also writes them as questions and answers in words. | `build_dataset`, `run_sample`, `load_dataset`, `question_answer_pairs` |
+| `cli.py` | The `cellab` command: `check`, `run`, `resume`, `answers`, `show`, `render`, `dataset`, `qa`. | `main` |
+
+The neural networks live outside the package, in `ml/` (they need PyTorch; the simulator doesn't): `eca.py` (rule families and classes), `data.py` (loading and splits), `models.py` (the two networks), `train.py`, `evaluate.py`. See [deliverables/D3-dataset/README.md](deliverables/D3-dataset/README.md).
 
 ## 4. How each part works
 
@@ -182,7 +185,8 @@ Each command parses arguments and calls the library; there's no logic in `cli.py
 | A new neighbourhood name | `NAMED_NEIGHBOURHOODS` in `neighbourhood.py` | Everything else |
 | A new kind of action for agents | `agents.py`: the `_Action` model, `build_agent_rule` and `_World.perform` | The synchronous mode, storage, questions |
 | A third update mode | `engine.step` chooses the mode named in the file's `update` field | Runner, fingerprints, questions, storage, CLI: they only see state arrays |
-| Deliverable 3 dataset | Loop over experiments with `parameters` overrides and `seed`s; read answers and `generations.bin` | Engine |
+| A new dataset | A new file in `datasets/`, then `cellab dataset` | Any code |
+| A new network or training method | `ml/models.py`, `ml/train.py` | The package `cellab` |
 | Deliverable 4 parser | Produce an automaton JSON file; `load_automaton` validates it | Everything else |
 | A graphical interface | Call `load_experiment`, `Run.start`, `run.advance(on_step=...)`, `render` | The library |
 | Changing the checkpoint contents | Raise `CHECKPOINT_FORMAT` in `storage.py` | Old runs are refused with a clear message |
@@ -201,6 +205,8 @@ Run them with `python -m pytest`; all 258 run in about 40 seconds.
 | `test_questions.py` | Jump-ahead through a cycle (checked against 12,345 directly simulated steps), "never", "not decided", random rules, saved answers. |
 | `test_generality.py` | **No state name from any example appears in the code**; every example file loads and runs. |
 | `test_agents.py` | The agents mode on tiny hand-made automata (turns, order, fallbacks, layers, `anywhere`); Langton's ant and falling sand against independent implementations; conservation and rule checks for Schelling, predator–prey and the ecosystem; over 20 broken agent files; resuming and fingerprints with layers. |
+| `test_dataset.py` | Dataset labels equal the answers of ordinary runs; the same file always gives the same dataset, with any number of worker processes; unknown answers are marked; questions and answers in words. |
+| `test_ml.py` | (Needs PyTorch.) The 88 rule families; whole families are kept out of training; both networks in 1D and 2D; the one-step network learns and simulates unseen rules; training resumes and is evaluated. |
 | `test_cli_and_storage.py` | Every command; run folder contents; generations on disk; replay without stored generations; pictures. |
 
 ## 7. Glossary

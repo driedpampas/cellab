@@ -1,0 +1,47 @@
+{
+  "name": "schelling_16",
+  "description": "16 x 16 grid, random starts of several densities. Random moves: each sample is one seeded realisation.",
+  "automaton": "../automata/schelling.json",
+  "size": [
+    16,
+    16
+  ],
+  "initials": [
+    {
+      "type": "random",
+      "weights": {
+        "A": 45,
+        "B": 45,
+        "EMPTY": 10
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "A": 40,
+        "B": 40,
+        "EMPTY": 20
+      }
+    },
+    {
+      "type": "random",
+      "weights": {
+        "A": 55,
+        "B": 30,
+        "EMPTY": 15
+      }
+    }
+  ],
+  "samples_per_setting": 1500,
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "max_steps": 32,
+  "occurs_queries": 2,
+  "seed": 2026
+}
