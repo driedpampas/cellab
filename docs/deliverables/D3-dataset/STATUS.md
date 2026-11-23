@@ -21,8 +21,8 @@ Written 23 November 2026. Deliverable 3 (Lab 11) asks for a **dataset of generat
 | One-step network on the 256 elementary rules | **Done — 100.0% seen, unseen, 32-cell & live engine** |
 | Five-questions network (shared + 5 separate) | **Done — results in `docs/deliverables/D3-dataset/results/`** |
 | 2D automata + traffic training | **Done — 8/10 discrete deterministic StepNets at 100.0% N=32 + `diffusion_16` float support (MAE 0.52)** |
-| Gradient-boosting baseline (`HistGradientBoosting`) | **Done — `AnswerNet` beats GBDT on all metrics (unseen stable F1: 0.712 vs 0.365)** |
-| Post-training verification & speed benchmarks | **Done — `PASS: 47 | WARN: 1 | FAIL: 0` (L4 + CPU)** |
+| Gradient-boosting baseline (`HistGradientBoosting`) | **Done — `AnswerNet` beats GBDT on all unseen metrics (unseen stable F1: 0.600 vs 0.365, occurs F1: 0.741 vs 0.661)** |
+| Post-training verification & speed benchmarks | **Done — `PASS: 49 | WARN: 1 | FAIL: 0` across 36 models (L4 + CPU)** |
 | Presentation for Deliverable 3 | **Not started** (ready — all results & charts archived) |
 
 ## Done

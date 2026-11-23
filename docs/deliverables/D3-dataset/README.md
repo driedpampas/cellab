@@ -1,6 +1,6 @@
 # Deliverable 3: dataset and neural-network experiment
 
-**Status:** training, evaluation, and verification are **complete** (all 34 models trained on an NVIDIA L4 GPU in 30.8 minutes; `PASS: 47 | WARN: 1 | FAIL: 0`). Full metrics, plots, and benchmark reports are in [`results/`](results/verification_report.md).
+**Status:** training, evaluation, and verification are **complete** (36 models archived; `PASS: 49 | WARN: 1 | FAIL: 0`). Full metrics, plots, and benchmark reports are in [`results/`](results/verification_report.md).
 
 ## What was asked
 From the lab schedule: *a dataset of generations, and a neural-network or reinforcement-learning
@@ -50,52 +50,52 @@ Numbers and charts: [`results/step_elementary/`](results/step_elementary/metrics
 `StepNet` has not memorised rules: it learned to read an 8-bit rule table and reproduces even unseen chaotic rules (Rule 30) without a single wrong cell 64 steps ahead, on rows twice as wide as training.
 
 ### 2. Five-questions network (`AnswerNet`, one pass) by Wolfram class
-437,865 parameters, 80 epochs (132.5 s on L4). Full report: [`results/answers_elementary/`](results/answers_elementary/metrics.json).
+437,865 parameters, 80 epochs on L4 with circular-shift augmentation, dropout, and clamped Kendall loss weights. Full report: [`results/answers_elementary/`](results/answers_elementary/metrics.json).
 
 | Split | Wolfram class | Cells N = 1 | Cells N = 4 | Cells N = 16 | Cells N = 64 | Grids N = 64 | Copy baseline N = 64 | Stable F1 | Occurs F1 | Cycle length MAE (common) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| **test** (seen rules) | **1 uniform** | 0.994 | 0.971 | 1.000 | **1.000** | 0.998 | — | 1.000 | 0.970 | 0.04 (7.02) |
-| | **2 periodic** | 0.979 | 0.800 | 0.869 | **0.895** | 0.543 | — | 0.995 | 0.856 | 1.37 (9.18) |
-| | **3 chaotic** | 0.933 | 0.609 | 0.804 | **0.817** | 0.553 | — | 0.953 | 0.751 | 121.92 (125.20) |
-| | **4 complex** | 0.962 | 0.567 | 0.572 | **0.558** | 0.055 | — | 0.571 | 0.693 | 462.33 (535.91) |
-| | **All** | 0.975 | 0.789 | 0.863 | **0.883** | 0.567 | 0.666 | **0.990** | **0.849** | **33.44** (43.77) |
-| **unseen** (new families) | **1 uniform** | 0.989 | 0.940 | 0.975 | **0.974** | 0.935 | — | 0.972 | 0.960 | 0.05 (6.94) |
-| | **2 periodic** | 0.953 | 0.768 | 0.774 | **0.815** | 0.274 | — | 0.559 | 0.738 | 2.60 (9.32) |
-| | **3 chaotic** (incl. Rule 30) | 0.903 | 0.518 | 0.560 | **0.567** | 0.139 | — | 0.829 | 0.543 | 3072.95 (3074.53) |
-| | **4 complex** | 0.939 | 0.598 | 0.602 | **0.606** | 0.035 | — | 0.000 | 0.567 | 67.03 (63.05) |
-| | **All** | 0.946 | 0.720 | 0.733 | **0.762** | 0.262 | 0.657 | **0.712** | **0.704** | **494.04** (498.83) |
+| **test** (seen rules) | **1 uniform** | 0.993 | 0.973 | 0.997 | **0.997** | 0.995 | — | 1.000 | 0.973 | 0.05 (7.02) |
+| | **2 periodic** | 0.992 | 0.806 | 0.883 | **0.902** | 0.576 | — | 0.997 | 0.863 | 2.40 (9.18) |
+| | **3 chaotic** | 0.977 | 0.595 | 0.804 | **0.810** | 0.545 | — | 0.963 | 0.753 | 117.91 (125.20) |
+| | **4 complex** | 0.971 | 0.577 | 0.582 | **0.569** | 0.055 | — | 1.000 | 0.679 | 648.69 (535.91) |
+| | **All** | 0.990 | 0.793 | 0.873 | **0.888** | 0.591 | 0.666 | **0.993** | **0.855** | **42.40** (43.77) |
+| **unseen** (new families) | **1 uniform** | 0.985 | 0.940 | 0.977 | **0.978** | 0.952 | — | 0.973 | 0.953 | 0.03 (6.94) |
+| | **2 periodic** | 0.965 | 0.771 | 0.796 | **0.833** | 0.361 | — | 0.319 | 0.783 | 4.26 (9.32) |
+| | **3 chaotic** (incl. Rule 30) | 0.966 | 0.524 | 0.557 | **0.566** | 0.138 | — | 0.880 | 0.538 | 3071.93 (3074.53) |
+| | **4 complex** | 0.944 | 0.579 | 0.580 | **0.593** | 0.020 | — | 0.000 | 0.631 | 61.76 (63.05) |
+| | **All** | 0.964 | 0.720 | 0.745 | **0.773** | 0.321 | 0.657 | **0.600** | **0.741** | **494.46** (498.83) |
 
-**What this confirms:** the Deliverable 1 hypothesis holds cleanly. Skipping the simulation works well for Class 1 (97–100%) and Class 2 (82–90%), while accuracy collapses with N on unseen Class 3 chaotic rules (90.3% at N=1 → 56.7% at N=64, barely above guessing) and Class 4 complex rules (55.8%–60.6%). On 32-cell transfer (`answers_elementary_on_elementary_w32_test`), overall N=64 accuracy stays nearly unchanged: **87.8%** on seen rules and **75.0%** on unseen rules.
+**What this confirms:** the Deliverable 1 hypothesis holds cleanly. Skipping the simulation works well for Class 1 (97.8–99.7%) and Class 2 (83.3–90.2%), while accuracy collapses with N on unseen Class 3 chaotic rules (96.6% at N=1 → 56.6% at N=64, a 40-point drop) and Class 4 complex rules (56.9%–59.3%). On 32-cell transfer (`answers_elementary_on_elementary_w32_test`), overall N=64 accuracy stays nearly unchanged: **88.5%** on seen rules and **76.2%** on unseen rules.
 
 ### 3. One shared network vs. five separate networks
 Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_single.png).
 
 | Split | Task | Metric | Shared (5 heads) | Separate (1 head) | Winner |
 |---|---|---|---:|---:|---|
-| `test` (seen rules) | `state` | cells correct (N=64) | 0.8829 | **0.9450** | Separate (+6.2 pts) |
-| | `count` | count MAE (N=64) | 0.5259 | **0.3953** | Separate |
-| | `stable` | F1 | 0.9897 | **0.9911** | Separate (tie) |
-| | `cycle` | cycle length MAE | 33.44 | **31.43** | Separate |
-| | `occurs` | F1 | **0.8493** | 0.8401 | Shared |
-| `unseen` (new families) | `state` | cells correct (N=64) | 0.7621 | **0.8019** | Separate (+4.0 pts) |
-| | `count` | count MAE (N=64) | **1.2757** | 1.4176 | **Shared** |
-| | `stable` | F1 | **0.7115** | 0.5176 | **Shared (+19.4 pts)** |
-| | `cycle` | cycle length MAE | **494.04** | 511.69 | **Shared** |
-| | `occurs` | F1 | 0.7038 | **0.7400** | Separate |
+| `test` (seen rules) | `state` | cells correct (N=64) | 0.8877 | **0.9450** | Separate (+5.7 pts) |
+| | `count` | count MAE (N=64) | 0.5419 | **0.3953** | Separate |
+| | `stable` | F1 | **0.9935** | 0.9911 | **Shared** |
+| | `cycle` | cycle length MAE | 42.40 | **31.43** | Separate |
+| | `occurs` | F1 | **0.8551** | 0.8401 | **Shared** |
+| `unseen` (new families) | `state` | cells correct (N=64) | 0.7735 | **0.8019** | Separate (+2.8 pts) |
+| | `count` | count MAE (N=64) | **1.1886** | 1.4176 | **Shared** |
+| | `stable` | F1 | **0.6003** | 0.5176 | **Shared (+8.3 pts)** |
+| | `cycle` | cycle length MAE | **494.46** | 511.69 | **Shared** |
+| | `occurs` | F1 | **0.7414** | 0.7400 | **Shared** |
 
-**Takeaway:** on rules seen in training, dedicating all 438k parameters to one head wins 4/5 tasks; on **unseen rule families**, the shared multi-task representation acts as a strong regularizer and beats single-task networks on 3/5 tasks (notably +19.4 F1 points on stability prediction).
+**Takeaway:** on rules seen in training, separate networks edge out on `state`, `count`, and `cycle` while the shared network wins `stable` and `occurs`; on **unseen rule families**, the shared multi-task representation beats separate single-task networks on **4 out of 5 tasks** (`count`, `stable`, `cycle`, `occurs`).
 
 ### 3b. Gradient-boosting tabular baseline vs. `AnswerNet` (`elementary_w16`)
 `HistGradientBoosting` trained on tabular grid features + the 8 rule bits (7.8 s on CPU). Full report: [`results/gbdt_elementary/metrics.json`](results/gbdt_elementary/metrics.json).
 
 | Split | Model | Count MAE (N=64) | Stable F1 | Cycle length MAE | Occurs F1 |
 |---|---|---:|---:|---:|---:|
-| `test` (seen rules) | `HistGradientBoosting` (GBDT) | 1.20 | 0.958 | 37.98 | 0.751 |
-| | **`AnswerNet` (CNN, 1 pass)** | **0.53** | **0.990** | **33.44** | **0.849** |
+| `test` (seen rules) | `HistGradientBoosting` (GBDT) | 1.20 | 0.958 | **37.98** | 0.751 |
+| | **`AnswerNet` (CNN, 1 pass)** | **0.54** | **0.993** | 42.40 *(single: 31.43)* | **0.855** |
 | `unseen` (new families) | `HistGradientBoosting` (GBDT) | 1.88 | 0.365 | 497.70 | 0.661 |
-| | **`AnswerNet` (CNN, 1 pass)** | **1.28** | **0.712** | **494.04** | **0.704** |
+| | **`AnswerNet` (CNN, 1 pass)** | **1.19** | **0.600** | **494.46** | **0.741** |
 
-**Takeaway:** `AnswerNet` beats Gradient Boosting on **every single metric** on both seen and unseen rules. Tabular GBDT memorises seen rules (`0.958` stable F1) but collapses to `0.365` on unseen rule families, whereas the convolutional `AnswerNet` retains `0.712` (+34.7 F1 pts).
+**Takeaway:** on **unseen rule families**, `AnswerNet` beats Gradient Boosting on **every single metric** (notably **+23.5 F1 pts** on `stable` and **+8.0 F1 pts** on `occurs`). Tabular GBDT memorises seen rules (`0.958` stable F1) but collapses to `0.365` on unseen rule families.
 
 ### 4. The 2D automata and 1D traffic
 All 16 non-elementary automata (including decimal-valued `diffusion_16`) now have trained models. Summary table: [`results/summary.csv`](results/summary.csv).
