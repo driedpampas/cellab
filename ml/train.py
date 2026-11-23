@@ -93,13 +93,20 @@ def build(kind: str, data: Data, width: int | None = None):
     return AnswerNet(data.dims, data.values, data.cond.shape[1], data.extra.shape[1], width or 96, data.wrap)
 
 
-def train(kind: str, dataset: str, out: str, epochs: int = 30, batch: int = 512, lr: float = 2e-3,
+def train(kind: str, dataset: str | Path | Data, out: str, epochs: int = 30, batch: int = 512, lr: float = 2e-3,
           tasks: tuple[str, ...] = TASKS, width: int | None = None, seed: int = 0, device: str | None = None,
-          resume: bool = False, limit: int | None = None) -> dict:
+          resume: bool = False, limit: int | None = None, save_every: int = 1, log_every: int = 1) -> dict:
     """Train and return the history. `limit` uses only that many training samples (for quick checks)."""
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    is_cuda = str(device).startswith("cuda")
+    device_type = "cuda" if is_cuda else "cpu"
+    if is_cuda:
+        torch.set_float32_matmul_precision("high")
     torch.manual_seed(seed)
-    data = load(dataset, device)
+    if isinstance(dataset, Data):
+        data, dataset_name = dataset, f"{dataset.name}.npz"
+    else:
+        data, dataset_name = load(dataset, device), Path(dataset).name
     if kind == "step" and (int(data.horizons[0]) != 1 or data.extra.shape[1] or not data.deterministic):
         raise SystemExit("the step network needs a deterministic automaton without layers, and horizon 1 in the dataset")
     out_dir = Path(out)
@@ -111,12 +118,14 @@ def train(kind: str, dataset: str, out: str, epochs: int = 30, batch: int = 512,
     tasks = tuple(task for task in tasks if has_labels.get(task, True))
     weighting = Weighting(tasks).to(device)
     steps_per_epoch = math.ceil(len(train_index) / batch)
-    optimizer = torch.optim.AdamW([*model.parameters(), *weighting.parameters()], lr=lr, weight_decay=1e-4)
+    optimizer = torch.optim.AdamW([*model.parameters(), *weighting.parameters()], lr=lr, weight_decay=1e-4, fused=is_cuda)
     schedule = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda s: min(
         (s + 1) / steps_per_epoch, 0.5 * (1 + math.cos(math.pi * min(1.0, s / (epochs * steps_per_epoch))))))
-    scaler = torch.amp.GradScaler(enabled=device == "cuda")
+    amp_dtype = torch.bfloat16 if (is_cuda and torch.cuda.is_bf16_supported()) else torch.float16
+    use_scaler = is_cuda and amp_dtype == torch.float16
+    scaler = torch.amp.GradScaler(device_type, enabled=use_scaler)
     generator = torch.Generator(device=device).manual_seed(seed)
-    config = {"kind": kind, "dataset": Path(dataset).name, "epochs": epochs, "batch": batch, "lr": lr,
+    config = {"kind": kind, "dataset": dataset_name, "epochs": epochs, "batch": batch, "lr": lr,
               "tasks": list(tasks), "width": width, "seed": seed, "parameters": sum(p.numel() for p in model.parameters())}
     history = {"config": config, "epochs": []}
     best = math.inf
@@ -126,7 +135,9 @@ def train(kind: str, dataset: str, out: str, epochs: int = 30, batch: int = 512,
         saved = torch.load(last, map_location=device)
         model.load_state_dict(saved["model"]); weighting.load_state_dict(saved["weighting"])
         optimizer.load_state_dict(saved["optimizer"]); schedule.load_state_dict(saved["schedule"])
-        generator.set_state(saved["generator"])
+        gen_state = saved["generator"].cpu()
+        if gen_state.numel() == generator.get_state().numel():
+            generator.set_state(gen_state)
         history, best = saved["history"], saved["best"]
 
     def loss_of(index: torch.Tensor, h=None, q=None) -> tuple[torch.Tensor, dict]:
@@ -143,43 +154,55 @@ def train(kind: str, dataset: str, out: str, epochs: int = 30, batch: int = 512,
     def validate() -> dict[str, float]:
         model.eval()
         index, totals, batches = data.splits["val"], {}, 0
-        for start in range(0, len(index), 4 * batch):
-            part = index[start:start + 4 * batch]
-            if kind == "step":
-                _, losses = loss_of(part)
-            else:           # validation: every sample with a fixed horizon and query, so epochs are comparable
-                h = (part % len(data.horizons)).to(device)
-                _, losses = loss_of(part, h, (part % data.queries.shape[1]).to(device))
-            for name, value in losses.items():
-                totals[name] = totals.get(name, 0.0) + float(value)
-            batches += 1
+        with torch.autocast(device_type=device_type, dtype=amp_dtype, enabled=is_cuda):
+            for start in range(0, len(index), 4 * batch):
+                part = index[start:start + 4 * batch]
+                if kind == "step":
+                    _, losses = loss_of(part)
+                else:           # validation: every sample with a fixed horizon and query, so epochs are comparable
+                    h = (part % len(data.horizons)).to(device)
+                    _, losses = loss_of(part, h, (part % data.queries.shape[1]).to(device))
+                for name, value in losses.items():
+                    totals[name] = value.detach().float() if name not in totals else totals[name] + value.detach().float()
+                batches += 1
         model.train()
-        return {name: value / batches for name, value in totals.items()}
+        return {name: (value / batches).item() for name, value in totals.items()}
 
     for epoch in range(len(history["epochs"]) + 1, epochs + 1):
-        started, running = time.time(), 0.0
+        started = time.time()
+        running = torch.zeros((), device=device)
         order = train_index[torch.randperm(len(train_index), device=device, generator=generator)]
         for start in range(0, len(order), batch):
-            with torch.autocast(device_type=device, enabled=device == "cuda"):
+            with torch.autocast(device_type=device_type, dtype=amp_dtype, enabled=is_cuda):
                 loss, _ = loss_of(order[start:start + batch])
             optimizer.zero_grad(set_to_none=True)
-            scaler.scale(loss).backward()
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            scaler.step(optimizer); scaler.update(); schedule.step()
-            running += loss.item()
+            if use_scaler:
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                scaler.step(optimizer); scaler.update()
+            else:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                optimizer.step()
+            schedule.step()
+            running += loss.detach()
         val = validate()
+        train_loss = (running / steps_per_epoch).item()
         score = sum(val[task] for task in (tasks if kind == "answers" else ("step",)))
-        history["epochs"].append({"epoch": epoch, "train_loss": running / steps_per_epoch, "val": val,
-                                  "val_score": score, "seconds": round(time.time() - started, 1)})
+        elapsed = time.time() - started
+        history["epochs"].append({"epoch": epoch, "train_loss": train_loss, "val": val,
+                                  "val_score": score, "seconds": round(elapsed, 2)})
         if score < best:
             best = score
             torch.save({"model": model.state_dict(), "config": config, "epoch": epoch}, out_dir / "best.pt")
-        torch.save({"model": model.state_dict(), "weighting": weighting.state_dict(), "optimizer": optimizer.state_dict(),
-                    "schedule": schedule.state_dict(), "generator": generator.get_state(), "history": history, "best": best}, last)
-        (out_dir / "history.json").write_text(json.dumps(history, indent=2), encoding="utf-8")
-        shown = "  ".join(f"{name} {value:.4f}" for name, value in val.items())
-        print(f"epoch {epoch:3d}/{epochs}  train {running / steps_per_epoch:.4f}  val: {shown}  ({time.time() - started:.0f}s)", flush=True)
+        if epoch % save_every == 0 or epoch == epochs:
+            torch.save({"model": model.state_dict(), "weighting": weighting.state_dict(), "optimizer": optimizer.state_dict(),
+                        "schedule": schedule.state_dict(), "generator": generator.get_state(), "history": history, "best": best}, last)
+            (out_dir / "history.json").write_text(json.dumps(history, indent=2), encoding="utf-8")
+        if epoch == 1 or epoch == epochs or epoch % log_every == 0:
+            shown = "  ".join(f"{name} {value:.4f}" for name, value in val.items())
+            print(f"epoch {epoch:3d}/{epochs}  train {train_loss:.4f}  val: {shown}  ({elapsed:.1f}s)", flush=True)
     return history
 
 
@@ -197,9 +220,11 @@ def main() -> None:
     parser.add_argument("--device")
     parser.add_argument("--resume", action="store_true", help="continue from last.pt in --out")
     parser.add_argument("--limit", type=int, help="use only this many training samples")
+    parser.add_argument("--save-every", type=int, default=1, help="write last.pt and history.json every N epochs")
+    parser.add_argument("--log-every", type=int, default=1, help="print progress every N epochs")
     args = parser.parse_args()
     train(args.kind, args.dataset, args.out, args.epochs, args.batch, args.lr, tuple(args.tasks), args.width,
-          args.seed, args.device, args.resume, args.limit)
+          args.seed, args.device, args.resume, args.limit, args.save_every, args.log_every)
 
 
 if __name__ == "__main__":

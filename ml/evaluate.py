@@ -131,9 +131,9 @@ def score(kind: str, data: Data, index: torch.Tensor, said: dict, train: torch.T
     return result
 
 
-def evaluate(kind: str, dataset: str, checkpoint: str, device: str | None = None) -> dict:
+def evaluate(kind: str, dataset: str | Path | Data, checkpoint: str | Path, device: str | None = None) -> dict:
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-    data = load(dataset, device)
+    data = dataset if isinstance(dataset, Data) else load(dataset, device)
     saved = torch.load(checkpoint, map_location=device)
     model = build(kind, data, saved["config"]["width"]).to(device)
     model.load_state_dict(saved["model"])
@@ -150,6 +150,22 @@ def evaluate(kind: str, dataset: str, checkpoint: str, device: str | None = None
             mask = data.group[index] == group
             part[eca.CLASS_NAMES[group]] = score(kind, data, index[mask], {k: v[mask] for k, v in said.items()}, data.splits["train"])
         report["splits"][split] = part
+    return report
+
+
+def evaluate_and_save(kind: str, dataset: str | Path | Data, checkpoint: str | Path, out: str | Path,
+                      device: str | None = None) -> dict:
+    report = evaluate(kind, dataset, checkpoint, device)
+    out_dir = Path(out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "metrics.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    for split, groups in report["splits"].items():
+        rows = groups["all"].get("by_horizon", [])
+        print(f"{split}: " + "  ".join(f"N={row['n']}: {row['model']['cells_correct']:.3f}" for row in rows))
+    try:
+        plot(report, out_dir / "accuracy_by_horizon.png")
+    except ImportError:
+        print("(matplotlib is not installed: no picture)")
     return report
 
 
@@ -172,6 +188,7 @@ def plot(report: dict, path: Path) -> None:
         axis.set_title(f"{report['kind']} network on {report['dataset']}: {split} split"); axis.legend(fontsize=8)
     figure.tight_layout()
     figure.savefig(path, dpi=150)
+    plt.close(figure)
 
 
 def main() -> None:
@@ -182,17 +199,7 @@ def main() -> None:
     parser.add_argument("--out", required=True)
     parser.add_argument("--device")
     args = parser.parse_args()
-    report = evaluate(args.kind, args.dataset, args.checkpoint, args.device)
-    out = Path(args.out)
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "metrics.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    for split, groups in report["splits"].items():
-        rows = groups["all"].get("by_horizon", [])
-        print(f"{split}: " + "  ".join(f"N={row['n']}: {row['model']['cells_correct']:.3f}" for row in rows))
-    try:
-        plot(report, out / "accuracy_by_horizon.png")
-    except ImportError:
-        print("(matplotlib is not installed: no picture)")
+    evaluate_and_save(args.kind, args.dataset, args.checkpoint, args.out, args.device)
 
 
 if __name__ == "__main__":

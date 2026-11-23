@@ -38,13 +38,12 @@ class Look(nn.Module):
         self.wrap, self.reach = wrap, dilation
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if not self.wrap or all(size >= self.reach for size in x.shape[2:]):
+            pad = (self.reach, self.reach) * (x.dim() - 2)
+            return self.conv(F.pad(x, pad, mode="circular" if self.wrap else "constant"))
         for axis in range(2, x.dim()):
             size = x.shape[axis]
-            if self.wrap:
-                x = x.index_select(axis, torch.arange(-self.reach, size + self.reach, device=x.device) % size)
-            else:
-                pad = [0, 0] * (x.dim() - 1 - axis) + [self.reach, self.reach]
-                x = F.pad(x, pad)
+            x = x.index_select(axis, torch.arange(-self.reach, size + self.reach, device=x.device) % size)
         return self.conv(x)
 
 

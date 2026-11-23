@@ -6,6 +6,7 @@ down, saving, resuming and evaluating.
 """
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -16,9 +17,10 @@ from cellab.dataset import build_dataset  # noqa: E402
 from helpers import AUTOMATA, write_json  # noqa: E402
 from ml import eca  # noqa: E402
 from ml.data import load  # noqa: E402
-from ml.evaluate import evaluate  # noqa: E402
-from ml.models import AnswerNet, StepNet  # noqa: E402
+from ml.evaluate import evaluate, evaluate_and_save  # noqa: E402
+from ml.models import AnswerNet, Look, StepNet  # noqa: E402
 from ml.train import train  # noqa: E402
+from ml.verify import run_verification, validate_model  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -95,3 +97,40 @@ def test_answers_network_trains_resumes_and_is_evaluated(dataset, tmp_path):
     only_count = train("answers", str(dataset), str(tmp_path / "count"), epochs=1, batch=128, width=16, device="cpu",
                        tasks=("count",), limit=256)
     assert only_count["config"]["tasks"] == ["count"]
+
+
+def test_look_circular_pad_matches_index_select():
+    for dims, shape in ((1, (16,)), (2, (16, 16))):
+        for reach in (1, 4, 8):
+            layer = Look(dims, 3, 4, wrap=True, dilation=reach)
+            x = torch.randn(2, 3, *shape)
+            got = layer(x)
+            ref = x
+            for axis in range(2, x.dim()):
+                s = ref.shape[axis]
+                ref = ref.index_select(axis, torch.arange(-reach, s + reach) % s)
+            assert torch.allclose(got, layer.conv(ref), atol=1e-6)
+
+
+def test_preloaded_data_save_every_and_verification(dataset, tmp_path):
+    data = load(dataset, "cpu")
+    res_dir = tmp_path / "results"
+    step_dir = res_dir / "step_elementary"
+    ans_dir = res_dir / "answers_elementary"
+    train("step", data, str(step_dir), epochs=3, batch=128, device="cpu", save_every=2, log_every=2)
+    evaluate_and_save("step", data, step_dir / "best.pt", step_dir, device="cpu")
+    train("answers", data, str(ans_dir), epochs=2, batch=128, width=16, device="cpu", save_every=2, log_every=2, limit=256)
+    evaluate_and_save("answers", data, ans_dir / "best.pt", ans_dir, device="cpu")
+
+    assert (step_dir / "last.pt").exists() and (step_dir / "metrics.json").exists()
+    assert (ans_dir / "last.pt").exists() and (ans_dir / "metrics.json").exists()
+
+    v = validate_model(res_dir, "step_elementary", datasets_dir=Path("datasets"), device="cpu")
+    assert v["status"] in ("PASS", "WARN", "FAIL") and v["live_sim"]
+
+    report = run_verification(res_dir, datasets_dir=Path("datasets"), device="cpu", save=True)
+    assert (res_dir / "verification.json").exists() and (res_dir / "verification_report.md").exists()
+    assert report["summary"]["models_audited"] == 2
+    assert report["summary"]["failed"] <= len(report["hypotheses"]) + len(report["live_simulator_checks"])
+    assert len(report["speed_benchmarks"]) >= 3
+    assert any(r["model"] == "step_elementary" for r in report["live_simulator_checks"])
