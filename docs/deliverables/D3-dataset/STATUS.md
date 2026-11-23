@@ -16,12 +16,13 @@ Written 23 November 2026. Deliverable 3 (Lab 11) asks for a **dataset of generat
 | Dataset generator | Done, tested |
 | The datasets (18 of them, 94,380 runs) | Done, in `data/` |
 | Question/answer set for hand-in | Done for the elementary rules; one command for the rest |
-| The two networks, training and evaluation code | Done, tested on a laptop |
-| Colab notebook | Written; **never run on Colab yet** |
-| One-step network on the 256 elementary rules | **Trained, result below** |
-| Five-questions network | Code works; **full training not done** (needs a GPU) |
-| 2D automata training | **Not done** (needs a GPU) |
-| Presentation for Deliverable 3 | **Not started** (needs the results) |
+| The two networks, training, evaluation & verification code | Done, tested on Linux (`295 passed`) |
+| Colab notebook | **Done & verified on L4 GPU (30.8 min total)** |
+| One-step network on the 256 elementary rules | **Done — 100.0% seen, unseen, 32-cell & live engine** |
+| Five-questions network (shared + 5 separate) | **Done — results in `docs/deliverables/D3-dataset/results/`** |
+| 2D automata + traffic training (25 models) | **Done — 6/10 deterministic StepNets at 100.0% N=32** |
+| Post-training verification & speed benchmarks | **Done — `PASS: 47 | WARN: 1 | FAIL: 0` (L4 + CPU)** |
+| Presentation for Deliverable 3 | **Not started** (ready — all results & charts archived) |
 
 ## Done
 
@@ -70,47 +71,21 @@ steps, so it did not learn the step exactly in that short run. Full training is 
 
 ## To do
 
-### 1. Push the work to GitHub (blocks everything else)
-- [ ] Refresh the published AI log: `python tools/publish_ai_logs.py`. The redaction list stays local.
-- [ ] Push `agents-mode` to `main` (`git push origin agents-mode:main`). Never push the local branch `main`:
-      it still contains the unredacted logs.
+### 1. Push the work to GitHub
+- [x] Pushed to `origin/main` (including Colab optimizations, verification suite, and full D3 results).
 
 ### 2. Set up and check on Linux (Matei)
-Nothing has ever run outside Windows yet.
-
-```bash
-git pull
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt -r requirements-ml.txt
-pip install -e .
-python -m pytest
-```
-
-- [ ] All 293 tests pass. If any fail, it is most likely a path or line-ending difference; fix it in a
-      commit of your own.
+- [x] Venv created, dependencies installed, all **295 tests pass** on Linux.
 
 ### 3. Run the training on Colab (Matei)
-- [ ] Open `notebooks/D3_train_on_colab.ipynb` in Colab, choose *Runtime → Change runtime type → T4 GPU*, run all cells.
-- [ ] My estimate is about 75 minutes, but the notebook has never run on Colab, so expect to fix small things
-      (package versions, paths). Results are saved to Google Drive after every epoch; running the cells
-      again continues where it stopped.
-- [ ] If Colab's free GPU time runs out, run parts 2 and 3 first (the elementary rules: the main result)
-      and part 4 (2D automata) in another session.
-- [ ] Download the results folder from Drive into `results/` (git-ignored), then copy the `metrics.json`
-      and `accuracy_by_horizon.png` of the models you want to keep into `docs/deliverables/D3-dataset/results/`
-      and commit them.
-
-What to look for in the results:
-- **Five-questions network by Wolfram class and steps ahead.** The expectation from Deliverable 1:
-  good on classes 1 and 2, getting worse with N on class 3 (chaotic, Rule 30). This is the main research result.
-- **One network vs five separate ones** (`answers_elementary` vs `only_*_elementary`).
-- **Unseen rule families** and **32-cell rows**.
-- Every model next to the "copy the start" and "most common answer" baselines.
+- [x] Optimized `notebooks/D3_train_on_colab.ipynb` + `ml/` for Colab Pro **L4 GPU** (`bf16`, fused AdamW, fused circular `F.pad`, local SSD training + Drive sync, automatic per-model and post-training verification & speed benchmarks).
+- [x] Ran all 34 models end-to-end on L4 (**30.8 minutes** total; `PASS: 47 | WARN: 1 | FAIL: 0`).
+- [x] Downloaded `cellab_results/` into local `results/`, archived all 34 models' `metrics.json`, `accuracy_by_horizon.png`, `summary.csv`, `verification.json`, `verification_report.md`, `cpu_speed_benchmark.json`, `multitask_vs_single.png`, and `speed_benchmark.png` into `docs/deliverables/D3-dataset/results/`.
 
 ### 4. Hand-in material
 - [ ] Question/answer sets for the other datasets, if the hand-in should include them (about 1 minute each):
       `cellab qa data/<name>.npz`.
-- [ ] Update `docs/deliverables/D3-dataset/README.md` with the real results (replace "expected" with what happened).
+- [x] Updated `docs/deliverables/D3-dataset/README.md` with the real results, failure-mode analysis, and GPU/CPU benchmarks.
 
 ### 5. Presentation for Lab 11 (both)
 Same style as the Deliverable 2 deck: plain, descriptive titles; real numbers only.

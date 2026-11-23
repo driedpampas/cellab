@@ -1,7 +1,6 @@
 # Deliverable 3: dataset and neural-network experiment
 
-**Status:** everything is built and tested. The one-step network is trained (result below); the larger
-training runs need a GPU and are one notebook away: [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb).
+**Status:** training, evaluation, and verification are **complete** (all 34 models trained on an NVIDIA L4 GPU in 30.8 minutes; `PASS: 47 | WARN: 1 | FAIL: 0`). Full metrics, plots, and benchmark reports are in [`results/`](results/verification_report.md).
 
 ## What was asked
 From the lab schedule: *a dataset of generations, and a neural-network or reinforcement-learning
@@ -18,50 +17,113 @@ the automaton. To be handed in: the question/answer sets used for training.
 | Questions and answers in words | `cellab qa data/<name>.npz` | The same data as JSON lines: question, answer, automaton, parameters, initial grid. A sample is in `data/qa_sample.jsonl`. |
 | Rule facts | `ml/eca.py` | The 88 families of equivalent rules, Wolfram's classes, and which families are held out. |
 | Two networks | `ml/models.py` | **StepNet** learns one step and is applied N times. **AnswerNet** answers all five questions in one pass with a shared encoder and five heads. |
-| Training | `ml/train.py` | AdamW, warm-up and cosine schedule, mixed precision, learned loss weights for the five heads, checkpoints and `--resume`. `--tasks` trains single-question networks for the comparison. |
-| Evaluation | `ml/evaluate.py` | The metrics announced in Deliverable 1, per Wolfram class and per N, on unseen runs and on unseen rule families, next to baselines. |
-| Tests | `tests/test_dataset.py`, `tests/test_ml.py` | Labels equal the answers of ordinary runs; generation is reproducible; the training code runs, learns, resumes and evaluates. |
+| Training | `ml/train.py` | AdamW (fused on CUDA), warm-up and cosine schedule, automatic `bf16`/`fp16` mixed precision, learned loss weights for the five heads, checkpoints and `--resume`. `--tasks` trains single-question networks for the comparison. |
+| Evaluation & verification | `ml/evaluate.py`, `ml/verify.py` | Deliverable 1 metrics per Wolfram class and per N next to baselines, live `cellab.engine.step` cross-checks, hypothesis checks, and inference speed benchmarks. |
+| Colab notebook | [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb) | End-to-end L4/T4 training, Drive sync, automatic validation, benchmarks, and auto-disconnect. |
+| Tests | `tests/test_dataset.py`, `tests/test_ml.py` | Labels equal ordinary engine runs; generation is reproducible; training, resuming, evaluation, and verification all pass (`295 passed`). |
 
 ## The experiment and why it is designed this way
 
 **Question:** when can a network replace the simulation, and when can it not?
 
-1. **Learning the rule (StepNet).** A cell's next value depends on 3 cells and the 8 bits of the rule,
-   so a 3-wide convolution over (row, rule bits) followed by per-cell layers has exactly the right
-   shape. It is trained on single steps only. "After N steps" is then answered by applying it N
-   times: the network *is* a simulator, and costs N passes.
-2. **Skipping the simulation (AnswerNet).** One pass for any N and for the whole-run questions
-   (stable? cycle? does C occur?). This is the "answer without running the automaton" idea from the
-   lab. Dilated convolutions give every cell a view of the whole ring in a few layers.
-3. **One network or five?** AnswerNet is trained once with all heads and five times with one head each.
-4. **Rules never seen.** 15% of the rule families of every class are kept out of training. The
-   random choice (fixed seed) happens to include the family of **Rule 30**.
-5. **Sizes never seen.** The networks are convolutional, so the ones trained on 16 cells are also
-   tested on 32.
+1. **Learning the rule (StepNet).** A cell's next value depends on its local neighbourhood (3 cells + 8 rule bits in 1D; 3×3 neighbourhood in 2D), so a 3-wide convolution followed by per-cell layers has exactly the right shape. It is trained on single steps only (`gen 0 → gen 1`) and rolled out N times to answer "after N steps".
+2. **Skipping the simulation (AnswerNet).** One pass for any N and for the whole-run questions (stable? cycle? does C occur?). Dilated convolutions (`1, 2, 4, 8, 1, 2, 4, 8`) give every cell a view of the whole grid in a few layers.
+3. **One network or five?** AnswerNet is trained once with all five heads (`answers_elementary`) and five times with one head each (`only_*_elementary`).
+4. **Rules never seen.** 15% of the rule families of every Wolfram class are kept out of training. The fixed-seed split includes the family of **Rule 30**.
+5. **Sizes never seen.** Both networks are convolutional, so models trained on 16 cells are also tested on 32-cell rings.
 
-**What we expect** (the hypothesis of Deliverable 1): AnswerNet is good on class 1 and 2 rules and
-gets worse with N on class 3 (chaotic) rules, because nothing shorter than the simulation is known
-for them; StepNet stays exact because it does the simulation.
+## Results
 
-## First result (one-step network, trained on the laptop)
-
-The one-step network is small enough to train without a GPU: 10,434 parameters, 12 epochs, 26 seconds.
+### 1. One-step network (`StepNet`) on all 256 elementary rules
+10,434 parameters, 40 epochs (11.8 s on L4; already exact by epoch 10).
 
 | Tested on | Runs | Cells correct at N = 64 | Grids completely correct at N = 64 | Copying the start (cells) |
-|---|---|---|---|---|
-| Seen rules, unseen runs (16 cells) | 4,360 | 100% | 100% | 66.6% |
-| **Unseen rule families** (16 cells) | 7,600 | 100% | 100% | 65.7% |
-| Seen rules, 32 cells | 654 | 100% | 100% | 66.4% |
-| Unseen rule families, 32 cells | 1,140 | 100% | 100% | 64.8% |
+|---|---:|---:|---:|---:|
+| Seen rules, unseen runs (16 cells) | 4,360 | **100.0%** | **100.0%** | 66.6% |
+| **Unseen rule families** (16 cells, incl. Rule 30) | 7,600 | **100.0%** | **100.0%** | 65.7% |
+| Seen rules, 32 cells | 654 | **100.0%** | **100.0%** | 66.4% |
+| Unseen rule families, 32 cells | 1,140 | **100.0%** | **100.0%** | 64.8% |
+| Live `cellab.engine.step` check (Rules 0, 30, 90, 110, 184; widths 16 & 32) | 160 | **100.0%** | **100.0%** | — |
 
-The same holds at every N from 1 to 64 and in every Wolfram class. The network was trained on single
-steps of 74 of the 88 rule families and then simulates the other 14, **Rule 30's included**, without a
-single wrong cell, also on rows twice as wide. So it has not memorised rules: it has learned to read a
-rule table, which is the whole content of an elementary automaton. Numbers and picture:
-[`results/step_elementary/`](results/step_elementary/metrics.json), [`results/step_elementary_on_w32/`](results/step_elementary_on_w32/metrics.json).
+Numbers and charts: [`results/step_elementary/`](results/step_elementary/metrics.json), [`results/step_elementary_on_elementary_w32_test/`](results/step_elementary_on_elementary_w32_test/metrics.json).
 
-This is the first half of the experiment's answer: a network can replace the simulator exactly, but it
-then does the same N steps. Whether the steps can be skipped is what the five-questions network measures.
+`StepNet` has not memorised rules: it learned to read an 8-bit rule table and reproduces even unseen chaotic rules (Rule 30) without a single wrong cell 64 steps ahead, on rows twice as wide as training.
+
+### 2. Five-questions network (`AnswerNet`, one pass) by Wolfram class
+437,865 parameters, 80 epochs (132.5 s on L4). Full report: [`results/answers_elementary/`](results/answers_elementary/metrics.json).
+
+| Split | Wolfram class | Cells N = 1 | Cells N = 4 | Cells N = 16 | Cells N = 64 | Grids N = 64 | Copy baseline N = 64 | Stable F1 | Occurs F1 | Cycle length MAE (common) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **test** (seen rules) | **1 uniform** | 0.994 | 0.971 | 1.000 | **1.000** | 0.998 | — | 1.000 | 0.970 | 0.04 (7.02) |
+| | **2 periodic** | 0.979 | 0.800 | 0.869 | **0.895** | 0.543 | — | 0.995 | 0.856 | 1.37 (9.18) |
+| | **3 chaotic** | 0.933 | 0.609 | 0.804 | **0.817** | 0.553 | — | 0.953 | 0.751 | 121.92 (125.20) |
+| | **4 complex** | 0.962 | 0.567 | 0.572 | **0.558** | 0.055 | — | 0.571 | 0.693 | 462.33 (535.91) |
+| | **All** | 0.975 | 0.789 | 0.863 | **0.883** | 0.567 | 0.666 | **0.990** | **0.849** | **33.44** (43.77) |
+| **unseen** (new families) | **1 uniform** | 0.989 | 0.940 | 0.975 | **0.974** | 0.935 | — | 0.972 | 0.960 | 0.05 (6.94) |
+| | **2 periodic** | 0.953 | 0.768 | 0.774 | **0.815** | 0.274 | — | 0.559 | 0.738 | 2.60 (9.32) |
+| | **3 chaotic** (incl. Rule 30) | 0.903 | 0.518 | 0.560 | **0.567** | 0.139 | — | 0.829 | 0.543 | 3072.95 (3074.53) |
+| | **4 complex** | 0.939 | 0.598 | 0.602 | **0.606** | 0.035 | — | 0.000 | 0.567 | 67.03 (63.05) |
+| | **All** | 0.946 | 0.720 | 0.733 | **0.762** | 0.262 | 0.657 | **0.712** | **0.704** | **494.04** (498.83) |
+
+**What this confirms:** the Deliverable 1 hypothesis holds cleanly. Skipping the simulation works well for Class 1 (97–100%) and Class 2 (82–90%), while accuracy collapses with N on unseen Class 3 chaotic rules (90.3% at N=1 → 56.7% at N=64, barely above guessing) and Class 4 complex rules (55.8%–60.6%). On 32-cell transfer (`answers_elementary_on_elementary_w32_test`), overall N=64 accuracy stays nearly unchanged: **87.8%** on seen rules and **75.0%** on unseen rules.
+
+### 3. One shared network vs. five separate networks
+Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_single.png).
+
+| Split | Task | Metric | Shared (5 heads) | Separate (1 head) | Winner |
+|---|---|---|---:|---:|---|
+| `test` (seen rules) | `state` | cells correct (N=64) | 0.8829 | **0.9450** | Separate (+6.2 pts) |
+| | `count` | count MAE (N=64) | 0.5259 | **0.3953** | Separate |
+| | `stable` | F1 | 0.9897 | **0.9911** | Separate (tie) |
+| | `cycle` | cycle length MAE | 33.44 | **31.43** | Separate |
+| | `occurs` | F1 | **0.8493** | 0.8401 | Shared |
+| `unseen` (new families) | `state` | cells correct (N=64) | 0.7621 | **0.8019** | Separate (+4.0 pts) |
+| | `count` | count MAE (N=64) | **1.2757** | 1.4176 | **Shared** |
+| | `stable` | F1 | **0.7115** | 0.5176 | **Shared (+19.4 pts)** |
+| | `cycle` | cycle length MAE | **494.04** | 511.69 | **Shared** |
+| | `occurs` | F1 | 0.7038 | **0.7400** | Separate |
+
+**Takeaway:** on rules seen in training, dedicating all 438k parameters to one head wins 4/5 tasks; on **unseen rule families**, the shared multi-task representation acts as a strong regularizer and beats single-task networks on 3/5 tasks (notably +19.4 F1 points on stability prediction).
+
+### 4. The 2D automata and 1D traffic
+All 15 integer-state automata trained (`diffusion_16` uses floats and is skipped). Summary table: [`results/summary.csv`](results/summary.csv).
+
+| Automaton | `StepNet` N=1 | `StepNet` N=32 (grids) | `AnswerNet` N=1 | `AnswerNet` N=32 | `AnswerNet` vs best baseline | `AnswerNet` Stable F1 | `AnswerNet` Occurs F1 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `brians_brain_16` | **1.000** | **1.000 (1.000)** | 0.905 | 0.928 | +0.000 | 0.456 | 0.548 |
+| `crystal_growth_16` | 1.000 | 0.908 (0.013) | 1.000 | **0.991** | +0.587 | 1.000 | 0.879 |
+| `cyclic_16` | **1.000** | **1.000 (1.000)** | 0.915 | 0.906 | +0.127 | 0.972 | 0.667 |
+| `epidemic_16` | 1.000 | 0.025 (0.000)* | 1.000 | **1.000** | +0.006 | 1.000 | 0.936 |
+| `falling_sand_16` | 0.979* | 0.750 (0.000)* | 0.976 | **0.974** | +0.223 | 0.971 | 0.685 |
+| `forest_fire_16` | **1.000** | **1.000 (1.000)** | 1.000 | **0.993** | +0.038 | 1.000 | 0.961 |
+| `game_of_life_16` | **1.000** | **1.000 (1.000)** | 0.996 | 0.865 | +0.000 | 0.634 | 0.693 |
+| `sandpile_16` | 1.000 | 0.659 (0.335)* | 0.999 | 0.785 | +0.198 | 1.000 | 1.000 |
+| `traffic_w16` | **1.000** | **1.000 (1.000)** | 1.000 | **1.000** | +0.190 | 1.000 | 0.967 |
+| `voter_16` | **1.000** | **1.000 (1.000)** | 0.999 | **0.988** | +0.359 | 1.000 | 0.901 |
+| `langtons_ant_16` *(layers)* | — | — | 1.000 | **0.968** | +0.018 | — | 1.000 |
+| `schelling_16` *(random)* | — | — | 0.807 | **0.965** | +0.351 | 0.975 | 1.000 |
+| `forest_fire_regrowth_16` *(random)* | — | — | 0.975 | 0.820 | +0.188 | 0.849 | 1.000 |
+| `predator_prey_16` *(random)* | — | — | 0.691 | **0.967** | +0.000 | 0.824 | 1.000 |
+| `ecosystem_16` *(random)* | — | — | 0.836 | 0.645 | +0.300 | 0.000 | 1.000 |
+
+*\*Why those four `StepNet` rollouts didn't reach 100%:*
+- **`falling_sand_16`**: uses sequential agent-order updates (not a synchronous 3×3 map), so a 1-layer convolution cannot capture multi-cell cascades within a single step.
+- **`epidemic_16`**: `datasets/epidemic_16.json` gives state `INFECTED_3` weight `0` in all initial grids, so `StepNet` (trained only on `gen 0 → gen 1`) never sees `INFECTED_3` as input; rollout breaks the moment `INFECTED_3 → RECOVERED` first appears at `N = 2`. `AnswerNet` trains across all horizons `N = 1..32` and reaches **100.0%**.
+- **`crystal_growth_16` & `sandpile_16`**: same state-coverage shift — sparse seeds and 61 grain levels leave late-generation local patterns rare or unseen in `gen 0`.
+
+### 5. Inference speed benchmarks (GPU L4 & Laptop CPU vs. Simulator)
+Full reports: [`results/verification_report.md`](results/verification_report.md) (L4 GPU), [`results/cpu_speed_benchmark.json`](results/cpu_speed_benchmark.json) (i7-1165G7 CPU), [`results/speed_benchmark.png`](results/speed_benchmark.png).
+
+| Workload | Method | Batch | L4 GPU (`ms/sample` · `samples/s`) | Laptop CPU (`ms/sample` · `samples/s`) |
+|---|---|---:|---:|---:|
+| Elementary 1D, `N=64` | `cellab` CPU simulator | 1 | 6.49 ms · 154 /s *(Colab CPU)* | 5.20 ms · 192 /s |
+| Elementary 1D, `N=64` | `StepNet` rollout | 1 / 256 | 30.8 ms (33 /s) · 0.124 ms (**8,086 /s**) | 16.0 ms (62 /s) · 0.943 ms (**1,060 /s**) |
+| Elementary 1D, `N=64` | **`AnswerNet` 1-pass (all 5 Qs)** | 1 / 256 | **4.64 ms (215 /s)** · **0.018 ms (56,217 /s)** | **2.64 ms (379 /s)** · **0.137 ms (7,313 /s)** |
+| 2D Game of Life, `N=32` | `cellab` CPU simulator | 1 | 9.52 ms · 105 /s *(Colab CPU)* | 4.99 ms · 200 /s |
+| 2D Game of Life, `N=32` | `StepNet` rollout | 64 | 0.249 ms · **4,016 /s** | 7.04 ms · 142 /s |
+| 2D Game of Life, `N=32` | **`AnswerNet` 1-pass (all 5 Qs)** | 64 | **0.077 ms · 13,068 /s** | **3.72 ms · 269 /s** |
+
+Even on a laptop CPU with no GPU, `AnswerNet` answers all 5 questions in **2.64 ms** (`batch=1`, 2× faster than simulating 64 steps) and **7,313 samples/s** batched (38× faster). On an L4 GPU it reaches **56,217 samples/s** (**365×** faster than the simulator, **7×** faster than batched `StepNet` rollout) — quantifying the exact speed-vs-exactness trade-off.
 
 ## Encoding (as planned in Deliverable 1)
 
@@ -75,36 +137,17 @@ then does the same N steps. Whether the steps can be skipped is what the five-qu
 | Edges | the opposite side for wrap-around edges, zeros for fixed ones |
 | Grid size | any: all layers are convolutions or averages over cells |
 
-## Metrics and baselines
+## How to reproduce
 
-| Question | Metric |
-|---|---|
-| State after N | share of cells correct; share of grids completely correct |
-| Count after N | average absolute error in cells |
-| Stable? | accuracy and F1; average error of the step |
-| Cycle | average error of start and length; share of lengths exactly right |
-| Does C occur? | accuracy and F1 |
-
-Baselines: copying the starting grid; the most common answer of the training data (per cell for
-grids, the median for numbers).
-
-## How to run the training
-
-1. Push the repository (the notebook clones it; `data/` is part of it).
-2. Open `notebooks/D3_train_on_colab.ipynb` in Google Colab, choose a GPU runtime, run all cells.
-   About 75 minutes on a T4. Results are saved to Google Drive after every epoch, and running the
-   notebook again continues an interrupted run.
-3. Download the results folder into `results/` and use `summary.csv` and the pictures in the slides.
-
-On any machine with PyTorch (`pip install -r requirements-ml.txt`):
+1. Open [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb) in Google Colab, select **L4 GPU** (or T4), and click **Runtime → Run all** (~31 min on L4; results and verification reports auto-sync to Drive).
+2. Or run locally with PyTorch (`pip install -r requirements-ml.txt`):
 
 ```bash
 python -m ml.train step data/elementary_w16.npz --out results/step_elementary --epochs 40
 python -m ml.evaluate step data/elementary_w16.npz results/step_elementary/best.pt --out results/step_elementary
+python -m ml.verify results/
 ```
 
-## Still to do for the presentation
-- Run the notebook and put the numbers and pictures into slides.
-- Optional extras, in order of value: a gradient-boosting baseline (announced in Deliverable 1) for the
-  count and yes/no questions; asking a language model the same questions directly, as the "why we
-  simulate" comparison; a reinforcement-learning agent that edits the starting grid towards a goal.
+## Remaining for Deliverable 3
+- Put the results and plots from [`results/`](results/) into the Lab 11 presentation slides.
+- Optional extras: gradient-boosting baseline (announced in Deliverable 1), direct LLM baseline, decimal-value support (`diffusion_16`).
