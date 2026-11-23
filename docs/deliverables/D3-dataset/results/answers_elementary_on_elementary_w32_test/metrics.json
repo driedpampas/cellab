@@ -137,20 +137,29 @@
             "error": 2.104762077331543,
             "exactly_right": 0.6190476417541504,
             "common_error": 5.409523963928223,
-            "samples": 210
+            "samples": 210,
+            "log_error": 0.13208097219467163,
+            "common_log_error": 0.7185561656951904,
+            "common_exactly_right": 0.06666667014360428
           }
         },
         "cycle_start": {
           "error": 2.0518782138824463,
           "exactly_right": 0.5277280807495117,
           "common_error": 4.298747539520264,
-          "samples": 559
+          "samples": 559,
+          "log_error": 0.20027922093868256,
+          "common_log_error": 0.696033239364624,
+          "common_exactly_right": 0.21466904878616333
         },
         "cycle_length": {
           "error": 5.284436225891113,
           "exactly_right": 0.4454382658004761,
           "common_error": 14.300536155700684,
-          "samples": 559
+          "samples": 559,
+          "log_error": 0.2523660361766815,
+          "common_log_error": 1.2779910564422607,
+          "common_exactly_right": 0.023255813866853714
         },
         "occurs": {
           "accuracy": 0.7971970438957214,
@@ -289,20 +298,29 @@
             "error": 0.5151515007019043,
             "exactly_right": 0.7727273106575012,
             "common_error": 2.7272727489471436,
-            "samples": 66
+            "samples": 66,
+            "log_error": 0.04710698500275612,
+            "common_log_error": 0.4795306921005249,
+            "common_exactly_right": 0.10606060922145844
           }
         },
         "cycle_start": {
           "error": 0.575757622718811,
           "exactly_right": 0.7424242496490479,
           "common_error": 2.7272727489471436,
-          "samples": 66
+          "samples": 66,
+          "log_error": 0.05667828768491745,
+          "common_log_error": 0.4795306921005249,
+          "common_exactly_right": 0.3484848737716675
         },
         "cycle_length": {
           "error": 0.0,
           "exactly_right": 1.0,
           "common_error": 2.0,
-          "samples": 66
+          "samples": 66,
+          "log_error": 0.0,
+          "common_log_error": 0.6931472420692444,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.9924242496490479,
@@ -441,20 +459,29 @@
             "error": 0.5762711763381958,
             "exactly_right": 0.6694915294647217,
             "common_error": 2.720339059829712,
-            "samples": 118
+            "samples": 118,
+            "log_error": 0.07690493017435074,
+            "common_log_error": 0.5939576625823975,
+            "common_exactly_right": 0.05932203307747841
           }
         },
         "cycle_start": {
           "error": 1.3937360048294067,
           "exactly_right": 0.536912739276886,
           "common_error": 3.116331100463867,
-          "samples": 447
+          "samples": 447,
+          "log_error": 0.1793796569108963,
+          "common_log_error": 0.6137124300003052,
+          "common_exactly_right": 0.2170022428035736
         },
         "cycle_length": {
           "error": 5.941834449768066,
           "exactly_right": 0.36017897725105286,
           "common_error": 16.5548095703125,
-          "samples": 447
+          "samples": 447,
+          "log_error": 0.269353985786438,
+          "common_log_error": 1.379731297492981,
+          "common_exactly_right": 0.029082775115966797
         },
         "occurs": {
           "accuracy": 0.8021163940429688,
@@ -593,20 +620,29 @@
             "error": 13.076923370361328,
             "exactly_right": 0.0,
             "common_error": 24.423078536987305,
-            "samples": 26
+            "samples": 26,
+            "log_error": 0.5981985926628113,
+            "common_log_error": 1.8907982110977173,
+            "common_exactly_right": 0.0
           }
         },
         "cycle_start": {
           "error": 10.95121955871582,
           "exactly_right": 0.1463414579629898,
           "common_error": 18.829267501831055,
-          "samples": 41
+          "samples": 41,
+          "log_error": 0.6172635555267334,
+          "common_log_error": 1.858725905418396,
+          "common_exactly_right": 0.0
         },
         "cycle_length": {
           "error": 5.878048419952393,
           "exactly_right": 0.5365853309631348,
           "common_error": 9.09756088256836,
-          "samples": 41
+          "samples": 41,
+          "log_error": 0.4170651137828827,
+          "common_log_error": 1.1007945537567139,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.603960394859314,
@@ -739,20 +775,26 @@
         ],
         "stable": {
           "accuracy": 1.0,
-          "f1": 0.0,
+          "f1": 1.0,
           "share_yes": 0.0
         },
         "cycle_start": {
           "error": 7.400000095367432,
           "exactly_right": 0.0,
           "common_error": 11.600000381469727,
-          "samples": 5
+          "samples": 5,
+          "log_error": 0.5449596047401428,
+          "common_log_error": 1.3792665004730225,
+          "common_exactly_right": 0.0
         },
         "cycle_length": {
           "error": 11.40000057220459,
           "exactly_right": 0.0,
           "common_error": 17.80000114440918,
-          "samples": 5
+          "samples": 5,
+          "log_error": 0.7143434882164001,
+          "common_log_error": 1.355385422706604,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.48571428656578064,
@@ -893,20 +935,29 @@
             "error": 3.800830125808716,
             "exactly_right": 0.17427386343479156,
             "common_error": 6.6597514152526855,
-            "samples": 241
+            "samples": 241,
+            "log_error": 0.3306836783885956,
+            "common_log_error": 0.7534676194190979,
+            "common_exactly_right": 0.11618258059024811
           }
         },
         "cycle_start": {
           "error": 3.7423689365386963,
           "exactly_right": 0.33089134097099304,
           "common_error": 5.413919448852539,
-          "samples": 819
+          "samples": 819,
+          "log_error": 0.37970104813575745,
+          "common_log_error": 0.8334970474243164,
+          "common_exactly_right": 0.06593406945466995
         },
         "cycle_length": {
           "error": 8.897436141967773,
           "exactly_right": 0.17704518139362335,
           "common_error": 16.41514015197754,
-          "samples": 819
+          "samples": 819,
+          "log_error": 0.46340104937553406,
+          "common_log_error": 1.376085877418518,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.6456212401390076,
@@ -1045,20 +1096,29 @@
             "error": 1.389830470085144,
             "exactly_right": 0.33898305892944336,
             "common_error": 3.288135528564453,
-            "samples": 59
+            "samples": 59,
+            "log_error": 0.166710764169693,
+            "common_log_error": 0.5176215171813965,
+            "common_exactly_right": 0.20338982343673706
           }
         },
         "cycle_start": {
           "error": 1.6666667461395264,
           "exactly_right": 0.3333333432674408,
           "common_error": 3.883333444595337,
-          "samples": 60
+          "samples": 60,
+          "log_error": 0.20163211226463318,
+          "common_log_error": 0.6949122548103333,
+          "common_exactly_right": 0.10000000894069672
         },
         "cycle_length": {
           "error": 0.0833333358168602,
           "exactly_right": 0.9166666865348816,
           "common_error": 1.9833334684371948,
-          "samples": 60
+          "samples": 60,
+          "log_error": 0.033788762986660004,
+          "common_log_error": 0.6863894462585449,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.9416667222976685,
@@ -1197,20 +1257,29 @@
             "error": 2.6352200508117676,
             "exactly_right": 0.1320754736661911,
             "common_error": 4.213836193084717,
-            "samples": 159
+            "samples": 159,
+            "log_error": 0.3422797620296478,
+            "common_log_error": 0.6390557289123535,
+            "common_exactly_right": 0.10062892735004425
           }
         },
         "cycle_start": {
           "error": 2.3288888931274414,
           "exactly_right": 0.36888888478279114,
           "common_error": 3.9718518257141113,
-          "samples": 675
+          "samples": 675,
+          "log_error": 0.344448447227478,
+          "common_log_error": 0.730870246887207,
+          "common_exactly_right": 0.07111111283302307
         },
         "cycle_length": {
           "error": 8.078518867492676,
           "exactly_right": 0.12444444745779037,
           "common_error": 17.223703384399414,
-          "samples": 675
+          "samples": 675,
+          "log_error": 0.4501209855079651,
+          "common_log_error": 1.401330590248108,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.693625807762146,
@@ -1349,20 +1418,29 @@
             "error": 18.04347801208496,
             "exactly_right": 0.043478261679410934,
             "common_error": 32.21739196777344,
-            "samples": 23
+            "samples": 23,
+            "log_error": 0.671145498752594,
+            "common_log_error": 2.149397850036621,
+            "common_exactly_right": 0.0
           }
         },
         "cycle_start": {
           "error": 13.63636302947998,
           "exactly_right": 0.0,
           "common_error": 20.23636245727539,
-          "samples": 55
+          "samples": 55,
+          "log_error": 0.7377595901489258,
+          "common_log_error": 1.8354294300079346,
+          "common_exactly_right": 0.0
         },
         "cycle_length": {
           "error": 12.63636302947998,
           "exactly_right": 0.1090909093618393,
           "common_error": 16.472726821899414,
-          "samples": 55
+          "samples": 55,
+          "log_error": 0.9649521708488464,
+          "common_log_error": 1.4788212776184082,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.38983049988746643,
@@ -1495,20 +1573,26 @@
         ],
         "stable": {
           "accuracy": 1.0,
-          "f1": 0.0,
+          "f1": 1.0,
           "share_yes": 0.0
         },
         "cycle_start": {
           "error": 22.172412872314453,
           "exactly_right": 0.06896551698446274,
           "common_error": 14.034482955932617,
-          "samples": 29
+          "samples": 29,
+          "log_error": 0.8895771503448486,
+          "common_log_error": 1.6087355613708496,
+          "common_exactly_right": 0.0
         },
         "cycle_length": {
           "error": 39.10344696044922,
           "exactly_right": 0.0,
           "common_error": 27.34482765197754,
-          "samples": 29
+          "samples": 29,
+          "log_error": 0.7101407647132874,
+          "common_log_error": 2.0206074714660645,
+          "common_exactly_right": 0.0
         },
         "occurs": {
           "accuracy": 0.34228187799453735,

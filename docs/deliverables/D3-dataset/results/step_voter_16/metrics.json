@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "voter_16",
   "trained_on": "voter_16.npz",
-  "epoch": 58,
+  "epoch": 57,
   "parameters": 9666,
   "splits": {
     "test": {

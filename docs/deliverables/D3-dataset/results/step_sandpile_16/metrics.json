@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "sandpile_16",
   "trained_on": "sandpile_16.npz",
-  "epoch": 59,
+  "epoch": 58,
   "parameters": 47485,
   "splits": {
     "test": {
@@ -29,9 +29,9 @@
           {
             "n": 2,
             "model": {
-              "cells_correct": 0.9887304306030273,
-              "grids_correct": 0.4449999928474426,
-              "count_error": 2.3899998664855957
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
             },
             "copy": {
               "cells_correct": 0.7101757526397705,
@@ -46,9 +46,9 @@
           {
             "n": 4,
             "model": {
-              "cells_correct": 0.9401757717132568,
-              "grids_correct": 0.3499999940395355,
-              "count_error": 8.304999351501465
+              "cells_correct": 0.9935546517372131,
+              "grids_correct": 0.6699999570846558,
+              "count_error": 1.649999976158142
             },
             "copy": {
               "cells_correct": 0.6926562190055847,
@@ -63,9 +63,9 @@
           {
             "n": 8,
             "model": {
-              "cells_correct": 0.8783007860183716,
-              "grids_correct": 0.3349999785423279,
-              "count_error": 14.46500015258789
+              "cells_correct": 0.9523046612739563,
+              "grids_correct": 0.6699999570846558,
+              "count_error": 4.289999961853027
             },
             "copy": {
               "cells_correct": 0.6735742092132568,
@@ -80,9 +80,9 @@
           {
             "n": 16,
             "model": {
-              "cells_correct": 0.7455859184265137,
-              "grids_correct": 0.3349999785423279,
-              "count_error": 26.814998626708984
+              "cells_correct": 0.9162108898162842,
+              "grids_correct": 0.6699999570846558,
+              "count_error": 14.84999942779541
             },
             "copy": {
               "cells_correct": 0.6300390362739563,
@@ -97,9 +97,9 @@
           {
             "n": 32,
             "model": {
-              "cells_correct": 0.6585742235183716,
-              "grids_correct": 0.3349999785423279,
-              "count_error": 37.30999755859375
+              "cells_correct": 0.8852733969688416,
+              "grids_correct": 0.6699999570846558,
+              "count_error": 25.40999984741211
             },
             "copy": {
               "cells_correct": 0.5865234136581421,

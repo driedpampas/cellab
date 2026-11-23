@@ -35,7 +35,7 @@ the automaton. To be handed in: the question/answer sets used for training.
 ## Results
 
 ### 1. One-step network (`StepNet`) on all 256 elementary rules
-10,434 parameters, 40 epochs (11.8 s on L4; already exact by epoch 10).
+10,434 parameters, 40 epochs (10.4 s on L4; already exact by epoch 10).
 
 | Tested on | Runs | Cells correct at N = 64 | Grids completely correct at N = 64 | Copying the start (cells) |
 |---|---:|---:|---:|---:|
@@ -50,7 +50,7 @@ Numbers and charts: [`results/step_elementary/`](results/step_elementary/metrics
 `StepNet` has not memorised rules: it learned to read an 8-bit rule table and reproduces even unseen chaotic rules (Rule 30) without a single wrong cell 64 steps ahead, on rows twice as wide as training.
 
 ### 2. Five-questions network (`AnswerNet`, one pass) by Wolfram class
-437,865 parameters, 80 epochs on L4 with circular-shift augmentation, dropout, and clamped Kendall loss weights. Full report: [`results/answers_elementary/`](results/answers_elementary/metrics.json).
+437,865 parameters, 80 epochs on L4 (about 130 s) with circular-shift augmentation, dropout, and clamped Kendall loss weights. Seed 0 below; seeds 1 and 2 are within 0.5 points on cells at N = 64 (section 3). Full report: [`results/answers_elementary/`](results/answers_elementary/metrics.json).
 
 | Split | Wolfram class | Cells N = 1 | Cells N = 4 | Cells N = 16 | Cells N = 64 | Grids N = 64 | Copy baseline N = 64 | Stable F1 | Occurs F1 | Cycle length MAE (common) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -62,10 +62,10 @@ Numbers and charts: [`results/step_elementary/`](results/step_elementary/metrics
 | **unseen** (new families) | **1 uniform** | 0.985 | 0.940 | 0.977 | **0.978** | 0.952 | — | 0.973 | 0.953 | 0.03 (6.94) |
 | | **2 periodic** | 0.965 | 0.771 | 0.796 | **0.833** | 0.361 | — | 0.319 | 0.783 | 4.26 (9.32) |
 | | **3 chaotic** (incl. Rule 30) | 0.966 | 0.524 | 0.557 | **0.566** | 0.138 | — | 0.880 | 0.538 | 3071.93 (3074.53) |
-| | **4 complex** | 0.944 | 0.579 | 0.580 | **0.593** | 0.020 | — | — ¹ | 0.631 | 61.76 (63.05) |
+| | **4 complex** | 0.944 | 0.579 | 0.580 | **0.593** | 0.020 | — | 1.000 ¹ | 0.631 | 61.76 (63.05) |
 | | **All** | 0.964 | 0.720 | 0.745 | **0.773** | 0.321 | 0.657 | **0.600** | **0.741** | **494.46** (498.83) |
 
-¹ No unseen class-4 run becomes stable, and the network says "not stable" for all of them (accuracy 100%). The old F1 formula printed 0.000 there; `ml/evaluate.py` now gives 1.0 when there is no "yes" to find and none is claimed.
+¹ No unseen class-4 run becomes stable, and the network says "not stable" for all of them (accuracy 100%). F1 is 1.0 here by definition (no "yes" to find and none claimed); the earlier report printed 0.000.
 
 **Cycle length, read by class.** Over all classes, the cycle-length error is barely below always guessing the median (42.4 vs 43.8 seen, 494 vs 499 unseen). That average is dominated by a few huge chaotic cycles: Rule 30 on 16 cells has only five cycle lengths (1, 8, 40, 4,144 and 6,016), and which one a row ends in can only be found by running it. By class, the head works where the hypothesis says it should: class 1 is exactly right for 97–98% of runs (error 0.0 vs 7.0 for the median guess), class 2 has error 2.4 vs 9.2 (seen) and 4.3 vs 9.3 (unseen). Classes 3 and 4 have no skill (unseen chaotic: 3,072 vs 3,075). Section 2b shows that simulating with the learned step gets all of them exactly.
 
@@ -74,37 +74,46 @@ Numbers and charts: [`results/step_elementary/`](results/step_elementary/metrics
 ### 2b. All five answers by simulating with the learned step (`ml/simulate.py`)
 The one-step network is run until a row repeats (Brent's algorithm, every sample at once on the GPU), which gives the cycle start and length, whether the run becomes stable, whether each configuration occurs, and the rows after every N. Scored with the same code and splits as `AnswerNet`.
 
-> **Pending the v2 Colab run** (`simulated_elementary/`). A local check on every 4th class-3 and class-4 sample (650 runs, Rule 30 included, seen and unseen families) matched the dataset exactly: cycle length, cycle start, stable, occurs and cells at N = 64 all 100%.
+Full report: [`results/simulated_elementary/`](results/simulated_elementary/metrics.json) (16 cells), [`results/simulated_elementary_on_elementary_w32_test/`](results/simulated_elementary_on_elementary_w32_test/metrics.json) (32 cells).
+
+| Split | Runs | Cycle length exact | Cycle start exact | Stable accuracy | Occurs accuracy | Cells N = 64 |
+|---|---:|---:|---:|---:|---:|---:|
+| Seen rules (16 cells) | 4,360 | **100.0%** | **100.0%** | **100.0%** | **100.0%** | **100.0%** |
+| **Unseen rule families** (16 cells, incl. Rule 30) | 7,600 | **100.0%** | **100.0%** | **100.0%** | **100.0%** | **100.0%** |
+| Seen rules, 32 cells | 654 | **100.0%** | **100.0%** | **100.0%** | **100.0%** | **100.0%** |
+| Unseen rule families, 32 cells | 1,140 | **100.0%** | **100.0%** | **100.0%** | **100.0%** | **100.0%** |
+
+Every Wolfram class is exact, including unseen chaotic rules, where the one-pass cycle error is 3,072 steps (the median guess: 3,075). On the L4 this takes 41 s for both 16-cell splits (43,178 batched StepNet passes; cycles of up to 6,016 steps are followed to the end). Per-class table: "Cycle length by Wolfram class" in [`results/verification_report.md`](results/verification_report.md).
 
 This is the cleanest statement of the result: answering in one pass cannot predict chaotic cycles, while simulating with a network that learned the step predicts them exactly.
 
 ### 3. One shared network vs. five separate networks
 Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_single.png).
 
-> **Provisional — not a fair comparison yet.** The five single-question networks were trained before the regularization change (dropout, weight decay 5e-4, shift augmentation, clamped loss weights); only the shared network was retrained with it. Each side is also a single seed, and most differences below are 1–3 points. The v2 Colab run retrains all of them on the same code with 3 seeds and marks differences smaller than the run-to-run spread as "within noise".
+All eleven networks (one shared, five single-question) are trained on the same code with 3 seeds each. Mean ± standard deviation over the seeds. "Within noise" means the difference is smaller than the two standard deviations added, so no winner is claimed.
 
 | Split | Task | Metric | Shared (5 heads) | Separate (1 head) | Winner |
 |---|---|---|---:|---:|---|
-| `test` (seen rules) | `state` | cells correct (N=64) | 0.8877 | **0.9450** | Separate (+5.7 pts) |
-| | `count` | count MAE (N=64) | 0.5419 | **0.3953** | Separate |
-| | `stable` | F1 | **0.9935** | 0.9911 | **Shared** |
-| | `cycle` | cycle length MAE | 42.40 | **31.43** | Separate |
-| | `occurs` | F1 | **0.8551** | 0.8401 | **Shared** |
-| `unseen` (new families) | `state` | cells correct (N=64) | 0.7735 | **0.8019** | Separate (+2.8 pts) |
-| | `count` | count MAE (N=64) | **1.1886** | 1.4176 | **Shared** |
-| | `stable` | F1 | **0.6003** | 0.5176 | **Shared (+8.3 pts)** |
-| | `cycle` | cycle length MAE | **494.46** | 511.69 | **Shared** |
-| | `occurs` | F1 | **0.7414** | 0.7400 | **Shared** |
+| `test` (seen rules) | `state` | cells correct (N=64) | 0.890 ± 0.002 | **0.945 ± 0.001** | Separate (+5.5 pts) |
+| | `count` | count MAE (N=64) | 0.533 ± 0.008 | **0.410 ± 0.011** | Separate |
+| | `stable` | F1 | 0.992 ± 0.001 | 0.991 ± 0.002 | within noise |
+| | `cycle` | cycle length MAE | 37.8 ± 4.0 | 34.9 ± 0.7 | within noise |
+| | `occurs` | F1 | **0.858 ± 0.003** | 0.846 ± 0.004 | Shared (+1.2 pts) |
+| `unseen` (new families) | `state` | cells correct (N=64) | 0.779 ± 0.005 | **0.801 ± 0.004** | Separate (+2.2 pts) |
+| | `count` | count MAE (N=64) | 1.22 ± 0.05 | 1.41 ± 0.15 | within noise |
+| | `stable` | F1 | 0.660 ± 0.071 | 0.563 ± 0.029 | within noise |
+| | `cycle` | cycle length MAE | 496.4 ± 2.3 | 502.7 ± 8.5 | within noise |
+| | `occurs` | F1 | 0.718 ± 0.023 | 0.736 ± 0.004 | within noise |
 
-**Takeaway (provisional):** in this run, separate networks are better on `state`, `count` and `cycle` for seen rules, and the shared one is better on `stable` and `occurs`. On unseen families the shared one is ahead on 4 of 5, but the `occurs` difference (0.0014) is noise and both `cycle` errors are at the median-guess level (≈ 499). Wait for the v2 run before drawing a conclusion.
+**Takeaway:** sharing one network costs accuracy on the grid itself: separate networks are better on `state` (seen and unseen) and on `count` for seen rules. The shared network is only ahead on `occurs` for seen rules, by about one point. Everything else is a draw over 3 seeds. On unseen rules the shared network's `stable` F1 is higher on average (0.66 vs 0.56) but varies a lot between seeds, so it is not a result. Both `cycle` errors are at the median-guess level (≈ 499) on unseen rules; section 2b is the way to get cycles right.
 
 ### 3b. Gradient-boosting tabular baseline vs. `AnswerNet` (`elementary_w16`)
-`HistGradientBoosting` trained on tabular grid features + the 8 rule bits (7.8 s on CPU). Full report: [`results/gbdt_elementary/metrics.json`](results/gbdt_elementary/metrics.json).
+`HistGradientBoosting` trained on tabular grid features + the 8 rule bits. `AnswerNet` is seed 0. Full report: [`results/gbdt_elementary/metrics.json`](results/gbdt_elementary/metrics.json).
 
 | Split | Model | Count MAE (N=64) | Stable F1 | Cycle length MAE | Occurs F1 |
 |---|---|---:|---:|---:|---:|
 | `test` (seen rules) | `HistGradientBoosting` (GBDT) | 1.20 | 0.958 | **37.98** | 0.751 |
-| | **`AnswerNet` (CNN, 1 pass)** | **0.54** | **0.993** | 42.40 *(single: 31.43)* | **0.855** |
+| | **`AnswerNet` (CNN, 1 pass)** | **0.54** | **0.993** | 42.40 *(single: 34.9 ± 0.7)* | **0.855** |
 | `unseen` (new families) | `HistGradientBoosting` (GBDT) | 1.88 | 0.365 | 497.70 | 0.661 |
 | | **`AnswerNet` (CNN, 1 pass)** | **1.19** | **0.600** | **494.46** | **0.741** |
 
@@ -115,24 +124,26 @@ All 16 non-elementary automata (including decimal-valued `diffusion_16`) now hav
 
 | Automaton | `StepNet` N=1 | `StepNet` N=32 (grids) | `AnswerNet` N=1 | `AnswerNet` N=32 | `AnswerNet` vs best baseline | `AnswerNet` Stable F1 | `AnswerNet` Occurs F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `brians_brain_16` | **1.000** | **1.000 (1.000)** | 0.905 | 0.928 | +0.000 | 0.456 | 0.548 |
-| `crystal_growth_16` | **1.000** | **1.000 (1.000)** *(was 0.908)* | 1.000 | **0.991** | +0.587 | 1.000 | 0.879 |
-| `cyclic_16` | **1.000** | **1.000 (1.000)** | 0.915 | 0.906 | +0.127 | 0.972 | 0.667 |
-| `epidemic_16` | **1.000** | **1.000 (1.000)** *(was 0.025)* | 1.000 | **1.000** | +0.006 | 1.000 | 0.936 |
-| `falling_sand_16` | 0.979* | 0.750 (0.000)* | 0.976 | **0.974** | +0.223 | 0.971 | 0.685 |
-| `forest_fire_16` | **1.000** | **1.000 (1.000)** | 1.000 | **0.993** | +0.038 | 1.000 | 0.961 |
-| `game_of_life_16` | **1.000** | **1.000 (1.000)** | 0.996 | 0.865 | +0.000 | 0.634 | 0.693 |
-| `sandpile_16` | 1.000 | 0.659 (0.335)* | 0.999 | 0.785 | +0.198 | 1.000 | 1.000 |
-| `traffic_w16` | **1.000** | **1.000 (1.000)** | 1.000 | **1.000** | +0.190 | 1.000 | 0.967 |
-| `voter_16` | **1.000** | **1.000 (1.000)** | 0.999 | **0.988** | +0.359 | 1.000 | 0.901 |
-| `diffusion_16` *(float)* | **0.997** *(within 1.0)* | **0.805 (MAE 0.52 / 100)** | — | — | — | — | — |
-| `langtons_ant_16` *(layers)* | — | — | 1.000 | **0.968** | +0.018 | — | 1.000 |
-| `schelling_16` *(random)* | — | — | 0.807 | **0.965** | +0.351 | 0.975 | 1.000 |
-| `forest_fire_regrowth_16` *(random)* | — | — | 0.975 | 0.820 | +0.188 | 0.849 | 1.000 |
-| `predator_prey_16` *(random)* | — | — | 0.691 | **0.967** | +0.000 | 0.824 | 1.000 |
-| `ecosystem_16` *(random)* | — | — | 0.836 | 0.645 | +0.300 | 0.000 | 1.000 |
+| `brians_brain_16` | **1.000** | **1.000 (1.000)** | 0.991 | 0.928 | +0.000 ² | 0.448 | 0.668 |
+| `crystal_growth_16` | **1.000** | **1.000 (1.000)** | 1.000 | **0.993** | +0.590 | 1.000 | 0.785 |
+| `cyclic_16` | **1.000** | **1.000 (1.000)** | 0.882 | 0.892 | +0.113 | 0.966 | 0.267 |
+| `epidemic_16` | **1.000** | **1.000 (1.000)** | 1.000 | **1.000** | +0.007 | 1.000 | 0.667 |
+| `falling_sand_16` | 0.979* | 0.751 (0.000)* | 0.976 | **0.975** | +0.224 | 0.971 | 0.813 |
+| `forest_fire_16` | **1.000** | **1.000 (1.000)** | 1.000 | **0.993** | +0.039 | 1.000 | 0.936 |
+| `game_of_life_16` | **1.000** | **1.000 (1.000)** | 0.999 | 0.865 | +0.000 ² | 0.773 | 0.667 |
+| `sandpile_16` | 1.000 | 0.885 (0.670)* | 0.999 | 0.784 | +0.198 | 1.000 | 1.000 |
+| `traffic_w16` | **1.000** | **1.000 (1.000)** | 1.000 | **0.999** | +0.190 | 1.000 | 0.963 |
+| `voter_16` | **1.000** | **1.000 (1.000)** | 0.999 | **0.987** | +0.358 | 1.000 | 0.902 |
+| `diffusion_16` *(decimal)* | **0.998** *(within 1.0)* | **0.954 (MAE 0.32 / 100)** | 0.488 | 0.875 (MAE 0.49) | +0.564 | 1.000 | 1.000 |
+| `langtons_ant_16` *(layers)* | — | — | 1.000 | **0.967** | +0.017 | — | 1.000 |
+| `schelling_16` *(random)* | — | — | 0.803 | **0.964** | +0.350 | 0.975 | 1.000 |
+| `forest_fire_regrowth_16` *(random)* | — | — | 0.979 | 0.817 | +0.185 | 0.846 | 1.000 |
+| `predator_prey_16` *(random)* | — | — | 0.690 | 0.967 | +0.000 ² | 0.837 | 1.000 |
+| `ecosystem_16` *(random)* | — | — | 0.835 | 0.642 | +0.297 | 0.000 | 1.000 |
 
-**Diagnosing & fixing state-coverage shift (`StepNet`):** initially, `step_epidemic_16` scored `2.5%` and `step_crystal_growth_16` scored `90.8%` at `N=32` despite `100.0%` at `N=1` because `datasets/epidemic_16.json` had zero `INFECTED_3` cells at `gen 0` (and sparse crystal seeds). Extending `step_loss` to train on **both** `(gen 0 → gen 1)` and `(gen 1 → gen 2)` (already in every `.npz` file) raised **both to 100.0% exact grids at `N=32`** — bringing **8/10** deterministic discrete automata to 100.0% exact rollout!
+² No better than the best baseline at N = 32 (the verification marks these WARN). For Brian's Brain, Game of Life and predator-prey, the one-pass network has learned nothing beyond the baseline for far horizons; `StepNet` is exact for the first two.
+
+**Diagnosing & fixing state-coverage shift (`StepNet`):** initially, `step_epidemic_16` scored `2.5%` and `step_crystal_growth_16` scored `90.8%` at `N=32` despite `100.0%` at `N=1` because `datasets/epidemic_16.json` had zero `INFECTED_3` cells at `gen 0` (and sparse crystal seeds). Extending `step_loss` to train on **both** `(gen 0 → gen 1)` and `(gen 1 → gen 2)` (already in every `.npz` file) raised **both to 100.0% exact grids at `N=32`** This brings 8 of the 10 deterministic automata with whole-number states to 100.0% exact grids.
 
 *\*Remaining two `StepNet` limits:* `falling_sand_16` uses sequential agent-order updates (multi-cell cascades exceed a 1-layer 3×3 conv), and `sandpile_16` has 61 unbounded integer grain levels with rare late-stage toppling patterns.
 
@@ -142,15 +153,15 @@ Full reports: [`results/verification_report.md`](results/verification_report.md)
 | Workload | Method | Batch | L4 GPU (`ms/sample` · `samples/s`) | Laptop CPU (`ms/sample` · `samples/s`) |
 |---|---|---:|---:|---:|
 | Elementary 1D, `N=64` | `cellab` CPU simulator | 1 | 6.49 ms · 154 /s *(Colab CPU)* | 5.20 ms · 192 /s |
-| Elementary 1D, `N=64` | `StepNet` rollout | 1 / 256 | 30.8 ms (33 /s) · 0.124 ms (**8,086 /s**) | 16.0 ms (62 /s) · 0.943 ms (**1,060 /s**) |
-| Elementary 1D, `N=64` | **`AnswerNet` 1-pass (all 5 Qs)** | 1 / 256 | **4.64 ms (215 /s)** · **0.018 ms (56,217 /s)** | **2.64 ms (379 /s)** · **0.137 ms (7,313 /s)** |
-| 2D Game of Life, `N=32` | `cellab` CPU simulator | 1 | 9.52 ms · 105 /s *(Colab CPU)* | 4.99 ms · 200 /s |
-| 2D Game of Life, `N=32` | `StepNet` rollout | 64 | 0.249 ms · **4,016 /s** | 7.04 ms · 142 /s |
-| 2D Game of Life, `N=32` | **`AnswerNet` 1-pass (all 5 Qs)** | 64 | **0.077 ms · 13,068 /s** | **3.72 ms · 269 /s** |
+| Elementary 1D, `N=64` | `StepNet` rollout | 1 / 256 | 32.3 ms (31 /s) · 0.131 ms (**7,609 /s**) | 16.0 ms (62 /s) · 0.943 ms (**1,060 /s**) |
+| Elementary 1D, `N=64` | **`AnswerNet` 1-pass (all 5 Qs)** | 1 / 256 | **4.82 ms (207 /s)** · **0.019 ms (53,267 /s)** | **2.64 ms (379 /s)** · **0.137 ms (7,313 /s)** |
+| 2D Game of Life, `N=32` | `cellab` CPU simulator | 1 | 9.70 ms · 103 /s *(Colab CPU)* | 4.99 ms · 200 /s |
+| 2D Game of Life, `N=32` | `StepNet` rollout | 64 | 0.262 ms · **3,823 /s** | 7.04 ms · 142 /s |
+| 2D Game of Life, `N=32` | **`AnswerNet` 1-pass (all 5 Qs)** | 64 | **0.081 ms · 12,355 /s** | **3.72 ms · 269 /s** |
 
 **Read with care:** this is not a like-for-like race. The simulator here runs one grid at a time on the CPU and is not batched or vectorised; the networks run batches on the GPU; and `AnswerNet`'s answers are not exact (77% of cells at N = 64 on unseen rules). At batch 1, `StepNet` is about 5× slower than the simulator. Present it as the price of exactness, not as "the network is faster".
 
-Even on a laptop CPU with no GPU, `AnswerNet` answers all 5 questions in **2.64 ms** (`batch=1`, 2× faster than simulating 64 steps) and **7,313 samples/s** batched (38× faster). On an L4 GPU it reaches **56,217 samples/s** (**365×** faster than the simulator, **7×** faster than batched `StepNet` rollout) — quantifying the exact speed-vs-exactness trade-off.
+Even on a laptop CPU with no GPU, `AnswerNet` answers all 5 questions in **2.64 ms** (`batch=1`, 2× faster than simulating 64 steps) and **7,313 samples/s** batched (38× faster). On an L4 GPU it reaches **53,267 samples/s** (about **345×** the unbatched CPU simulator, **7×** batched `StepNet` rollout) — quantifying the exact speed-vs-exactness trade-off.
 
 ## Encoding (as planned in Deliverable 1)
 
@@ -177,6 +188,5 @@ python -m ml.verify results/
 ```
 
 ## Remaining for Deliverable 3
-- Run the v2 notebook (one code version for every model, 3 seeds, simulated answers) and replace the provisional numbers above.
 - Put the results and plots from [`results/`](results/) into the Lab 11 presentation slides.
 - Optional extra: direct LLM baseline on a sample of `data/qa_sample.jsonl`.

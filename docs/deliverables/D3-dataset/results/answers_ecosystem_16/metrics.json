@@ -2,7 +2,7 @@
   "kind": "answers",
   "dataset": "ecosystem_16",
   "trained_on": "ecosystem_16.npz",
-  "epoch": 79,
+  "epoch": 71,
   "parameters": 886797,
   "splits": {
     "test": {
@@ -12,9 +12,9 @@
           {
             "n": 1,
             "model": {
-              "cells_correct": 0.8360937237739563,
+              "cells_correct": 0.8349609375,
               "grids_correct": 0.0,
-              "count_error": 5.117447376251221
+              "count_error": 6.963978290557861
             },
             "copy": {
               "cells_correct": 0.6274218559265137,
@@ -29,9 +29,9 @@
           {
             "n": 2,
             "model": {
-              "cells_correct": 0.7088280916213989,
+              "cells_correct": 0.70863276720047,
               "grids_correct": 0.0,
-              "count_error": 7.345557689666748
+              "count_error": 8.742209434509277
             },
             "copy": {
               "cells_correct": 0.5681250095367432,
@@ -46,9 +46,9 @@
           {
             "n": 4,
             "model": {
-              "cells_correct": 0.5795312523841858,
+              "cells_correct": 0.5774218440055847,
               "grids_correct": 0.0,
-              "count_error": 9.723433494567871
+              "count_error": 12.835559844970703
             },
             "copy": {
               "cells_correct": 0.4291015565395355,
@@ -63,9 +63,9 @@
           {
             "n": 8,
             "model": {
-              "cells_correct": 0.664257824420929,
+              "cells_correct": 0.6625390648841858,
               "grids_correct": 0.0,
-              "count_error": 10.512155532836914
+              "count_error": 12.873849868774414
             },
             "copy": {
               "cells_correct": 0.3992968797683716,
@@ -80,9 +80,9 @@
           {
             "n": 16,
             "model": {
-              "cells_correct": 0.6635546684265137,
+              "cells_correct": 0.659960925579071,
               "grids_correct": 0.0,
-              "count_error": 11.495596885681152
+              "count_error": 12.247150421142578
             },
             "copy": {
               "cells_correct": 0.41207030415534973,
@@ -97,9 +97,9 @@
           {
             "n": 32,
             "model": {
-              "cells_correct": 0.6447656154632568,
+              "cells_correct": 0.6415234208106995,
               "grids_correct": 0.0,
-              "count_error": 43.955345153808594
+              "count_error": 45.61381149291992
             },
             "copy": {
               "cells_correct": 0.34492185711860657,
@@ -120,7 +120,10 @@
             "error": 5.0,
             "exactly_right": 0.0,
             "common_error": 4.0,
-            "samples": 1
+            "samples": 1,
+            "log_error": 0.16989898681640625,
+            "common_log_error": 0.13815021514892578,
+            "common_exactly_right": 0.0
           }
         },
         "occurs": {

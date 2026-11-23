@@ -2,7 +2,7 @@
   "kind": "answers",
   "dataset": "langtons_ant_16",
   "trained_on": "langtons_ant_16.npz",
-  "epoch": 80,
+  "epoch": 69,
   "parameters": 883753,
   "splits": {
     "test": {
@@ -12,9 +12,9 @@
           {
             "n": 1,
             "model": {
-              "cells_correct": 0.9999219179153442,
-              "grids_correct": 0.9800000190734863,
-              "count_error": 0.5810150504112244
+              "cells_correct": 0.9998437762260437,
+              "grids_correct": 0.9600000381469727,
+              "count_error": 0.6454728245735168
             },
             "copy": {
               "cells_correct": 0.99609375,
@@ -29,9 +29,9 @@
           {
             "n": 2,
             "model": {
-              "cells_correct": 0.9986718893051147,
-              "grids_correct": 0.6666666865348816,
-              "count_error": 0.6961073875427246
+              "cells_correct": 0.9987500309944153,
+              "grids_correct": 0.6800000071525574,
+              "count_error": 0.5796147584915161
             },
             "copy": {
               "cells_correct": 0.9921875,
@@ -47,8 +47,8 @@
             "n": 4,
             "model": {
               "cells_correct": 0.995312511920929,
-              "grids_correct": 0.41333335638046265,
-              "count_error": 0.8539685010910034
+              "grids_correct": 0.4266666769981384,
+              "count_error": 0.8498074412345886
             },
             "copy": {
               "cells_correct": 0.984375,
@@ -63,9 +63,9 @@
           {
             "n": 8,
             "model": {
-              "cells_correct": 0.9890625476837158,
+              "cells_correct": 0.989036500453949,
               "grids_correct": 0.3333333432674408,
-              "count_error": 1.0943629741668701
+              "count_error": 1.1128705739974976
             },
             "copy": {
               "cells_correct": 0.9773958325386047,
@@ -80,9 +80,9 @@
           {
             "n": 16,
             "model": {
-              "cells_correct": 0.9821614623069763,
+              "cells_correct": 0.9823958277702332,
               "grids_correct": 0.3333333432674408,
-              "count_error": 1.4877204895019531
+              "count_error": 1.507447600364685
             },
             "copy": {
               "cells_correct": 0.9668229222297668,
@@ -97,9 +97,9 @@
           {
             "n": 32,
             "model": {
-              "cells_correct": 0.9676041603088379,
+              "cells_correct": 0.9674218893051147,
               "grids_correct": 0.3333333432674408,
-              "count_error": 1.81842839717865
+              "count_error": 1.8971714973449707
             },
             "copy": {
               "cells_correct": 0.9500000476837158,

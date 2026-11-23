@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "cyclic_16",
   "trained_on": "cyclic_16.npz",
-  "epoch": 58,
+  "epoch": 59,
   "parameters": 10948,
   "splits": {
     "test": {

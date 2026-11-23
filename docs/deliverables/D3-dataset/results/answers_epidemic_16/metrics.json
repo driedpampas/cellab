@@ -12,9 +12,9 @@
           {
             "n": 1,
             "model": {
-              "cells_correct": 0.9997656345367432,
-              "grids_correct": 0.9466667175292969,
-              "count_error": 3.9950382709503174
+              "cells_correct": 0.9999739527702332,
+              "grids_correct": 0.9933333396911621,
+              "count_error": 4.164659023284912
             },
             "copy": {
               "cells_correct": 0.7561849355697632,
@@ -29,9 +29,9 @@
           {
             "n": 2,
             "model": {
-              "cells_correct": 0.9995182752609253,
-              "grids_correct": 0.9033333659172058,
-              "count_error": 5.901113510131836
+              "cells_correct": 0.9999219179153442,
+              "grids_correct": 0.9833333492279053,
+              "count_error": 6.537775039672852
             },
             "copy": {
               "cells_correct": 0.563255250453949,
@@ -46,9 +46,9 @@
           {
             "n": 4,
             "model": {
-              "cells_correct": 0.9879167079925537,
-              "grids_correct": 0.1899999976158142,
-              "count_error": 6.750413417816162
+              "cells_correct": 0.9939453601837158,
+              "grids_correct": 0.4000000059604645,
+              "count_error": 7.037785053253174
             },
             "copy": {
               "cells_correct": 0.285260409116745,
@@ -63,9 +63,9 @@
           {
             "n": 8,
             "model": {
-              "cells_correct": 0.9812500476837158,
-              "grids_correct": 0.2199999988079071,
-              "count_error": 4.331039905548096
+              "cells_correct": 0.9870052337646484,
+              "grids_correct": 0.2866666615009308,
+              "count_error": 4.855284214019775
             },
             "copy": {
               "cells_correct": 0.10669270902872086,
@@ -80,9 +80,9 @@
           {
             "n": 16,
             "model": {
-              "cells_correct": 0.9943619966506958,
-              "grids_correct": 0.7933333516120911,
-              "count_error": 1.1198407411575317
+              "cells_correct": 0.9960547089576721,
+              "grids_correct": 0.8133333325386047,
+              "count_error": 1.0040680170059204
             },
             "copy": {
               "cells_correct": 0.03098958358168602,
@@ -97,9 +97,9 @@
           {
             "n": 32,
             "model": {
-              "cells_correct": 0.9995573163032532,
-              "grids_correct": 0.9633333683013916,
-              "count_error": 0.20557284355163574
+              "cells_correct": 0.9997526407241821,
+              "grids_correct": 0.9700000286102295,
+              "count_error": 0.14414629340171814
             },
             "copy": {
               "cells_correct": 0.024205729365348816,
@@ -117,27 +117,36 @@
           "f1": 1.0,
           "share_yes": 1.0,
           "step": {
-            "error": 0.7200000286102295,
-            "exactly_right": 0.4466666877269745,
+            "error": 0.6966666579246521,
+            "exactly_right": 0.5,
             "common_error": 3.4666666984558105,
-            "samples": 300
+            "samples": 300,
+            "log_error": 0.04848876968026161,
+            "common_log_error": 0.25023549795150757,
+            "common_exactly_right": 0.09000000357627869
           }
         },
         "cycle_start": {
-          "error": 0.6600000262260437,
-          "exactly_right": 0.4633333384990692,
+          "error": 0.7366666793823242,
+          "exactly_right": 0.46666666865348816,
           "common_error": 3.4666666984558105,
-          "samples": 300
+          "samples": 300,
+          "log_error": 0.05159297585487366,
+          "common_log_error": 0.25023549795150757,
+          "common_exactly_right": 0.09000000357627869
         },
         "cycle_length": {
           "error": 0.0,
           "exactly_right": 1.0,
           "common_error": 0.0,
-          "samples": 300
+          "samples": 300,
+          "log_error": 0.0,
+          "common_log_error": 0.0,
+          "common_exactly_right": 1.0
         },
         "occurs": {
-          "accuracy": 0.9333333373069763,
-          "f1": 0.9356913183279743,
+          "accuracy": 0.5,
+          "f1": 0.6666666666666666,
           "share_yes": 0.5
         }
       }

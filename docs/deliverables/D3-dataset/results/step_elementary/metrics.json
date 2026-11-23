@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "elementary_w16",
   "trained_on": "elementary_w16.npz",
-  "epoch": 37,
+  "epoch": 39,
   "parameters": 10434,
   "splits": {
     "test": {

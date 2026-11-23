@@ -2,7 +2,7 @@
   "kind": "answers",
   "dataset": "crystal_growth_16",
   "trained_on": "crystal_growth_16.npz",
-  "epoch": 59,
+  "epoch": 67,
   "parameters": 882025,
   "splits": {
     "test": {
@@ -14,7 +14,7 @@
             "model": {
               "cells_correct": 0.9999739527702332,
               "grids_correct": 0.9933333396911621,
-              "count_error": 1.2526167631149292
+              "count_error": 1.396562933921814
             },
             "copy": {
               "cells_correct": 0.89704430103302,
@@ -29,9 +29,9 @@
           {
             "n": 2,
             "model": {
-              "cells_correct": 0.9994922280311584,
+              "cells_correct": 0.9995443224906921,
               "grids_correct": 0.9233333468437195,
-              "count_error": 1.4930145740509033
+              "count_error": 1.581015706062317
             },
             "copy": {
               "cells_correct": 0.8228906393051147,
@@ -46,9 +46,9 @@
           {
             "n": 4,
             "model": {
-              "cells_correct": 0.9981771111488342,
-              "grids_correct": 0.7800000309944153,
-              "count_error": 2.1860568523406982
+              "cells_correct": 0.9992578625679016,
+              "grids_correct": 0.8766666650772095,
+              "count_error": 2.219465732574463
             },
             "copy": {
               "cells_correct": 0.6610547304153442,
@@ -63,9 +63,9 @@
           {
             "n": 8,
             "model": {
-              "cells_correct": 0.9935937523841858,
-              "grids_correct": 0.6133333444595337,
-              "count_error": 2.4802072048187256
+              "cells_correct": 0.9959505200386047,
+              "grids_correct": 0.6866666674613953,
+              "count_error": 2.41876220703125
             },
             "copy": {
               "cells_correct": 0.49065104126930237,
@@ -80,9 +80,9 @@
           {
             "n": 16,
             "model": {
-              "cells_correct": 0.9905989766120911,
-              "grids_correct": 0.6466667056083679,
-              "count_error": 2.786541700363159
+              "cells_correct": 0.9930078387260437,
+              "grids_correct": 0.6600000262260437,
+              "count_error": 2.4539215564727783
             },
             "copy": {
               "cells_correct": 0.4039192795753479,
@@ -97,9 +97,9 @@
           {
             "n": 32,
             "model": {
-              "cells_correct": 0.9907031655311584,
-              "grids_correct": 0.6666666865348816,
-              "count_error": 2.6835250854492188
+              "cells_correct": 0.9931380152702332,
+              "grids_correct": 0.6700000166893005,
+              "count_error": 2.4026973247528076
             },
             "copy": {
               "cells_correct": 0.4034374952316284,
@@ -117,27 +117,36 @@
           "f1": 1.0,
           "share_yes": 1.0,
           "step": {
-            "error": 0.9700000286102295,
-            "exactly_right": 0.38333335518836975,
+            "error": 0.9266666769981384,
+            "exactly_right": 0.36666667461395264,
             "common_error": 3.37333345413208,
-            "samples": 300
+            "samples": 300,
+            "log_error": 0.07683427631855011,
+            "common_log_error": 0.3075794577598572,
+            "common_exactly_right": 0.09000000357627869
           }
         },
         "cycle_start": {
-          "error": 0.9600000381469727,
-          "exactly_right": 0.36666667461395264,
+          "error": 0.9133333563804626,
+          "exactly_right": 0.3733333349227905,
           "common_error": 3.37333345413208,
-          "samples": 300
+          "samples": 300,
+          "log_error": 0.07582923024892807,
+          "common_log_error": 0.3075794577598572,
+          "common_exactly_right": 0.09000000357627869
         },
         "cycle_length": {
           "error": 0.0,
           "exactly_right": 1.0,
           "common_error": 0.0,
-          "samples": 300
+          "samples": 300,
+          "log_error": 0.0,
+          "common_log_error": 0.0,
+          "common_exactly_right": 1.0
         },
         "occurs": {
-          "accuracy": 0.8683333396911621,
-          "f1": 0.879019908116386,
+          "accuracy": 0.7383333444595337,
+          "f1": 0.784636488340192,
           "share_yes": 0.5
         }
       }

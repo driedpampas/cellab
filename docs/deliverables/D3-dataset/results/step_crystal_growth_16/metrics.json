@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "crystal_growth_16",
   "trained_on": "crystal_growth_16.npz",
-  "epoch": 25,
+  "epoch": 58,
   "parameters": 9666,
   "splits": {
     "test": {
@@ -17,7 +17,7 @@
               "count_error": 0.0
             },
             "copy": {
-              "cells_correct": 0.8970442414283752,
+              "cells_correct": 0.89704430103302,
               "grids_correct": 0.013333333656191826,
               "count_error": 26.356666564941406
             },
@@ -51,12 +51,12 @@
               "count_error": 0.0
             },
             "copy": {
-              "cells_correct": 0.6610546708106995,
+              "cells_correct": 0.6610547304153442,
               "grids_correct": 0.013333333656191826,
-              "count_error": 86.7699966430664
+              "count_error": 86.77000427246094
             },
             "common": {
-              "cells_correct": 0.6282551884651184,
+              "cells_correct": 0.6282552480697632,
               "grids_correct": 0.013333333656191826
             }
           },
@@ -70,7 +70,7 @@
             "copy": {
               "cells_correct": 0.49065104126930237,
               "grids_correct": 0.013333333656191826,
-              "count_error": 130.39332580566406
+              "count_error": 130.39334106445312
             },
             "common": {
               "cells_correct": 0.4578515589237213,
@@ -107,7 +107,7 @@
               "count_error": 152.72000122070312
             },
             "common": {
-              "cells_correct": 0.37063801288604736,
+              "cells_correct": 0.37063804268836975,
               "grids_correct": 0.013333333656191826
             }
           }

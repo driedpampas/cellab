@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "traffic_w16",
   "trained_on": "traffic_w16.npz",
-  "epoch": 54,
+  "epoch": 52,
   "parameters": 8898,
   "splits": {
     "test": {
