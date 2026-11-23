@@ -1,0 +1,20 @@
+<section id="folders" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">The project folder</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Where everything is</h2>
+</div>
+<div style="display:flex;gap:32px;flex:1">
+<div style="flex:1;background:#16202B;border-radius:16px;padding:36px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.55;color:#E3E8EC">CelLab/<br>├─ automata/&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8a96a3">13 automata: WHAT they are</span><br>├─ experiments/&#160;&#160;&#160;<span style="color:#8a96a3">19 runs: WHAT TO DO with them</span><br>├─ src/cellab/&#160;&#160;&#160;&#160;<span style="color:#8a96a3">the code (19 modules)</span><br>├─ tests/&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8a96a3">195 tests + reference.py</span><br>├─ docs/<br>│&#160;&#160;├─ GUIDE.md&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8a96a3">the code, file by file</span><br>│&#160;&#160;└─ FILE_FORMATS.md&#160;<span style="color:#8a96a3">how to write inputs</span><br>├─ runs/&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8a96a3">made by runs, not in git</span><br>├─ pyproject.toml&#160;<span style="color:#8a96a3">the `cellab` command</span><br>└─ requirements.txt</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#5F6873;font-weight:600">src/cellab, by layer</p>
+<div style="display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:18px 22px"><p style="font-size:24px;font-weight:600">1 · Loading</p><p style="font-family:'IBM Plex Mono', monospace;font-size:24px;color:#2B5C99">errors loading states grids automaton experiment</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:18px 22px"><p style="font-size:24px;font-weight:600">2 · Rules</p><p style="font-family:'IBM Plex Mono', monospace;font-size:24px;color:#2B5C99">expressions rules neighbourhood</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#FCE9DD;border:1px solid #B04A1A;border-radius:12px;padding:18px 22px"><p style="font-size:24px;font-weight:600">3 · One step</p><p style="font-family:'IBM Plex Mono', monospace;font-size:24px;color:#2B5C99">engine randomness</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:18px 22px"><p style="font-size:24px;font-weight:600">4 · A run</p><p style="font-family:'IBM Plex Mono', monospace;font-size:24px;color:#2B5C99">runner fingerprints questions storage</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:18px 22px"><p style="font-size:24px;font-weight:600">5 · Outside</p><p style="font-family:'IBM Plex Mono', monospace;font-size:24px;color:#2B5C99">cli render</p></div>
+</div>
+</div>
+<aside>Two kinds of input file, one package, one test folder, two documents. Each layer of the package only uses the layers above it: the engine never reads files, and the command line holds no logic of its own. docs/GUIDE.md has a table describing every module in one line.</aside>
+</section>

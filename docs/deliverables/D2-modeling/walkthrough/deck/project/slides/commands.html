@@ -1,0 +1,17 @@
+<section id="commands" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">The command line · cli.py</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Six commands, no logic of their own</h2>
+</div>
+<table style="font-size:26px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:40%;text-align:left">Command</th><th style="width:60%;text-align:left">What it does</th></tr>
+<tr><td style="font-family:'IBM Plex Mono', monospace">cellab check FILE...</td><td>validate automaton and experiment files</td></tr>
+<tr><td style="font-family:'IBM Plex Mono', monospace">cellab run EXPERIMENT</td><td>start a run, answer the questions, save the folder</td></tr>
+<tr><td style="font-family:'IBM Plex Mono', monospace">cellab resume FOLDER</td><td>continue from the last checkpoint (--steps N: go further)</td></tr>
+<tr><td style="font-family:'IBM Plex Mono', monospace">cellab answers FOLDER</td><td>print a finished run’s answers again</td></tr>
+<tr><td style="font-family:'IBM Plex Mono', monospace">cellab show FOLDER</td><td>print one stored generation (--step K)</td></tr>
+<tr><td style="font-family:'IBM Plex Mono', monospace">cellab render FOLDER</td><td>pictures: first.png, last.png, run.gif or spacetime.png</td></tr>
+</table>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Options for run and resume: <b>--seed</b>, <b>--steps</b>, <b>--stop-at</b> (stop cleanly at a step), <b>--trace</b> (print fingerprints), <b>--show</b> (print every grid).</p>
+<aside>Each command parses its arguments and calls the library. Library errors are printed as one line starting with "error:", never as a Python traceback, and the exit code is 1. This separation means a graphical interface later can call exactly the same functions: load_experiment, Run.start, run.advance and render_run.</aside>
+</section>

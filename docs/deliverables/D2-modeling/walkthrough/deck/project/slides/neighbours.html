@@ -1,0 +1,16 @@
+<section id="neighbours" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Neighbours · neighbourhood.py</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Every neighbour is the grid shifted: no loops over cells</h2>
+</div>
+<div style="background:#16202B;border-radius:16px;padding:32px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.4;color:#E3E8EC">class GridViews:<br>&#160;&#160;&#160;&#160;def __init__(self, grid: np.ndarray, radius: int, edge_mode: str, edge_value):<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.shape = grid.shape<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.radius = radius<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if edge_mode == "wrap":<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.padded = np.pad(grid, radius, mode="wrap")<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;else:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.padded = np.pad(grid, radius, mode="constant", constant_values=edge_value)<br>&#160;&#160;&#160;&#160;def at(self, offset: tuple[int, ...]) -&gt; np.ndarray:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"""The value of the neighbour at `offset`, for every cell at once."""<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;slices = tuple(slice(self.radius + d, self.radius + d + n) for d, n in zip(offset, self.shape))<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return self.padded[slices]</p>
+</div>
+<div style="display:flex;gap:32px;align-items:start">
+<div style="background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:24px 32px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#16202B">row:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;a b c d e<br>padded (wrap):&#160;&#160;e <b>a b c d e</b> a<br>view "left":&#160;&#160;&#160;&#160;e a b c d&#160;&#160;<span style="color:#5F6873">each cell sees its left</span><br>view "right":&#160;&#160;&#160;b c d e a&#160;&#160;<span style="color:#5F6873">each cell sees its right</span></p>
+</div>
+<p style="flex:1;font-size:26px;line-height:1.45;color:#3F4A55">Pad once, then each neighbour is a <b>slice</b>: NumPy hands back a view of the same memory, with no copying.</p>
+</div>
+<aside>The grid is padded by "radius" cells: copied from the other side for wrap-around edges, or filled with the fixed edge value. Then at(offset) cuts the padded grid at a shifted position, and at every position that slice holds the neighbour at that offset. The same code works for 1D and 2D, and for any list of offsets. The rule language uses it for names like north and left, and for count/sum/mean over the neighbourhood.</aside>
+</section>

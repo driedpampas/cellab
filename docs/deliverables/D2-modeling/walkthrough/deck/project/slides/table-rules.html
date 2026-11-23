@@ -1,0 +1,20 @@
+<section id="table-rules" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Table rules · rules.py · used by Rule 30</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">A pattern table becomes a lookup in an array</h2>
+</div>
+<div style="background:#16202B;border-radius:16px;padding:32px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.45;color:#E3E8EC">def evaluate(self, ctx: EvalContext) -&gt; tuple[np.ndarray, np.ndarray]:<br>&#160;&#160;&#160;&#160;<span style="color:#8a96a3"># Each pattern becomes a number ("code"), like reading the cells as digits in base `base`.</span><br>&#160;&#160;&#160;&#160;code = np.zeros(ctx.shape, dtype=np.int64)<br>&#160;&#160;&#160;&#160;for offset in self.offsets:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cell = ctx.grid if not any(offset) else ctx.views.at(offset)<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;code = code * self.base + (cell.astype(np.int64) - self.lowest)<br>&#160;&#160;&#160;&#160;return self.listed[code], self.results[code]</p>
+</div>
+<div style="display:flex;gap:32px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-size:28px;font-weight:600">One cell, worked through</h3>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.5;color:#16202B">(left, self, right) = (1, 0, 0)<br>code = ((1)·2 + 0)·2 + 0 = <b>4</b><br>results[4] = <b>1</b>&#160;&#160;<span style="color:#5F6873">("100": 1 in Rule 30)</span></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:28px">
+<h3 style="font-size:28px;font-weight:600">Built once, when the file is loaded</h3>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.5;color:#16202B">code:&#160;&#160;&#160;&#160;0 1 2 3 <span style="color:#B04A1A">4</span> 5 6 7<br>results: 0 1 1 1 <span style="color:#B04A1A">1</span> 0 0 0<br>listed:&#160;&#160;all 8 patterns listed</p>
+</div>
+</div>
+<aside>The table in rule30.json lists the 8 patterns of (left, self, right), just like the brief. When the file is loaded, build_table_rule turns it into two arrays: listed (is this pattern in the table?) and results (what it produces). At run time, every cell's pattern is turned into its code at once, and two array lookups give the answer. Patterns not listed fall through to the next rule.</aside>
+</section>

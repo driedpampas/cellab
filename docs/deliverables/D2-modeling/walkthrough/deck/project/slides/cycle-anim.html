@@ -1,0 +1,15 @@
+<section id="cycle-anim" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Animated · Rule 30 on a ring of 8 cells, real fingerprints</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Finding the cycle, and what it tells us</h2>
+</div>
+<div style="display:flex;gap:40px;align-items:start">
+<img src="/_blob/8ee4ed823313b34dc4136a85bbdd45c0" alt="Animation: each generation of Rule 30 on 8 cells with its fingerprint; at step 41 the fingerprint of step 1 returns, giving a cycle of length 40" style="width:1184px;height:666px;object-fit:contain;border-radius:12px;border:1px solid #DDD9CF">
+<div style="flex:1;display:flex;flex-direction:column;gap:22px">
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Step 41 has the fingerprint of step 1.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">The rules are deterministic, so from step 1 the run repeats every 40 steps <b>forever</b>.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">One repeat answers stable, cycle, occurs, and any “state after N”.</p>
+</div>
+</div>
+<aside>This is the key fact from Deliverable 1: a finite grid has finitely many states, so a deterministic run must eventually repeat. Once it does, we know the entire future without simulating it. The jump formula on the last frame was checked in tests/test_questions.py against 12,345 directly simulated steps.</aside>
+</section>

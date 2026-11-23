@@ -1,0 +1,20 @@
+<section id="experiment-file" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Input file 2 · experiments/forest_fire_brief.json</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">An experiment file says what to do with it</h2>
+</div>
+<div style="display:flex;gap:40px;flex:1">
+<div style="width:960px;background:#16202B;border-radius:16px;padding:36px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3E8EC">{<br>&#160;&#160;"name": "Forest fire, grid from the brief",<br>&#160;&#160;"automaton": "../automata/forest_fire.json",<br>&#160;&#160;"initial": {<br>&#160;&#160;&#160;&#160;"type": "text",<br>&#160;&#160;&#160;&#160;"rows": ["TTTT.", "TT.TT", ".TFTT", "TTTTT"],<br>&#160;&#160;&#160;&#160;"legend": {"T": "TREE", "F": "FIRE", ".": "EMPTY"}<br>&#160;&#160;},<br>&#160;&#160;"steps": 8,<br>&#160;&#160;"max_steps": 1000,<br>&#160;&#160;"questions": [<br>&#160;&#160;&#160;&#160;{"ask": "state_after", "n": 2},<br>&#160;&#160;&#160;&#160;{"ask": "stable"},<br>&#160;&#160;&#160;&#160;{"ask": "occurs", "rows": ["T....", ...]},<br>&#160;&#160;&#160;&#160;{"ask": "count_after", "n": 3, "value": "TREE"},<br>&#160;&#160;&#160;&#160;{"ask": "cycle"}<br>&#160;&#160;]<br>}</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">automaton</b>: which file to run. One automaton, many experiments.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">initial</b>: generation 0, drawn as text (or “random”, or “single”).</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">steps</b>: generations to simulate and store.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">max_steps</b>: how far the run may go to answer questions.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">questions</b>: the brief’s five, with their parameters (n, value, rows).</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">Not shown: <b style="color:#16202B">seed</b>, <b style="color:#16202B">store_generations</b>, <b style="color:#16202B">checkpoint_every</b>, <b style="color:#16202B">parameters</b>.</p>
+</div>
+</div>
+<aside>This file is the "experiment parameters" part of the deliverable, including the parameters of the five questions. Without a seed, the run picks one and writes it into its run folder, so the run can always be repeated. "parameters" can override the automaton's own parameters, e.g. which elementary rule to run.</aside>
+</section>

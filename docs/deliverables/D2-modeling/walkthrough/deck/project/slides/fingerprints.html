@@ -1,0 +1,22 @@
+<section id="fingerprints" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:30px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Hashes over states (max score) · fingerprints.py</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">A 16-byte fingerprint for every generation</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="background:#16202B;border-radius:16px;padding:28px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.45;color:#E3E8EC">def fingerprint(grid: np.ndarray) -&gt; bytes:<br>&#160;&#160;&#160;&#160;h = hashlib.blake2b(digest_size=FINGERPRINT_SIZE)<br>&#160;&#160;&#160;&#160;h.update(f"{grid.shape}|{grid.dtype.str}|".encode())<br>&#160;&#160;&#160;&#160;h.update(np.ascontiguousarray(grid).tobytes())<br>&#160;&#160;&#160;&#160;return h.digest()</p>
+</div>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Same grid → same 16 bytes. Two different grids collide with probability about <b>1 in 2¹²⁸</b>.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Comparing 16 bytes is much cheaper than comparing whole grids, and storing them is cheap: a million steps take 16 MB.</p>
+</div>
+<div style="flex:1.15;display:flex;flex-direction:column;gap:16px">
+<div style="background:#16202B;border-radius:16px;padding:28px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.45;color:#E3E8EC">def record(self, fp: bytes) -&gt; None:<br>&#160;&#160;&#160;&#160;step = len(self.fingerprints)<br>&#160;&#160;&#160;&#160;if fp in self.first_seen:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if self.repeat is None:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.repeat = (self.first_seen[fp], step)<br>&#160;&#160;&#160;&#160;else:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.first_seen[fp] = step<br>&#160;&#160;&#160;&#160;if (self.standstill is None and self.fingerprints<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;and fp == self.fingerprints[-1]):<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;self.standstill = step<br>&#160;&#160;&#160;&#160;self.fingerprints.append(fp)</p>
+</div>
+<p style="font-size:24px;line-height:1.45;color:#3F4A55"><b>first_seen</b>: fingerprint → first step · <b>repeat</b>: first (earlier, later) pair · <b>standstill</b>: first step equal to the one before</p>
+</div>
+</div>
+<aside>History.record is called once per generation, step 0 included. Three small facts are all the five questions need: the first step each fingerprint appeared, the first time any fingerprint comes back (a repeat), and the first time a grid equals the grid just before it (a standstill). The if in record is wrapped over two lines here to fit the slide; in the file it is one line.</aside>
+</section>

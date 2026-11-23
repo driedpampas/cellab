@@ -1,0 +1,14 @@
+<section id="generality" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:30px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">“Nimic specific unui automat în cod” · tests/test_generality.py</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">A test that proves the code knows no automaton</h2>
+</div>
+<div style="background:#16202B;border-radius:16px;padding:28px 32px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.45;color:#E3E8EC">def test_no_state_name_from_any_example_appears_in_the_code():<br>&#160;&#160;&#160;&#160;names = state_names()<span style="color:#8a96a3">&#160;&#160;# every state name in automata/*.json (3+ letters)</span><br>&#160;&#160;&#160;&#160;assert len(names) &gt; 10<span style="color:#8a96a3">&#160;&#160;# the check is not vacuous</span><br>&#160;&#160;&#160;&#160;for path in (ROOT / "src" / "cellab").glob("*.py"):<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;code = path.read_text(encoding="utf-8")<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;found = sorted(name for name in names if re.search(rf"\b{re.escape(name)}\b", code))<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;assert not found, f"{path.name} mentions {found}"</p>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FCE9DD;border:1px solid #B04A1A;border-radius:12px;padding:28px"><h3 style="font-size:28px;font-weight:600">It caught a real slip</h3><p style="font-size:24px;line-height:1.45;color:#3F4A55">The first time it ran, it failed: an example in a docstring in grids.py said “TREE”. Harmless, but exactly the kind of leak it exists to catch. Fixed with neutral names (STATE_X).</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:12px;padding:28px"><h3 style="font-size:28px;font-weight:600">What it checks</h3><p style="font-size:24px;line-height:1.45;color:#3F4A55">EMPTY, TREE, FIRE, OFF, FIRING, DYING, CRYSTAL, CAR, DEAD, ALIVE, SUSCEPTIBLE… none may appear anywhere in src/cellab, not even in comments.</p></div>
+</div>
+<aside>The professor's note said nothing in the code should be specific to one automaton. This test makes that mechanical: it collects every state name used by our example files and fails if any of them appears in the engine's source code. The grey comment on the second line was added for the slide. A second test in the same file runs every example experiment, so every automaton is exercised on each test run.</aside>
+</section>

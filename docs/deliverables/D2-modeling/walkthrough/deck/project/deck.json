@@ -1,0 +1,22 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-30T20:00:00Z"},
+  "lists": "css",
+  "title": "CelLab D2: how it works",
+  "order": ["cover", "checklist", "big-picture", "folders", "automaton-file", "experiment-file", "loading", "check-demo", "rule-language", "rule-eval", "neighbours", "aggregates", "engine-code", "engine-anim", "table-rules", "states", "fingerprints", "cycle-anim", "questions", "never", "randomness", "run-folder", "run-loop", "resume-code", "resume-anim", "resume-proof", "commands", "run-demo", "gallery", "one-d", "generality", "tests", "tests-proof", "caught", "speed", "future", "not-done", "try-it"],
+  "sections": {
+    "intro": {"description": "What Deliverable 2 asked for and the shape of the whole system", "start": "cover"},
+    "input": {"description": "The input files and how they are checked", "start": "automaton-file"},
+    "rules": {"description": "The rule language and how one step is computed", "start": "rule-language"},
+    "questions": {"description": "Fingerprints, cycles and the five questions", "start": "fingerprints"},
+    "runs": {"description": "Randomness, run folders, stopping and resuming", "start": "randomness"},
+    "proof": {"description": "Commands, automata gallery, tests and what they caught", "start": "commands"},
+    "next": {"description": "Speed, future changes, open work and a cheat sheet", "start": "speed"}
+  },
+  "faces": {
+    "space-grotesk": {"family": "Space Grotesk", "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"},
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"},
+    "ibm-plex-mono": {"family": "IBM Plex Mono", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"}
+  },
+  "designSystems": []
+}

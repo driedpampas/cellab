@@ -1,0 +1,15 @@
+<section id="resume-proof" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Proof · real terminal output · random forest fire, seed 5</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Stopped at 120, resumed, and compared with Windows’ own tool</h2>
+</div>
+<div style="display:flex;gap:40px;align-items:start">
+<img src="/_blob/7ebb8465692a03bd8eb7c0e3a37adda5" alt="Recording: one straight run to step 500, one run stopped at step 120 and resumed to 500, then fc /b reports no differences in generations.bin and answers.json" style="width:1280px;height:684px;object-fit:contain;border-radius:12px">
+<div style="flex:1;display:flex;flex-direction:column;gap:22px">
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Run A goes straight to step 500.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Run B stops at 120, then resumes.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55"><b>fc /b</b> compares the files byte by byte: <b>no differences</b>, in 501 stored generations.</p>
+</div>
+</div>
+<aside>This automaton uses random numbers (regrowth and lightning), so the result only matches if the random generator also continues exactly where it stopped. fc is Windows' built-in file comparison tool, so this check doesn't depend on our own code. --stop-at takes the same path as pressing Ctrl+C.</aside>
+</section>

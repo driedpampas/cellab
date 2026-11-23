@@ -1,0 +1,19 @@
+<section id="engine-anim" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Animated · generation 0 → 1 of the brief’s forest fire</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">The step function, one stage at a time</h2>
+</div>
+<div style="display:flex;gap:40px;align-items:start">
+<img src="/_blob/59ba0c04518638e980159c07461166df" alt="Animation in 7 stages: old grid, padded grid, four shifted views, count of burning neighbours, rule 0 mask, rule 1 mask, new grid" style="width:1184px;height:666px;object-fit:contain;border-radius:12px;border:1px solid #DDD9CF">
+<div style="flex:1;display:flex;flex-direction:column;gap:18px">
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>1</b> old grid</p>
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>2</b> padded once</p>
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>3</b> one shifted view per neighbour</p>
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>4</b> count(FIRE) from the views</p>
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>5</b> rule 0 claims 1 cell</p>
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>6</b> rule 1 claims 3 cells</p>
+<p style="font-size:24px;line-height:1.4;color:#3F4A55"><b>7</b> the rest keep their value</p>
+</div>
+</div>
+<aside>Every grid in this animation was computed by the real engine on the brief's starting grid. Stage 6 shows "first rule wins": the fire cell matched rule 0, so rule 1 can't touch it (crossed out). The result in stage 7 is generation 1, and tests/test_known_results.py checks it, along with generations 2 and 3.</aside>
+</section>

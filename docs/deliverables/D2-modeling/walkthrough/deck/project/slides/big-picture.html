@@ -1,0 +1,15 @@
+<section id="big-picture" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">The big picture</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">What happens when you run an experiment</h2>
+</div>
+<div style="display:flex;gap:40px;align-items:start">
+<img src="/_blob/2340b308ce11ecae3c1267f37279db8c" alt="Animation: the stages of a run, from input files through loading, starting, the step loop, fingerprints, checkpoints and questions, to the answers" style="width:1184px;height:666px;object-fit:contain;border-radius:12px;border:1px solid #DDD9CF">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Two text files go in. Answers, pictures and a saved run come out.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">The orange part is the loop that repeats every step: compute, fingerprint, save, check the questions.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Blue names are the files holding that stage’s code.</p>
+</div>
+</div>
+<aside>The animation walks through the stages in order. Everything before engine.step happens once. The four highlighted stages at the end form the loop that runs once per generation. The run stops when the experiment's steps are done and every question has an answer, or when max_steps is reached.</aside>
+</section>

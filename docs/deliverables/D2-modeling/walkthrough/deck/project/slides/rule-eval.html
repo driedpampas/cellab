@@ -1,0 +1,15 @@
+<section id="rule-eval" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Animated · real values from the brief’s forest fire</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">How a rule is evaluated for every cell at once</h2>
+</div>
+<div style="display:flex;gap:40px;align-items:start">
+<img src="/_blob/13a30b845eded17e57453c31da38e77c" alt="Animation: the expression tree of 'self == TREE and count(FIRE) >= 1', evaluated bottom-up, with the grid each node produces" style="width:1184px;height:666px;object-fit:contain;border-radius:12px;border:1px solid #DDD9CF">
+<div style="flex:1;display:flex;flex-direction:column;gap:22px">
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Each node of the tree is evaluated from the bottom up.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">A node’s value is a <b>whole grid</b>: “self == TREE” is True or False for all 20 cells at once.</p>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">The top grid says where the rule applies: the 3 trees touching the fire.</p>
+</div>
+</div>
+<aside>This is the core trick that keeps the engine simple and fast: the evaluator never loops over cells. Names stand for whole grids (self is the grid, north is the grid shifted by one row, FIRE is the number 2), and NumPy applies every operator to all cells together. "and" combines two True/False grids cell by cell.</aside>
+</section>

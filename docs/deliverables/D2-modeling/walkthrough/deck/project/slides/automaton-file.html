@@ -1,0 +1,20 @@
+<section id="automaton-file" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Input file 1 · automata/forest_fire.json</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">An automaton file says what the automaton is</h2>
+</div>
+<div style="display:flex;gap:40px;flex:1">
+<div style="width:960px;background:#16202B;border-radius:16px;padding:36px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.55;color:#E3E8EC">{<br>&#160;&#160;"name": "Forest fire",<br>&#160;&#160;"dimensions": 2,<br>&#160;&#160;"states": <span style="color:#F0894E">["EMPTY", "TREE", "FIRE"]</span>,<br>&#160;&#160;"neighbourhood": "von_neumann",<br>&#160;&#160;"edges": {"type": "fixed", "value": "EMPTY"},<br>&#160;&#160;"rules": [<br>&#160;&#160;&#160;&#160;{"when": <span style="color:#F0894E">"self == FIRE"</span>, "then": "EMPTY"},<br>&#160;&#160;&#160;&#160;{"when": <span style="color:#F0894E">"self == TREE and count(FIRE) &gt;= 1"</span>,<br>&#160;&#160;&#160;&#160;&#160;"then": "FIRE"}<br>&#160;&#160;],<br>&#160;&#160;"otherwise": "self",<br>&#160;&#160;"colors": {"EMPTY": "#e3dfd4", ...}<br>}</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">states</b>: names become numbers inside the engine: EMPTY = 0, TREE = 1, FIRE = 2.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">neighbourhood</b>: “von_neumann” = the 4 cells above, left, right, below.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">edges</b>: beyond the grid there is EMPTY (or “wrap”: opposite sides touch).</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">rules</b>: small expressions. For each cell, the first rule that applies decides.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">otherwise</b>: cells no rule touches stay as they are.</p>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55"><b style="color:#16202B">colors</b>: only for pictures.</p>
+</div>
+</div>
+<aside>Nothing here is Python code: it is data. The two orange strings are the only "program" in the file, and they are not run as Python: our own evaluator reads them (see the rule language slides). The full field reference is in docs/FILE_FORMATS.md.</aside>
+</section>

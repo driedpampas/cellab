@@ -1,0 +1,18 @@
+<section id="caught" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:30px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Honest log</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">What testing caught while building</h2>
+</div>
+<table style="font-size:24px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:44%;text-align:left">Found</th><th style="width:56%;text-align:left">What changed</th></tr>
+<tr><td>“TREE” in a docstring example</td><td>generality test failed; replaced with neutral names</td></tr>
+<tr><td>A test expected step 2, the code said 10</td><td>the code was right (2 + 998 mod 10); the test was fixed</td></tr>
+<tr><td>Test suite took 4 minutes</td><td>random “cycle?” ran to 10,000 steps; slow disk syncs on Windows; tests got max_steps</td></tr>
+<tr><td>“Fire” got no spelling suggestion</td><td>suggestions now ignore upper/lower case</td></tr>
+<tr><td>Misspelled field reported as “missing”</td><td>unknown fields are now listed first</td></tr>
+<tr><td>GIF had fewer frames than steps</td><td>Pillow merges identical frames; the test checks total time</td></tr>
+<tr><td>Rule 30 picture far too tall</td><td>questions kept the run going; added render --until (and found the step-175 freeze)</td></tr>
+<tr><td>“After 1 steps”</td><td>fixed, with a test for singular and plural</td></tr>
+</table>
+<aside>Most of these are small, but they show the tests doing their job in both directions: once the code was wrong (the docstring), once the test itself was wrong (the traffic step number), and several times the user-facing messages improved. Everything here is committed on the d2-engine branch.</aside>
+</section>

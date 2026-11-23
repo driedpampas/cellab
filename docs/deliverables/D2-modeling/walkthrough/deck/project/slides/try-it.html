@@ -1,0 +1,11 @@
+<section id="try-it" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Cheat sheet</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Try it yourself</h2>
+</div>
+<div style="background:#16202B;border-radius:16px;padding:32px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.6;color:#E3E8EC">.venv\Scripts\activate<br>cellab check automata/*.json experiments/*.json<br>cellab run experiments/forest_fire_brief.json --show<br>cellab run experiments/rule30_ring16.json --stop-at 2000<br>cellab resume runs/&lt;experiment&gt;/&lt;date_time&gt;<br>cellab run experiments/forest_fire_regrowth.json --seed 42 --trace<br>cellab render runs/&lt;...&gt;<br>python -m pytest</p>
+</div>
+<p style="font-size:26px;line-height:1.45;color:#3F4A55">Then read docs/GUIDE.md (the code) and docs/FILE_FORMATS.md (writing your own automaton).</p>
+<aside>A good exercise: copy automata/brians_brain.json, change "count(FIRING) == 2" to "== 3", write an experiment for it, and run it. No code changes needed.</aside>
+</section>

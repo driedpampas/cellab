@@ -1,0 +1,31 @@
+<section id="loading" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Loading · automaton.py, experiment.py, loading.py</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Three layers of checks before anything runs</h2>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:48px;font-weight:600;color:#B04A1A;line-height:1">1</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:600;line-height:1.2">Is it JSON?</h3>
+<p style="font-size:24px;line-height:1.45;color:#3F4A55">read_json gives the line and column of a syntax error.</p>
+<div style="flex:1"></div>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.4;color:#16202B;background:#EAE7DF;border-radius:8px;padding:14px">bad.json, line 3, column 19: invalid JSON (Expecting value)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFAF7;border:1px solid #DDD9CF;border-radius:16px;padding:32px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:48px;font-weight:600;color:#B04A1A;line-height:1">2</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:600;line-height:1.2">Right structure?</h3>
+<p style="font-size:24px;line-height:1.45;color:#3F4A55">A pydantic model checks required fields, types, and catches misspelled field names.</p>
+<div style="flex:1"></div>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.4;color:#16202B;background:#EAE7DF;border-radius:8px;padding:14px">neighborhood: unknown field (check the spelling)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FCE9DD;border:1px solid #B04A1A;border-radius:16px;padding:32px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:48px;font-weight:600;color:#B04A1A;line-height:1">3</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:600;line-height:1.2">Does it make sense?</h3>
+<p style="font-size:24px;line-height:1.45;color:#3F4A55">States, edges, parameters and grids are checked together. Every rule is compiled here.</p>
+<div style="flex:1"></div>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.4;color:#16202B;background:#FBFAF7;border-radius:8px;padding:14px">rules[1].when: unknown name 'FIER' (did you mean 'FIRE'?)</p>
+</div>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3F4A55">The result is an <b style="color:#16202B">Automaton</b> object with no text left in it: states are numbers, the neighbourhood is a list of offsets, every rule is compiled.</p>
+<aside>This is constraint checking, the Lab 5 topic: a file is valid only if all its parts are consistent with each other. Layer 3 is in build_automaton (automaton.py) and load_experiment (experiment.py). Every message names the file and the field, which errors.py's InputFileError guarantees. tests/test_validation.py feeds over 50 broken files and checks each message.</aside>
+</section>

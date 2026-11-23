@@ -1,0 +1,19 @@
+<section id="checklist" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Your Lab 5 notes</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Every requirement, where it lives, and the proof</h2>
+</div>
+<table style="font-size:24px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:33%;text-align:left">From the notes</th><th style="width:31%;text-align:left">Where in the code</th><th style="width:36%;text-align:left">Proof</th></tr>
+<tr><td><b>Rules read from files</b></td><td>automata/*.json, automaton.py</td><td>All 13 automaton files load and run</td></tr>
+<tr><td><b>Nothing automaton-specific in the code</b></td><td>engine.py, expressions.py</td><td>A test fails if any state name appears in src/</td></tr>
+<tr><td><b>Save the automaton’s state</b></td><td>storage.py: checkpoint.npz, .bin files</td><td>Run folders checked by tests</td></tr>
+<tr><td><b>Reload and continue where it stopped</b></td><td>runner.py: Run.open, advance</td><td>Resumed run = uninterrupted run, byte for byte</td></tr>
+<tr><td><b>Parameters, including the 5 questions</b></td><td>experiment.py, questions.py</td><td>19 experiment files</td></tr>
+<tr><td><b>2–3 automata (“I’d do more”)</b></td><td>automata/</td><td>10 of the 15, plus Game of Life and all 256 elementary rules</td></tr>
+<tr style="background:#FCE9DD"><td><b>Hashes over states (max score)</b></td><td>fingerprints.py</td><td>Stable, cycle and “occurs” come from hashes</td></tr>
+<tr style="background:#FCE9DD"><td><b>Same seed twice, same result (max score)</b></td><td>randomness.py</td><td>Tests + identical files after twin runs</td></tr>
+</table>
+<p style="font-size:24px;color:#5F6873">Highlighted rows: the two items your notes marked “pentru punctaj maxim”.</p>
+<aside>This is the contract for Deliverable 2, taken from your Lab 5 notes. Every row points to the file that implements it and to the evidence that it works. The rest of the deck explains each row in detail.</aside>
+</section>

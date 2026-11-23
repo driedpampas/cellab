@@ -1,0 +1,21 @@
+<section id="questions" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:30px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">The five questions · questions.py</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">How each question is answered from the history</h2>
+</div>
+<table style="font-size:24px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:22%;text-align:left">Question</th><th style="width:48%;text-align:left">Answer comes from</th><th style="width:30%;text-align:left">Resolved when</th></tr>
+<tr><td><b>state_after(n)</b></td><td>kept grid of step n, or a jump inside the cycle</td><td>step n, or a cycle</td></tr>
+<tr><td><b>count_after(n, X)</b></td><td>that grid, then count the cells holding X</td><td>the same</td></tr>
+<tr><td><b>stable</b></td><td>standstill − 1, or “never” if the cycle is longer</td><td>a cycle</td></tr>
+<tr><td><b>cycle</b></td><td>repeat = (earlier, later): start and length</td><td>a repeat</td></tr>
+<tr><td><b>occurs(C)</b></td><td>C’s fingerprint in first_seen, else “never”</td><td>C seen, or a cycle</td></tr>
+</table>
+<div style="display:flex;gap:32px;align-items:start">
+<div style="width:1080px;background:#16202B;border-radius:16px;padding:28px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.45;color:#E3E8EC">def grid_after(self, n: int) -&gt; tuple[np.ndarray, int] | None:<br>&#160;&#160;&#160;&#160;if n &lt;= self.history.last_step:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;grid = self.captured[n] if n in self.captured else self.grid_at(n)<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return grid, n<br>&#160;&#160;&#160;&#160;if self.deterministic and self.history.cycle is not None:<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;start, length = self.history.cycle<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;same = start + (n - start) % length<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return self.grid_at(same), same<br>&#160;&#160;&#160;&#160;return None</p>
+</div>
+<p style="flex:1;font-size:26px;line-height:1.45;color:#3F4A55">The run continues while a question is unresolved, up to <b>max_steps</b>. Anything still open is answered “Not decided”, never guessed.</p>
+</div>
+<aside>Each question is a small class with three jobs: capture_steps (which grids to keep), resolved (does the run know enough yet?), and answer. The runner's loop stops only when the experiment's steps are done and every question is resolved, or at max_steps. grid_after is the jump-ahead: this is how "state after 1,000,000 steps" of Rule 30 on 16 cells was answered after simulating only 6,074 steps.</aside>
+</section>

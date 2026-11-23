@@ -1,0 +1,16 @@
+<section id="future" data-transition="fade" style="background:#F5F3EE;color:#16202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 96px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B04A1A;font-weight:600">Future-proof · docs/GUIDE.md section 5</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:52px;font-weight:600;line-height:1.1;color:#16202B">Where each future change goes, and what stays untouched</h2>
+</div>
+<table style="font-size:24px;color:#16202B">
+<tr style="background:#EAE7DF"><th style="width:30%;text-align:left">Future need</th><th style="width:38%;text-align:left">Where it goes</th><th style="width:32%;text-align:left">Unchanged</th></tr>
+<tr><td>A new automaton</td><td>a new JSON file</td><td>all code</td></tr>
+<tr><td>A new rule function</td><td>expressions.py (checker + _call)</td><td>everything else</td></tr>
+<tr><td>Movement / agents</td><td>a new update mode in engine.step (“update” field is reserved)</td><td>runner, fingerprints, questions, storage, CLI</td></tr>
+<tr><td>D3 dataset</td><td>loop over experiments with seeds and parameters</td><td>the engine</td></tr>
+<tr><td>D4 parser</td><td>write an automaton JSON; load_automaton checks it</td><td>everything else</td></tr>
+<tr><td>Graphical interface</td><td>calls load_experiment, Run, render_run</td><td>the library</td></tr>
+</table>
+<aside>The design separates what changes often (automata, interfaces) from what should not (the engine and the run machinery). The checker in automaton.py already recognises the planned update modes "movement" and "agents" and says they are not available yet.</aside>
+</section>
