@@ -18,4 +18,4 @@ runs/
 *.egg-info/
 
 # trained models and metrics from training runs (copy the ones to keep into docs)
-results/
+/results/

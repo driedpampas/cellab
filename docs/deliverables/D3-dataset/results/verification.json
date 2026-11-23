@@ -1,0 +1,758 @@
+{
+  "summary": {
+    "device": "cuda",
+    "models_audited": 34,
+    "passed": 47,
+    "warnings": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "hypotheses": [
+    {
+      "check": "StepNet 16-cell exactness (test, N=64)",
+      "status": "PASS",
+      "detail": "cells=1.0000, grids=1.0000"
+    },
+    {
+      "check": "StepNet 16-cell exactness (unseen, N=64)",
+      "status": "PASS",
+      "detail": "cells=1.0000, grids=1.0000"
+    },
+    {
+      "check": "StepNet 32-cell transfer exactness (test, N=64)",
+      "status": "PASS",
+      "detail": "cells=1.0000, grids=1.0000"
+    },
+    {
+      "check": "StepNet 32-cell transfer exactness (unseen, N=64)",
+      "status": "PASS",
+      "detail": "cells=1.0000, grids=1.0000"
+    },
+    {
+      "check": "AnswerNet beats baselines (test, N=64)",
+      "status": "PASS",
+      "detail": "model=0.8829 vs best_baseline=0.6658 (+0.2171)"
+    },
+    {
+      "check": "Wolfram class ordering (test, N=64): Class 1 & 2 > Class 3",
+      "status": "PASS",
+      "detail": "C1=1.000, C2=0.895, C3=0.817"
+    },
+    {
+      "check": "Chaotic horizon collapse (test): Class 3 drops N=1 -> N=64",
+      "status": "PASS",
+      "detail": "C3 N=1=0.933 -> N=64=0.817"
+    },
+    {
+      "check": "AnswerNet cycle length beats median (test)",
+      "status": "PASS",
+      "detail": "MAE=33.44 vs common=43.77"
+    },
+    {
+      "check": "AnswerNet beats baselines (unseen, N=64)",
+      "status": "PASS",
+      "detail": "model=0.7621 vs best_baseline=0.6566 (+0.1055)"
+    },
+    {
+      "check": "Wolfram class ordering (unseen, N=64): Class 1 & 2 > Class 3",
+      "status": "PASS",
+      "detail": "C1=0.974, C2=0.815, C3=0.567"
+    },
+    {
+      "check": "Chaotic horizon collapse (unseen): Class 3 drops N=1 -> N=64",
+      "status": "PASS",
+      "detail": "C3 N=1=0.903 -> N=64=0.567"
+    },
+    {
+      "check": "AnswerNet cycle length beats median (unseen)",
+      "status": "PASS",
+      "detail": "MAE=494.04 vs common=498.83"
+    }
+  ],
+  "multitask_vs_single": [
+    {
+      "split": "test",
+      "task": "state",
+      "metric": "cells_correct (N=64)",
+      "shared": 0.8829,
+      "single": 0.945,
+      "delta": -0.0621,
+      "winner": "single"
+    },
+    {
+      "split": "test",
+      "task": "count",
+      "metric": "count_error (N=64)",
+      "shared": 0.5259,
+      "single": 0.3953,
+      "delta": 0.1306,
+      "winner": "single"
+    },
+    {
+      "split": "test",
+      "task": "stable",
+      "metric": "stable F1",
+      "shared": 0.9897,
+      "single": 0.9911,
+      "delta": -0.0013,
+      "winner": "single"
+    },
+    {
+      "split": "test",
+      "task": "cycle",
+      "metric": "cycle_length MAE",
+      "shared": 33.4413,
+      "single": 31.4328,
+      "delta": 2.0085,
+      "winner": "single"
+    },
+    {
+      "split": "test",
+      "task": "occurs",
+      "metric": "occurs F1",
+      "shared": 0.8493,
+      "single": 0.8401,
+      "delta": 0.0092,
+      "winner": "shared"
+    },
+    {
+      "split": "unseen",
+      "task": "state",
+      "metric": "cells_correct (N=64)",
+      "shared": 0.7621,
+      "single": 0.8019,
+      "delta": -0.0399,
+      "winner": "single"
+    },
+    {
+      "split": "unseen",
+      "task": "count",
+      "metric": "count_error (N=64)",
+      "shared": 1.2757,
+      "single": 1.4176,
+      "delta": -0.1419,
+      "winner": "shared"
+    },
+    {
+      "split": "unseen",
+      "task": "stable",
+      "metric": "stable F1",
+      "shared": 0.7115,
+      "single": 0.5176,
+      "delta": 0.1939,
+      "winner": "shared"
+    },
+    {
+      "split": "unseen",
+      "task": "cycle",
+      "metric": "cycle_length MAE",
+      "shared": 494.0425,
+      "single": 511.6893,
+      "delta": -17.6469,
+      "winner": "shared"
+    },
+    {
+      "split": "unseen",
+      "task": "occurs",
+      "metric": "occurs F1",
+      "shared": 0.7038,
+      "single": 0.74,
+      "delta": -0.0362,
+      "winner": "single"
+    }
+  ],
+  "live_simulator_checks": [
+    {
+      "model": "step_elementary",
+      "target": "live engine rules [0, 30, 90, 110, 184], width=16, N=64",
+      "cells_match": 1.0,
+      "grids_match": 1.0,
+      "status": "PASS"
+    },
+    {
+      "model": "step_elementary",
+      "target": "live engine rules [0, 30, 90, 110, 184], width=32, N=64",
+      "cells_match": 1.0,
+      "grids_match": 1.0,
+      "status": "PASS"
+    }
+  ],
+  "speed_benchmarks": [
+    {
+      "method": "cellab simulator (CPU)",
+      "horizon_n": 1,
+      "batch": 1,
+      "ms_per_sample": 0.1097,
+      "samples_per_sec": 9115.5
+    },
+    {
+      "method": "cellab simulator (CPU)",
+      "horizon_n": 8,
+      "batch": 1,
+      "ms_per_sample": 0.8216,
+      "samples_per_sec": 1217.2
+    },
+    {
+      "method": "cellab simulator (CPU)",
+      "horizon_n": 64,
+      "batch": 1,
+      "ms_per_sample": 6.4917,
+      "samples_per_sec": 154.0
+    },
+    {
+      "method": "StepNet rollout (cuda)",
+      "horizon_n": 1,
+      "batch": 1,
+      "ms_per_sample": 0.50618,
+      "samples_per_sec": 1975.6
+    },
+    {
+      "method": "StepNet rollout (cuda)",
+      "horizon_n": 8,
+      "batch": 1,
+      "ms_per_sample": 3.86845,
+      "samples_per_sec": 258.5
+    },
+    {
+      "method": "StepNet rollout (cuda)",
+      "horizon_n": 64,
+      "batch": 1,
+      "ms_per_sample": 30.8064,
+      "samples_per_sec": 32.5
+    },
+    {
+      "method": "StepNet rollout (cuda)",
+      "horizon_n": 1,
+      "batch": 256,
+      "ms_per_sample": 0.00202,
+      "samples_per_sec": 493986.5
+    },
+    {
+      "method": "StepNet rollout (cuda)",
+      "horizon_n": 8,
+      "batch": 256,
+      "ms_per_sample": 0.01595,
+      "samples_per_sec": 62686.7
+    },
+    {
+      "method": "StepNet rollout (cuda)",
+      "horizon_n": 64,
+      "batch": 256,
+      "ms_per_sample": 0.12367,
+      "samples_per_sec": 8086.2
+    },
+    {
+      "method": "AnswerNet 1-pass (cuda)",
+      "horizon_n": 64,
+      "batch": 1,
+      "ms_per_sample": 4.64191,
+      "samples_per_sec": 215.4
+    },
+    {
+      "method": "AnswerNet 1-pass (cuda)",
+      "horizon_n": 64,
+      "batch": 256,
+      "ms_per_sample": 0.01779,
+      "samples_per_sec": 56216.5
+    },
+    {
+      "method": "cellab 2D game_of_life_16 (CPU)",
+      "horizon_n": 32,
+      "batch": 1,
+      "ms_per_sample": 9.5228,
+      "samples_per_sec": 105.0
+    },
+    {
+      "method": "StepNet 2D game_of_life_16 (cuda)",
+      "horizon_n": 32,
+      "batch": 64,
+      "ms_per_sample": 0.24903,
+      "samples_per_sec": 4015.6
+    },
+    {
+      "method": "AnswerNet 2D game_of_life_16 (cuda)",
+      "horizon_n": 32,
+      "batch": 64,
+      "ms_per_sample": 0.07652,
+      "samples_per_sec": 13068.4
+    }
+  ],
+  "audit": [
+    {
+      "model": "answers_brians_brain_16",
+      "kind": "answers",
+      "dataset": "brians_brain_16",
+      "epochs": 80,
+      "best_epoch": 16,
+      "train_seconds": 66.5,
+      "cells_n1": 0.9055,
+      "cells_last": 0.9278,
+      "grids_last": 0.1133,
+      "delta_vs_best_baseline": 0.0,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_crystal_growth_16",
+      "kind": "answers",
+      "dataset": "crystal_growth_16",
+      "epochs": 80,
+      "best_epoch": 59,
+      "train_seconds": 34.7,
+      "cells_n1": 1.0,
+      "cells_last": 0.9907,
+      "grids_last": 0.6667,
+      "delta_vs_best_baseline": 0.5873,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_cyclic_16",
+      "kind": "answers",
+      "dataset": "cyclic_16",
+      "epochs": 80,
+      "best_epoch": 16,
+      "train_seconds": 65.6,
+      "cells_n1": 0.9145,
+      "cells_last": 0.9061,
+      "grids_last": 0.45,
+      "delta_vs_best_baseline": 0.1271,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_ecosystem_16",
+      "kind": "answers",
+      "dataset": "ecosystem_16",
+      "epochs": 80,
+      "best_epoch": 79,
+      "train_seconds": 21.6,
+      "cells_n1": 0.8361,
+      "cells_last": 0.6448,
+      "grids_last": 0.0,
+      "delta_vs_best_baseline": 0.2998,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_elementary",
+      "kind": "answers",
+      "dataset": "elementary_w16",
+      "epochs": 80,
+      "best_epoch": 43,
+      "train_seconds": 132.5,
+      "cells_n1": 0.9751,
+      "cells_last": 0.8829,
+      "grids_last": 0.5672,
+      "delta_vs_best_baseline": 0.2171,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_elementary_on_elementary_w32_test",
+      "kind": "answers",
+      "dataset": "elementary_w32_test",
+      "epochs": null,
+      "best_epoch": 43,
+      "train_seconds": null,
+      "cells_n1": 0.9763,
+      "cells_last": 0.8779,
+      "grids_last": 0.5122,
+      "delta_vs_best_baseline": 0.2139,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_epidemic_16",
+      "kind": "answers",
+      "dataset": "epidemic_16",
+      "epochs": 80,
+      "best_epoch": 64,
+      "train_seconds": 34.6,
+      "cells_n1": 0.9998,
+      "cells_last": 0.9996,
+      "grids_last": 0.9633,
+      "delta_vs_best_baseline": 0.0064,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_falling_sand_16",
+      "kind": "answers",
+      "dataset": "falling_sand_16",
+      "epochs": 80,
+      "best_epoch": 69,
+      "train_seconds": 17.5,
+      "cells_n1": 0.9757,
+      "cells_last": 0.9736,
+      "grids_last": 0.1667,
+      "delta_vs_best_baseline": 0.2226,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_forest_fire_16",
+      "kind": "answers",
+      "dataset": "forest_fire_16",
+      "epochs": 80,
+      "best_epoch": 60,
+      "train_seconds": 34.9,
+      "cells_n1": 0.9998,
+      "cells_last": 0.9925,
+      "grids_last": 0.6733,
+      "delta_vs_best_baseline": 0.0379,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_forest_fire_regrowth_16",
+      "kind": "answers",
+      "dataset": "forest_fire_regrowth_16",
+      "epochs": 80,
+      "best_epoch": 31,
+      "train_seconds": 43.2,
+      "cells_n1": 0.9755,
+      "cells_last": 0.8204,
+      "grids_last": 0.035,
+      "delta_vs_best_baseline": 0.1878,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_game_of_life_16",
+      "kind": "answers",
+      "dataset": "game_of_life_16",
+      "epochs": 80,
+      "best_epoch": 33,
+      "train_seconds": 65.8,
+      "cells_n1": 0.996,
+      "cells_last": 0.8647,
+      "grids_last": 0.0133,
+      "delta_vs_best_baseline": -0.0,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_langtons_ant_16",
+      "kind": "answers",
+      "dataset": "langtons_ant_16",
+      "epochs": 80,
+      "best_epoch": 80,
+      "train_seconds": 32.4,
+      "cells_n1": 0.9999,
+      "cells_last": 0.9676,
+      "grids_last": 0.3333,
+      "delta_vs_best_baseline": 0.0176,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_predator_prey_16",
+      "kind": "answers",
+      "dataset": "predator_prey_16",
+      "epochs": 80,
+      "best_epoch": 43,
+      "train_seconds": 21.6,
+      "cells_n1": 0.6909,
+      "cells_last": 0.9671,
+      "grids_last": 0.59,
+      "delta_vs_best_baseline": 0.0,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_sandpile_16",
+      "kind": "answers",
+      "dataset": "sandpile_16",
+      "epochs": 80,
+      "best_epoch": 80,
+      "train_seconds": 24.1,
+      "cells_n1": 0.9988,
+      "cells_last": 0.7847,
+      "grids_last": 0.665,
+      "delta_vs_best_baseline": 0.1982,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_schelling_16",
+      "kind": "answers",
+      "dataset": "schelling_16",
+      "epochs": 80,
+      "best_epoch": 45,
+      "train_seconds": 32.4,
+      "cells_n1": 0.8068,
+      "cells_last": 0.9647,
+      "grids_last": 0.52,
+      "delta_vs_best_baseline": 0.3512,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_traffic_w16",
+      "kind": "answers",
+      "dataset": "traffic_w16",
+      "epochs": 80,
+      "best_epoch": 52,
+      "train_seconds": 36.7,
+      "cells_n1": 1.0,
+      "cells_last": 0.9996,
+      "grids_last": 0.9933,
+      "delta_vs_best_baseline": 0.19,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "answers_voter_16",
+      "kind": "answers",
+      "dataset": "voter_16",
+      "epochs": 80,
+      "best_epoch": 39,
+      "train_seconds": 66.3,
+      "cells_n1": 0.9995,
+      "cells_last": 0.9884,
+      "grids_last": 0.6267,
+      "delta_vs_best_baseline": 0.3588,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "only_count_elementary",
+      "kind": "answers",
+      "dataset": "elementary_w16",
+      "epochs": 80,
+      "best_epoch": 77,
+      "train_seconds": 126.6,
+      "cells_n1": 0.6387,
+      "cells_last": 0.7499,
+      "grids_last": 0.2138,
+      "delta_vs_best_baseline": 0.0841,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "only_cycle_elementary",
+      "kind": "answers",
+      "dataset": "elementary_w16",
+      "epochs": 80,
+      "best_epoch": 57,
+      "train_seconds": 126.5,
+      "cells_n1": 0.5079,
+      "cells_last": 0.5252,
+      "grids_last": 0.0528,
+      "delta_vs_best_baseline": -0.1406,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "only_occurs_elementary",
+      "kind": "answers",
+      "dataset": "elementary_w16",
+      "epochs": 80,
+      "best_epoch": 12,
+      "train_seconds": 126.1,
+      "cells_n1": 0.5129,
+      "cells_last": 0.5382,
+      "grids_last": 0.0773,
+      "delta_vs_best_baseline": -0.1276,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "only_stable_elementary",
+      "kind": "answers",
+      "dataset": "elementary_w16",
+      "epochs": 80,
+      "best_epoch": 23,
+      "train_seconds": 126.3,
+      "cells_n1": 0.5031,
+      "cells_last": 0.5298,
+      "grids_last": 0.0275,
+      "delta_vs_best_baseline": -0.136,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "only_state_elementary",
+      "kind": "answers",
+      "dataset": "elementary_w16",
+      "epochs": 80,
+      "best_epoch": 58,
+      "train_seconds": 123.5,
+      "cells_n1": 1.0,
+      "cells_last": 0.945,
+      "grids_last": 0.8211,
+      "delta_vs_best_baseline": 0.2792,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_brians_brain_16",
+      "kind": "step",
+      "dataset": "brians_brain_16",
+      "epochs": 60,
+      "best_epoch": 60,
+      "train_seconds": 3.2,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.0722,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_crystal_growth_16",
+      "kind": "step",
+      "dataset": "crystal_growth_16",
+      "epochs": 60,
+      "best_epoch": 60,
+      "train_seconds": 3.0,
+      "cells_n1": 1.0,
+      "cells_last": 0.9077,
+      "grids_last": 0.0133,
+      "delta_vs_best_baseline": 0.5043,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_cyclic_16",
+      "kind": "step",
+      "dataset": "cyclic_16",
+      "epochs": 60,
+      "best_epoch": 58,
+      "train_seconds": 3.2,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.221,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_elementary",
+      "kind": "step",
+      "dataset": "elementary_w16",
+      "epochs": 40,
+      "best_epoch": 37,
+      "train_seconds": 11.8,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.3342,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_elementary_on_elementary_w32_test",
+      "kind": "step",
+      "dataset": "elementary_w32_test",
+      "epochs": null,
+      "best_epoch": 37,
+      "train_seconds": null,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.3361,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_epidemic_16",
+      "kind": "step",
+      "dataset": "epidemic_16",
+      "epochs": 60,
+      "best_epoch": 59,
+      "train_seconds": 3.1,
+      "cells_n1": 1.0,
+      "cells_last": 0.0248,
+      "grids_last": 0.0,
+      "delta_vs_best_baseline": -0.9684,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_falling_sand_16",
+      "kind": "step",
+      "dataset": "falling_sand_16",
+      "epochs": 60,
+      "best_epoch": 56,
+      "train_seconds": 1.8,
+      "cells_n1": 0.9791,
+      "cells_last": 0.7497,
+      "grids_last": 0.0,
+      "delta_vs_best_baseline": -0.0014,
+      "status": "WARN",
+      "notes": "1-step cell accuracy 0.979 < 0.99"
+    },
+    {
+      "model": "step_forest_fire_16",
+      "kind": "step",
+      "dataset": "forest_fire_16",
+      "epochs": 60,
+      "best_epoch": 59,
+      "train_seconds": 3.0,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.0453,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_game_of_life_16",
+      "kind": "step",
+      "dataset": "game_of_life_16",
+      "epochs": 60,
+      "best_epoch": 58,
+      "train_seconds": 3.2,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.1353,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_sandpile_16",
+      "kind": "step",
+      "dataset": "sandpile_16",
+      "epochs": 60,
+      "best_epoch": 59,
+      "train_seconds": 2.4,
+      "cells_n1": 1.0,
+      "cells_last": 0.6586,
+      "grids_last": 0.335,
+      "delta_vs_best_baseline": 0.0721,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_traffic_w16",
+      "kind": "step",
+      "dataset": "traffic_w16",
+      "epochs": 60,
+      "best_epoch": 54,
+      "train_seconds": 3.4,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.1904,
+      "status": "PASS",
+      "notes": ""
+    },
+    {
+      "model": "step_voter_16",
+      "kind": "step",
+      "dataset": "voter_16",
+      "epochs": 60,
+      "best_epoch": 58,
+      "train_seconds": 3.1,
+      "cells_n1": 1.0,
+      "cells_last": 1.0,
+      "grids_last": 1.0,
+      "delta_vs_best_baseline": 0.3703,
+      "status": "PASS",
+      "notes": ""
+    }
+  ]
+}

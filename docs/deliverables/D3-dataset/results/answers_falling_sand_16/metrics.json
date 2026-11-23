@@ -1,0 +1,146 @@
+{
+  "kind": "answers",
+  "dataset": "falling_sand_16",
+  "trained_on": "falling_sand_16.npz",
+  "epoch": 69,
+  "parameters": 885933,
+  "splits": {
+    "test": {
+      "all": {
+        "samples": 150,
+        "by_horizon": [
+          {
+            "n": 1,
+            "model": {
+              "cells_correct": 0.9756771326065063,
+              "grids_correct": 0.08666666597127914,
+              "count_error": 3.438638687133789
+            },
+            "copy": {
+              "cells_correct": 0.5929427146911621,
+              "grids_correct": 0.0,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.549401044845581,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 2,
+            "model": {
+              "cells_correct": 0.9498958587646484,
+              "grids_correct": 0.006666666828095913,
+              "count_error": 3.518970251083374
+            },
+            "copy": {
+              "cells_correct": 0.5929427146911621,
+              "grids_correct": 0.0,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.5793489813804626,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 4,
+            "model": {
+              "cells_correct": 0.8957552313804626,
+              "grids_correct": 0.0,
+              "count_error": 3.492770195007324
+            },
+            "copy": {
+              "cells_correct": 0.58356773853302,
+              "grids_correct": 0.0,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.6342447996139526,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 8,
+            "model": {
+              "cells_correct": 0.8955990076065063,
+              "grids_correct": 0.0,
+              "count_error": 3.6512420177459717
+            },
+            "copy": {
+              "cells_correct": 0.580859363079071,
+              "grids_correct": 0.0,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.715624988079071,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 16,
+            "model": {
+              "cells_correct": 0.9695312976837158,
+              "grids_correct": 0.15333333611488342,
+              "count_error": 3.707805633544922
+            },
+            "copy": {
+              "cells_correct": 0.5809635519981384,
+              "grids_correct": 0.0,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.7509896159172058,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 32,
+            "model": {
+              "cells_correct": 0.9736458659172058,
+              "grids_correct": 0.1666666716337204,
+              "count_error": 3.7010409832000732
+            },
+            "copy": {
+              "cells_correct": 0.5812239646911621,
+              "grids_correct": 0.0,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.7510676980018616,
+              "grids_correct": 0.0
+            }
+          }
+        ],
+        "stable": {
+          "accuracy": 0.9800000190734863,
+          "f1": 0.970873786407767,
+          "share_yes": 0.35333335399627686,
+          "step": {
+            "error": 0.9811320900917053,
+            "exactly_right": 0.4528301954269409,
+            "common_error": 1.3396226167678833,
+            "samples": 53
+          }
+        },
+        "cycle_start": {
+          "error": 3.320000171661377,
+          "exactly_right": 0.1599999964237213,
+          "common_error": 4.599999904632568,
+          "samples": 150
+        },
+        "cycle_length": {
+          "error": 2.6600000858306885,
+          "exactly_right": 0.47333335876464844,
+          "common_error": 2.380000114440918,
+          "samples": 150
+        },
+        "occurs": {
+          "accuracy": 0.6233333349227905,
+          "f1": 0.6852367688022284,
+          "share_yes": 0.5
+        }
+      }
+    }
+  }
+}

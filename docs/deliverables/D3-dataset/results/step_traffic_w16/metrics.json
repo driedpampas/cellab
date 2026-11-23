@@ -1,0 +1,118 @@
+{
+  "kind": "step",
+  "dataset": "traffic_w16",
+  "trained_on": "traffic_w16.npz",
+  "epoch": 54,
+  "parameters": 8898,
+  "splits": {
+    "test": {
+      "all": {
+        "samples": 300,
+        "by_horizon": [
+          {
+            "n": 1,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.5820833444595337,
+              "grids_correct": 0.013333333656191826,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.4983333349227905,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 2,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.6720833778381348,
+              "grids_correct": 0.013333333656191826,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.5004166960716248,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 4,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.6320833563804626,
+              "grids_correct": 0.01666666753590107,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.4975000023841858,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 8,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.5945833325386047,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.5054166913032532,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 16,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.8095833659172058,
+              "grids_correct": 0.30000001192092896,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.4937500059604645,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 32,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.8095833659172058,
+              "grids_correct": 0.30000001192092896,
+              "count_error": 0.0
+            },
+            "common": {
+              "cells_correct": 0.4937500059604645,
+              "grids_correct": 0.0
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+[
+  {
+    "method": "cellab simulator (CPU)",
+    "horizon_n": 1,
+    "batch": 1,
+    "ms_per_sample": 0.0827,
+    "samples_per_sec": 12091.5
+  },
+  {
+    "method": "cellab simulator (CPU)",
+    "horizon_n": 8,
+    "batch": 1,
+    "ms_per_sample": 0.5345,
+    "samples_per_sec": 1870.9
+  },
+  {
+    "method": "cellab simulator (CPU)",
+    "horizon_n": 64,
+    "batch": 1,
+    "ms_per_sample": 5.1985,
+    "samples_per_sec": 192.4
+  },
+  {
+    "method": "StepNet rollout (cpu)",
+    "horizon_n": 1,
+    "batch": 1,
+    "ms_per_sample": 4.10501,
+    "samples_per_sec": 243.6
+  },
+  {
+    "method": "StepNet rollout (cpu)",
+    "horizon_n": 8,
+    "batch": 1,
+    "ms_per_sample": 4.34353,
+    "samples_per_sec": 230.2
+  },
+  {
+    "method": "StepNet rollout (cpu)",
+    "horizon_n": 64,
+    "batch": 1,
+    "ms_per_sample": 16.01378,
+    "samples_per_sec": 62.4
+  },
+  {
+    "method": "StepNet rollout (cpu)",
+    "horizon_n": 1,
+    "batch": 256,
+    "ms_per_sample": 0.01631,
+    "samples_per_sec": 61317.4
+  },
+  {
+    "method": "StepNet rollout (cpu)",
+    "horizon_n": 8,
+    "batch": 256,
+    "ms_per_sample": 0.13998,
+    "samples_per_sec": 7144.1
+  },
+  {
+    "method": "StepNet rollout (cpu)",
+    "horizon_n": 64,
+    "batch": 256,
+    "ms_per_sample": 0.94322,
+    "samples_per_sec": 1060.2
+  },
+  {
+    "method": "AnswerNet 1-pass (cpu)",
+    "horizon_n": 64,
+    "batch": 1,
+    "ms_per_sample": 2.63582,
+    "samples_per_sec": 379.4
+  },
+  {
+    "method": "AnswerNet 1-pass (cpu)",
+    "horizon_n": 64,
+    "batch": 256,
+    "ms_per_sample": 0.13675,
+    "samples_per_sec": 7312.8
+  },
+  {
+    "method": "cellab 2D game_of_life_16 (CPU)",
+    "horizon_n": 32,
+    "batch": 1,
+    "ms_per_sample": 4.9929,
+    "samples_per_sec": 200.3
+  },
+  {
+    "method": "StepNet 2D game_of_life_16 (cpu)",
+    "horizon_n": 32,
+    "batch": 64,
+    "ms_per_sample": 7.04176,
+    "samples_per_sec": 142.0
+  },
+  {
+    "method": "AnswerNet 2D game_of_life_16 (cpu)",
+    "horizon_n": 32,
+    "batch": 64,
+    "ms_per_sample": 3.7206,
+    "samples_per_sec": 268.8
+  }
+]

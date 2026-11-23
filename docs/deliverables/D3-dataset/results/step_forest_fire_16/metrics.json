@@ -1,0 +1,118 @@
+{
+  "kind": "step",
+  "dataset": "forest_fire_16",
+  "trained_on": "forest_fire_16.npz",
+  "epoch": 59,
+  "parameters": 10307,
+  "splits": {
+    "test": {
+      "all": {
+        "samples": 300,
+        "by_horizon": [
+          {
+            "n": 1,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.9403516054153442,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 11.283333778381348
+            },
+            "common": {
+              "cells_correct": 0.25154948234558105,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 2,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.8769270777702332,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 27.520000457763672
+            },
+            "common": {
+              "cells_correct": 0.2956250011920929,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 4,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.7345052361488342,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 63.983333587646484
+            },
+            "common": {
+              "cells_correct": 0.42955729365348816,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 8,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.5104948282241821,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 121.59000396728516
+            },
+            "common": {
+              "cells_correct": 0.6808203458786011,
+              "grids_correct": 0.0
+            }
+          },
+          {
+            "n": 16,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.32604166865348816,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 171.36000061035156
+            },
+            "common": {
+              "cells_correct": 0.8979557752609253,
+              "grids_correct": 0.18333333730697632
+            }
+          },
+          {
+            "n": 32,
+            "model": {
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
+            },
+            "copy": {
+              "cells_correct": 0.2812109589576721,
+              "grids_correct": 0.023333333432674408,
+              "count_error": 183.99000549316406
+            },
+            "common": {
+              "cells_correct": 0.95466148853302,
+              "grids_correct": 0.2866666615009308
+            }
+          }
+        ]
+      }
+    }
+  }
+}
