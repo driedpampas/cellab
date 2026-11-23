@@ -17,10 +17,10 @@ the automaton. To be handed in: the question/answer sets used for training.
 | Questions and answers in words | `cellab qa data/<name>.npz` | The same data as JSON lines: question, answer, automaton, parameters, initial grid. A sample is in `data/qa_sample.jsonl`. |
 | Rule facts | `ml/eca.py` | The 88 families of equivalent rules, Wolfram's classes, and which families are held out. |
 | Two networks | `ml/models.py` | **StepNet** learns one step and is applied N times. **AnswerNet** answers all five questions in one pass with a shared encoder and five heads. |
-| Training | `ml/train.py` | AdamW (fused on CUDA), warm-up and cosine schedule, automatic `bf16`/`fp16` mixed precision, learned loss weights for the five heads, checkpoints and `--resume`. `--tasks` trains single-question networks for the comparison. |
-| Evaluation & verification | `ml/evaluate.py`, `ml/verify.py` | Deliverable 1 metrics per Wolfram class and per N next to baselines, live `cellab.engine.step` cross-checks, hypothesis checks, and inference speed benchmarks. |
-| Colab notebook | [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb) | End-to-end L4/T4 training, Drive sync, automatic validation, benchmarks, and auto-disconnect. |
-| Tests | `tests/test_dataset.py`, `tests/test_ml.py` | Labels equal ordinary engine runs; generation is reproducible; training, resuming, evaluation, and verification all pass (`295 passed`). |
+| Training | `ml/train.py` | AdamW (fused on CUDA), warm-up and cosine schedule, automatic `bf16`/`fp16` mixed precision, clamped learned loss weights, circular-shift augmentation, `gen 0→1 + gen 1→2` StepNet transitions, continuous float support (`diffusion_16`), checkpoints and `--resume`. |
+| Baselines & verification | `ml/baselines.py`, `ml/evaluate.py`, `ml/verify.py` | Deliverable 1 metrics per Wolfram class and per N, scikit-learn `HistGradientBoosting` baseline, live `cellab.engine.step` cross-checks, hypothesis checks, and inference speed benchmarks. |
+| Colab notebook | [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb) | End-to-end L4/T4 training across all 18 datasets, GBDT baseline, Drive sync, automatic validation, benchmarks, and auto-disconnect. |
+| Tests | `tests/test_dataset.py`, `tests/test_ml.py` | Labels equal ordinary engine runs; generation is reproducible; training, resuming, GBDT baseline, continuous diffusion, evaluation, and verification all pass (`296 passed`). |
 
 ## The experiment and why it is designed this way
 
@@ -85,31 +85,43 @@ Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_singl
 
 **Takeaway:** on rules seen in training, dedicating all 438k parameters to one head wins 4/5 tasks; on **unseen rule families**, the shared multi-task representation acts as a strong regularizer and beats single-task networks on 3/5 tasks (notably +19.4 F1 points on stability prediction).
 
+### 3b. Gradient-boosting tabular baseline vs. `AnswerNet` (`elementary_w16`)
+`HistGradientBoosting` trained on tabular grid features + the 8 rule bits (7.8 s on CPU). Full report: [`results/gbdt_elementary/metrics.json`](results/gbdt_elementary/metrics.json).
+
+| Split | Model | Count MAE (N=64) | Stable F1 | Cycle length MAE | Occurs F1 |
+|---|---|---:|---:|---:|---:|
+| `test` (seen rules) | `HistGradientBoosting` (GBDT) | 1.20 | 0.958 | 37.98 | 0.751 |
+| | **`AnswerNet` (CNN, 1 pass)** | **0.53** | **0.990** | **33.44** | **0.849** |
+| `unseen` (new families) | `HistGradientBoosting` (GBDT) | 1.88 | 0.365 | 497.70 | 0.661 |
+| | **`AnswerNet` (CNN, 1 pass)** | **1.28** | **0.712** | **494.04** | **0.704** |
+
+**Takeaway:** `AnswerNet` beats Gradient Boosting on **every single metric** on both seen and unseen rules. Tabular GBDT memorises seen rules (`0.958` stable F1) but collapses to `0.365` on unseen rule families, whereas the convolutional `AnswerNet` retains `0.712` (+34.7 F1 pts).
+
 ### 4. The 2D automata and 1D traffic
-All 15 integer-state automata trained (`diffusion_16` uses floats and is skipped). Summary table: [`results/summary.csv`](results/summary.csv).
+All 16 non-elementary automata (including decimal-valued `diffusion_16`) now have trained models. Summary table: [`results/summary.csv`](results/summary.csv).
 
 | Automaton | `StepNet` N=1 | `StepNet` N=32 (grids) | `AnswerNet` N=1 | `AnswerNet` N=32 | `AnswerNet` vs best baseline | `AnswerNet` Stable F1 | `AnswerNet` Occurs F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `brians_brain_16` | **1.000** | **1.000 (1.000)** | 0.905 | 0.928 | +0.000 | 0.456 | 0.548 |
-| `crystal_growth_16` | 1.000 | 0.908 (0.013) | 1.000 | **0.991** | +0.587 | 1.000 | 0.879 |
+| `crystal_growth_16` | **1.000** | **1.000 (1.000)** *(was 0.908)* | 1.000 | **0.991** | +0.587 | 1.000 | 0.879 |
 | `cyclic_16` | **1.000** | **1.000 (1.000)** | 0.915 | 0.906 | +0.127 | 0.972 | 0.667 |
-| `epidemic_16` | 1.000 | 0.025 (0.000)* | 1.000 | **1.000** | +0.006 | 1.000 | 0.936 |
+| `epidemic_16` | **1.000** | **1.000 (1.000)** *(was 0.025)* | 1.000 | **1.000** | +0.006 | 1.000 | 0.936 |
 | `falling_sand_16` | 0.979* | 0.750 (0.000)* | 0.976 | **0.974** | +0.223 | 0.971 | 0.685 |
 | `forest_fire_16` | **1.000** | **1.000 (1.000)** | 1.000 | **0.993** | +0.038 | 1.000 | 0.961 |
 | `game_of_life_16` | **1.000** | **1.000 (1.000)** | 0.996 | 0.865 | +0.000 | 0.634 | 0.693 |
 | `sandpile_16` | 1.000 | 0.659 (0.335)* | 0.999 | 0.785 | +0.198 | 1.000 | 1.000 |
 | `traffic_w16` | **1.000** | **1.000 (1.000)** | 1.000 | **1.000** | +0.190 | 1.000 | 0.967 |
 | `voter_16` | **1.000** | **1.000 (1.000)** | 0.999 | **0.988** | +0.359 | 1.000 | 0.901 |
+| `diffusion_16` *(float)* | **0.997** *(within 1.0)* | **0.805 (MAE 0.52 / 100)** | — | — | — | — | — |
 | `langtons_ant_16` *(layers)* | — | — | 1.000 | **0.968** | +0.018 | — | 1.000 |
 | `schelling_16` *(random)* | — | — | 0.807 | **0.965** | +0.351 | 0.975 | 1.000 |
 | `forest_fire_regrowth_16` *(random)* | — | — | 0.975 | 0.820 | +0.188 | 0.849 | 1.000 |
 | `predator_prey_16` *(random)* | — | — | 0.691 | **0.967** | +0.000 | 0.824 | 1.000 |
 | `ecosystem_16` *(random)* | — | — | 0.836 | 0.645 | +0.300 | 0.000 | 1.000 |
 
-*\*Why those four `StepNet` rollouts didn't reach 100%:*
-- **`falling_sand_16`**: uses sequential agent-order updates (not a synchronous 3×3 map), so a 1-layer convolution cannot capture multi-cell cascades within a single step.
-- **`epidemic_16`**: `datasets/epidemic_16.json` gives state `INFECTED_3` weight `0` in all initial grids, so `StepNet` (trained only on `gen 0 → gen 1`) never sees `INFECTED_3` as input; rollout breaks the moment `INFECTED_3 → RECOVERED` first appears at `N = 2`. `AnswerNet` trains across all horizons `N = 1..32` and reaches **100.0%**.
-- **`crystal_growth_16` & `sandpile_16`**: same state-coverage shift — sparse seeds and 61 grain levels leave late-generation local patterns rare or unseen in `gen 0`.
+**Diagnosing & fixing state-coverage shift (`StepNet`):** initially, `step_epidemic_16` scored `2.5%` and `step_crystal_growth_16` scored `90.8%` at `N=32` despite `100.0%` at `N=1` because `datasets/epidemic_16.json` had zero `INFECTED_3` cells at `gen 0` (and sparse crystal seeds). Extending `step_loss` to train on **both** `(gen 0 → gen 1)` and `(gen 1 → gen 2)` (already in every `.npz` file) raised **both to 100.0% exact grids at `N=32`** — bringing **8/10** deterministic discrete automata to 100.0% exact rollout!
+
+*\*Remaining two `StepNet` limits:* `falling_sand_16` uses sequential agent-order updates (multi-cell cascades exceed a 1-layer 3×3 conv), and `sandpile_16` has 61 unbounded integer grain levels with rare late-stage toppling patterns.
 
 ### 5. Inference speed benchmarks (GPU L4 & Laptop CPU vs. Simulator)
 Full reports: [`results/verification_report.md`](results/verification_report.md) (L4 GPU), [`results/cpu_speed_benchmark.json`](results/cpu_speed_benchmark.json) (i7-1165G7 CPU), [`results/speed_benchmark.png`](results/speed_benchmark.png).
@@ -150,4 +162,4 @@ python -m ml.verify results/
 
 ## Remaining for Deliverable 3
 - Put the results and plots from [`results/`](results/) into the Lab 11 presentation slides.
-- Optional extras: gradient-boosting baseline (announced in Deliverable 1), direct LLM baseline, decimal-value support (`diffusion_16`).
+- Optional extra: direct LLM baseline on a sample of `data/qa_sample.jsonl`.

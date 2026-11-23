@@ -16,6 +16,7 @@ torch = pytest.importorskip("torch")
 from cellab.dataset import build_dataset  # noqa: E402
 from helpers import AUTOMATA, write_json  # noqa: E402
 from ml import eca  # noqa: E402
+from ml.baselines import run_gbdt_baseline  # noqa: E402
 from ml.data import load  # noqa: E402
 from ml.evaluate import evaluate, evaluate_and_save  # noqa: E402
 from ml.models import AnswerNet, Look, StepNet  # noqa: E402
@@ -134,3 +135,23 @@ def test_preloaded_data_save_every_and_verification(dataset, tmp_path):
     assert report["summary"]["failed"] <= len(report["hypotheses"]) + len(report["live_simulator_checks"])
     assert len(report["speed_benchmarks"]) >= 3
     assert any(r["model"] == "step_elementary" for r in report["live_simulator_checks"])
+
+
+def test_gbdt_baseline_and_continuous_diffusion(dataset, tmp_path):
+    gbdt = run_gbdt_baseline(dataset, max_iter=20)
+    assert gbdt["kind"] == "gbdt"
+    assert {"test", "unseen"} <= set(gbdt["splits"])
+    assert "stable" in gbdt["splits"]["test"]["all"] and "occurs" in gbdt["splits"]["test"]["all"]
+
+    diff_path = Path("data/diffusion_16.npz")
+    if diff_path.exists():
+        d = load(diff_path, "cpu")
+        assert d.continuous and d.scale > 1.0 and d.values == 1
+        out_s = tmp_path / "step_diff"
+        train("step", d, str(out_s), epochs=1, batch=64, device="cpu", limit=64)
+        rep_s = evaluate("step", d, out_s / "best.pt", device="cpu")
+        assert "mae" in rep_s["splits"]["test"]["all"]["by_horizon"][0]["model"]
+        out_a = tmp_path / "ans_diff"
+        train("answers", d, str(out_a), epochs=1, batch=64, width=16, device="cpu", limit=64)
+        rep_a = evaluate("answers", d, out_a / "best.pt", device="cpu")
+        assert "mae" in rep_a["splits"]["test"]["all"]["by_horizon"][0]["model"]

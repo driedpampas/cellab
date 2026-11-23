@@ -19,7 +19,9 @@ from torch.nn import functional as F
 
 
 def one_hot(grid: torch.Tensor, values: int) -> torch.Tensor:
-    """[B, *shape] of state numbers -> [B, values, *shape] of 0/1 channels."""
+    """[B, *shape] of state numbers -> [B, values, *shape] of 0/1 channels (or [B, 1, *shape] for floats)."""
+    if grid.is_floating_point():
+        return grid.unsqueeze(1)
     return F.one_hot(grid, values).movedim(-1, 1).float()
 
 
@@ -65,7 +67,8 @@ class StepNet(nn.Module):
     def rollout(self, grid: torch.Tensor, cond: torch.Tensor, steps: int) -> torch.Tensor:
         """Apply the learned step `steps` times, always continuing from the most likely grid."""
         for _ in range(steps):
-            grid = self(grid, cond).argmax(dim=1)
+            out = self(grid, cond)
+            grid = out.squeeze(1) if grid.is_floating_point() else out.argmax(dim=1)
         return grid
 
 
@@ -100,7 +103,8 @@ class AnswerNet(nn.Module):
 
     DILATIONS = (1, 2, 4, 8, 1, 2, 4, 8)
 
-    def __init__(self, dims: int, values: int, cond: int = 0, extra: int = 0, width: int = 96, wrap: bool = True):
+    def __init__(self, dims: int, values: int, cond: int = 0, extra: int = 0, width: int = 96, wrap: bool = True,
+                 dropout: float = 0.15):
         super().__init__()
         conv = nn.Conv1d if dims == 1 else nn.Conv2d
         self.values = values
@@ -109,6 +113,7 @@ class AnswerNet(nn.Module):
         self.blocks = nn.ModuleList(_Block(dims, width, d, wrap, 64) for d in self.DILATIONS)
         self.state = conv(width, values, 1)
         self.summary = nn.Sequential(nn.Linear(2 * width + 64, 128), nn.ReLU())
+        self.drop = nn.Dropout(dropout)
         self.count = nn.Linear(128, values)
         self.numbers = nn.Linear(128, 5)           # stable, stable_at, start, length, occurs
 
@@ -118,7 +123,8 @@ class AnswerNet(nn.Module):
         for block in self.blocks:
             h = block(h, told)
         flat = h.flatten(2)
-        summary = self.summary(torch.cat([flat.mean(dim=2), flat.amax(dim=2), told], dim=1))
+        summary = self.drop(self.summary(torch.cat([flat.mean(dim=2), flat.amax(dim=2), told], dim=1)))
         stable, stable_at, start, length, occurs = self.numbers(summary).unbind(dim=1)
-        return {"state": self.state(h), "count": F.softmax(self.count(summary), dim=1), "stable": stable,
+        count = self.count(summary) if grid.is_floating_point() else F.softmax(self.count(summary), dim=1)
+        return {"state": self.state(h), "count": count, "stable": stable,
                 "stable_at": stable_at, "start": start, "length": length, "occurs": occurs}

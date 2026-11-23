@@ -20,7 +20,8 @@ Written 23 November 2026. Deliverable 3 (Lab 11) asks for a **dataset of generat
 | Colab notebook | **Done & verified on L4 GPU (30.8 min total)** |
 | One-step network on the 256 elementary rules | **Done — 100.0% seen, unseen, 32-cell & live engine** |
 | Five-questions network (shared + 5 separate) | **Done — results in `docs/deliverables/D3-dataset/results/`** |
-| 2D automata + traffic training (25 models) | **Done — 6/10 deterministic StepNets at 100.0% N=32** |
+| 2D automata + traffic training | **Done — 8/10 discrete deterministic StepNets at 100.0% N=32 + `diffusion_16` float support (MAE 0.52)** |
+| Gradient-boosting baseline (`HistGradientBoosting`) | **Done — `AnswerNet` beats GBDT on all metrics (unseen stable F1: 0.712 vs 0.365)** |
 | Post-training verification & speed benchmarks | **Done — `PASS: 47 | WARN: 1 | FAIL: 0` (L4 + CPU)** |
 | Presentation for Deliverable 3 | **Not started** (ready — all results & charts archived) |
 
@@ -100,10 +101,9 @@ Same style as the Deliverable 2 deck: plain, descriptive titles; real numbers on
 - [ ] Short mention of the new agents-mode automata (all 15 from the brief now exist).
 
 ### 6. Optional extras, by value
-- [ ] A gradient-boosting baseline for the counts and yes/no questions. It was announced on the
-      Deliverable 1 metrics slide, so the professor may ask about it (scikit-learn, about 30 lines).
+- [x] A gradient-boosting baseline (`ml/baselines.py`, `HistGradientBoosting`) for counts and whole-run questions.
 - [ ] Asking a language model the same questions directly, as the "why we simulate" comparison.
-- [ ] Support for decimal values (`diffusion_16` is generated but the networks skip it).
+- [x] Support for decimal values (`diffusion_16` trained & evaluated via L1 regression).
 - [ ] A reinforcement-learning agent that edits the starting grid towards a goal. The deliverable says
       "neural network **or** reinforcement learning", so this is not required.
 

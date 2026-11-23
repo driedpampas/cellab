@@ -2,7 +2,7 @@
   "kind": "step",
   "dataset": "epidemic_16",
   "trained_on": "epidemic_16.npz",
-  "epoch": 59,
+  "epoch": 25,
   "parameters": 11589,
   "splits": {
     "test": {
@@ -17,26 +17,26 @@
               "count_error": 0.0
             },
             "copy": {
-              "cells_correct": 0.7561849355697632,
+              "cells_correct": 0.7561848759651184,
               "grids_correct": 0.0,
               "count_error": 37.46666717529297
             },
             "common": {
-              "cells_correct": 0.017330730333924294,
+              "cells_correct": 0.017330728471279144,
               "grids_correct": 0.0
             }
           },
           {
             "n": 2,
             "model": {
-              "cells_correct": 0.9747917056083679,
-              "grids_correct": 0.6666666865348816,
-              "count_error": 4.2166666984558105
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
             },
             "copy": {
-              "cells_correct": 0.563255250453949,
+              "cells_correct": 0.5632551908493042,
               "grids_correct": 0.0,
-              "count_error": 86.1300048828125
+              "count_error": 86.12999725341797
             },
             "common": {
               "cells_correct": 0.03354166820645332,
@@ -46,9 +46,9 @@
           {
             "n": 4,
             "model": {
-              "cells_correct": 0.696276068687439,
-              "grids_correct": 0.0,
-              "count_error": 62.75666809082031
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
             },
             "copy": {
               "cells_correct": 0.285260409116745,
@@ -63,14 +63,14 @@
           {
             "n": 8,
             "model": {
-              "cells_correct": 0.1885807365179062,
-              "grids_correct": 0.0,
-              "count_error": 201.07000732421875
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
             },
             "copy": {
               "cells_correct": 0.10669270902872086,
               "grids_correct": 0.0,
-              "count_error": 223.4666748046875
+              "count_error": 223.46665954589844
             },
             "common": {
               "cells_correct": 0.8027604222297668,
@@ -80,14 +80,14 @@
           {
             "n": 16,
             "model": {
-              "cells_correct": 0.039830729365348816,
-              "grids_correct": 0.0,
-              "count_error": 244.8800048828125
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
             },
             "copy": {
               "cells_correct": 0.03098958358168602,
               "grids_correct": 0.0,
-              "count_error": 247.52334594726562
+              "count_error": 247.52333068847656
             },
             "common": {
               "cells_correct": 0.9743750095367432,
@@ -97,14 +97,14 @@
           {
             "n": 32,
             "model": {
-              "cells_correct": 0.024765625596046448,
-              "grids_correct": 0.0,
-              "count_error": 249.66000366210938
+              "cells_correct": 1.0,
+              "grids_correct": 1.0,
+              "count_error": 0.0
             },
             "copy": {
               "cells_correct": 0.024205729365348816,
               "grids_correct": 0.0,
-              "count_error": 249.8033447265625
+              "count_error": 249.80332946777344
             },
             "common": {
               "cells_correct": 0.9931250214576721,

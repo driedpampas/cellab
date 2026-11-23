@@ -35,14 +35,35 @@ TASKS = ("state", "count", "stable", "cycle", "occurs")
 # ------------------------------------------------------------ losses
 
 def step_loss(model: StepNet, data: Data, index: torch.Tensor) -> torch.Tensor:
-    """One step: generation 0 -> generation 1 (the first horizon must be 1)."""
-    return F.cross_entropy(model(data.initial[index], data.cond[index]), data.states[index, 0])
+    """One step: generation 0 -> generation 1 (plus 1 -> 2 when horizon 2 is present)."""
+    cond = data.cond[index]
+    x0, y0 = data.initial[index], data.states[index, 0]
+    if len(data.horizons) >= 2 and int(data.horizons[1]) == 2:
+        x = torch.cat([x0, y0], dim=0)
+        y = torch.cat([y0, data.states[index, 1]], dim=0)
+        cond = torch.cat([cond, cond], dim=0)
+    else:
+        x, y = x0, y0
+    pred = model(x, cond)
+    if data.continuous:
+        return F.l1_loss(pred.squeeze(1), y)
+    return F.cross_entropy(pred, y)
 
 
-def answer_batch(data: Data, index: torch.Tensor, h: torch.Tensor, q: torch.Tensor) -> dict:
+def answer_batch(data: Data, index: torch.Tensor, h: torch.Tensor, q: torch.Tensor,
+                 shifts: tuple[int, ...] = ()) -> dict:
     """Inputs and targets for samples `index`, each with horizon number h and query number q."""
-    return {"grid": data.initial[index], "extra": data.extra[index], "query": data.queries[index, q],
-            "cond": data.cond[index], "n": data.horizons[h], "state": data.states[index, h],
+    grid, extra, query, state = data.initial[index], data.extra[index], data.queries[index, q], data.states[index, h]
+    if shifts:
+        dims_grid = tuple(range(1, 1 + len(shifts)))
+        dims_extra = tuple(range(2, 2 + len(shifts)))
+        grid = torch.roll(grid, shifts=shifts, dims=dims_grid)
+        query = torch.roll(query, shifts=shifts, dims=dims_grid)
+        state = torch.roll(state, shifts=shifts, dims=dims_grid)
+        if extra.shape[1]:
+            extra = torch.roll(extra, shifts=shifts, dims=dims_extra)
+    return {"grid": grid, "extra": extra, "query": query,
+            "cond": data.cond[index], "n": data.horizons[h], "state": state,
             "occurs": data.occurs[index, q], "start": data.cycle_start[index],
             "length": data.cycle_length[index], "stable_from": data.stable_from[index]}
 
@@ -50,7 +71,6 @@ def answer_batch(data: Data, index: torch.Tensor, h: torch.Tensor, q: torch.Tens
 def answer_losses(model: AnswerNet, data: Data, batch: dict) -> dict[str, torch.Tensor]:
     """The loss of each head on a batch (a head with nothing to learn from in the batch gives 0)."""
     out = model(batch["grid"], batch["extra"], batch["query"], batch["cond"], batch["n"])
-    target_share = F.one_hot(batch["state"], data.values).float().flatten(1, -2).mean(dim=1)
 
     def masked(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         return (values * mask).sum() / mask.sum().clamp(min=1)
@@ -62,9 +82,16 @@ def answer_losses(model: AnswerNet, data: Data, batch: dict) -> dict[str, torch.
     # Whether a run becomes stable is known if it did, or if its cycle (longer than 1) was found.
     stable_known = is_stable | known(batch["length"]) if data.deterministic else torch.ones_like(is_stable)
     occurs_known = known(batch["occurs"])
+    if data.continuous:
+        state_loss = F.l1_loss(out["state"].squeeze(1), batch["state"])
+        count_loss = F.l1_loss(out["count"].squeeze(1), batch["state"].flatten(1).mean(dim=1))
+    else:
+        target_share = F.one_hot(batch["state"], data.values).float().flatten(1, -2).mean(dim=1)
+        state_loss = F.cross_entropy(out["state"], batch["state"])
+        count_loss = F.l1_loss(out["count"], target_share) * data.values
     return {
-        "state": F.cross_entropy(out["state"], batch["state"]),
-        "count": F.l1_loss(out["count"], target_share) * data.values,
+        "state": state_loss,
+        "count": count_loss,
         "stable": masked(F.binary_cross_entropy_with_logits(out["stable"], is_stable.float(), reduction="none"), stable_known)
                   + masked(far(out["stable_at"], batch["stable_from"]), is_stable),
         "cycle": masked(far(out["start"], batch["start"]) + far(out["length"], batch["length"]), known(batch["length"])),
@@ -73,7 +100,7 @@ def answer_losses(model: AnswerNet, data: Data, batch: dict) -> dict[str, torch.
 
 
 class Weighting(torch.nn.Module):
-    """Combines the heads' losses: sum of loss / weight + log(weight), with learned weights."""
+    """Combines the heads' losses: sum of loss / weight + log(weight), with clamped learned weights."""
 
     def __init__(self, tasks: tuple[str, ...]):
         super().__init__()
@@ -82,7 +109,8 @@ class Weighting(torch.nn.Module):
 
     def forward(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:
         chosen = torch.stack([losses[task] for task in self.tasks])
-        return (chosen * torch.exp(-self.log_weight) + self.log_weight).sum()
+        lw = self.log_weight.clamp(-2.0, 2.0)
+        return (chosen * torch.exp(-lw) + lw).sum()
 
 
 # ------------------------------------------------------------ the loop
@@ -118,7 +146,7 @@ def train(kind: str, dataset: str | Path | Data, out: str, epochs: int = 30, bat
     tasks = tuple(task for task in tasks if has_labels.get(task, True))
     weighting = Weighting(tasks).to(device)
     steps_per_epoch = math.ceil(len(train_index) / batch)
-    optimizer = torch.optim.AdamW([*model.parameters(), *weighting.parameters()], lr=lr, weight_decay=1e-4, fused=is_cuda)
+    optimizer = torch.optim.AdamW([*model.parameters(), *weighting.parameters()], lr=lr, weight_decay=5e-4, fused=is_cuda)
     schedule = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda s: min(
         (s + 1) / steps_per_epoch, 0.5 * (1 + math.cos(math.pi * min(1.0, s / (epochs * steps_per_epoch))))))
     amp_dtype = torch.bfloat16 if (is_cuda and torch.cuda.is_bf16_supported()) else torch.float16
@@ -140,14 +168,14 @@ def train(kind: str, dataset: str | Path | Data, out: str, epochs: int = 30, bat
             generator.set_state(gen_state)
         history, best = saved["history"], saved["best"]
 
-    def loss_of(index: torch.Tensor, h=None, q=None) -> tuple[torch.Tensor, dict]:
+    def loss_of(index: torch.Tensor, h=None, q=None, shifts: tuple[int, ...] = ()) -> tuple[torch.Tensor, dict]:
         if kind == "step":
             loss = step_loss(model, data, index)
             return loss, {"step": loss}
         if h is None:       # training: a random horizon and query for every sample
             h = torch.randint(len(data.horizons), (len(index),), device=device, generator=generator)
             q = torch.randint(data.queries.shape[1], (len(index),), device=device, generator=generator)
-        losses = answer_losses(model, data, answer_batch(data, index, h, q))
+        losses = answer_losses(model, data, answer_batch(data, index, h, q, shifts=shifts))
         return weighting(losses), losses
 
     @torch.no_grad()
@@ -168,13 +196,18 @@ def train(kind: str, dataset: str | Path | Data, out: str, epochs: int = 30, bat
         model.train()
         return {name: (value / batches).item() for name, value in totals.items()}
 
+    spatial_shape = tuple(data.initial.shape[1:])
     for epoch in range(len(history["epochs"]) + 1, epochs + 1):
         started = time.time()
         running = torch.zeros((), device=device)
         order = train_index[torch.randperm(len(train_index), device=device, generator=generator)]
-        for start in range(0, len(order), batch):
+        for step_idx, start in enumerate(range(0, len(order), batch)):
+            shifts: tuple[int, ...] = ()
+            if kind == "answers" and data.wrap:
+                shifts = tuple((seed * (37 + 16 * a) + epoch * (13 + 4 * a) + step_idx * (7 + 4 * a)) % s
+                               for a, s in enumerate(spatial_shape))
             with torch.autocast(device_type=device_type, dtype=amp_dtype, enabled=is_cuda):
-                loss, _ = loss_of(order[start:start + batch])
+                loss, _ = loss_of(order[start:start + batch], shifts=shifts)
             optimizer.zero_grad(set_to_none=True)
             if use_scaler:
                 scaler.scale(loss).backward()

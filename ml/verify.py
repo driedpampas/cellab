@@ -65,11 +65,11 @@ def audit_run(folder: Path) -> dict:
     horizons = test_all.get("by_horizon", [])
     n1 = horizons[0] if horizons else None
     nlast = horizons[-1] if horizons else None
-    cells_n1 = n1["model"]["cells_correct"] if n1 else None
-    cells_last = nlast["model"]["cells_correct"] if nlast else None
-    grids_last = nlast["model"]["grids_correct"] if nlast else None
-    copy_last = nlast["copy"]["cells_correct"] if nlast else None
-    common_last = nlast["common"]["cells_correct"] if nlast else None
+    cells_n1 = n1["model"].get("cells_correct") if n1 else None
+    cells_last = nlast["model"].get("cells_correct") if nlast else None
+    grids_last = nlast["model"].get("grids_correct") if nlast else None
+    copy_last = nlast.get("copy", {}).get("cells_correct") if nlast else None
+    common_last = nlast.get("common", {}).get("cells_correct") if nlast else None
     best_base = max(copy_last, common_last) if (copy_last is not None and common_last is not None) else None
 
     status = "PASS"

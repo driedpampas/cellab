@@ -34,7 +34,13 @@ from .models import one_hot
 from .train import answer_batch, build
 
 
-def grid_scores(prediction: torch.Tensor, target: torch.Tensor) -> dict[str, float]:
+def grid_scores(prediction: torch.Tensor, target: torch.Tensor, continuous: bool = False, scale: float = 1.0) -> dict[str, float]:
+    if continuous:
+        err = (prediction - target).abs() * scale
+        tol = 0.01 * scale
+        within = (err <= tol).flatten(1).float().mean(dim=1)
+        return {"cells_correct": within.mean().item(), "grids_correct": (within == 1).float().mean().item(),
+                "mae": err.mean().item()}
     right = (prediction == target).flatten(1).float().mean(dim=1)
     return {"cells_correct": right.mean().item(), "grids_correct": (right == 1).float().mean().item()}
 
@@ -71,7 +77,10 @@ def predictions(kind: str, model, data: Data, index: torch.Tensor, batch: int = 
             continue
         per_h = [model(**{k: v for k, v in answer_batch(data, part, torch.full_like(part, h), torch.zeros_like(part)).items()
                           if k in ("grid", "extra", "query", "cond", "n")}) for h in range(horizons)]
-        keep("state", torch.stack([out["state"].argmax(dim=1) for out in per_h], dim=1))
+        if data.continuous:
+            keep("state", torch.stack([out["state"].squeeze(1) for out in per_h], dim=1))
+        else:
+            keep("state", torch.stack([out["state"].argmax(dim=1) for out in per_h], dim=1))
         keep("count", torch.stack([out["count"] for out in per_h], dim=1))
         middle = per_h[horizons // 2]           # the whole-run answers do not depend on N: read them at one N
         for name in ("stable", "stable_at", "start", "length"):
@@ -81,7 +90,10 @@ def predictions(kind: str, model, data: Data, index: torch.Tensor, batch: int = 
                                              if k in ("grid", "extra", "query", "cond", "n")})["occurs"] for q in range(queries)], dim=1))
     result = {name: torch.cat(values) for name, values in parts.items()}
     if kind == "step":
-        result["count"] = torch.stack([shares(result["state"][:, h], data.values) for h in range(horizons)], dim=1)
+        if data.continuous:
+            result["count"] = result["state"].flatten(2).mean(dim=2, keepdim=True)
+        else:
+            result["count"] = torch.stack([shares(result["state"][:, h], data.values) for h in range(horizons)], dim=1)
     return result
 
 
@@ -91,15 +103,24 @@ def score(kind: str, data: Data, index: torch.Tensor, said: dict, train: torch.T
     if not len(index):
         return result
     target_states = data.states[index]
-    target_share = torch.stack([shares(target_states[:, h], data.values) for h in range(len(data.horizons))], dim=1)
-    common_grid = data.states[train].flatten(0, 1).mode(dim=0).values
+    if data.continuous:
+        common_grid = data.states[train].flatten(0, 1).mean(dim=0)
+    else:
+        target_share = torch.stack([shares(target_states[:, h], data.values) for h in range(len(data.horizons))], dim=1)
+        common_grid = data.states[train].flatten(0, 1).mode(dim=0).values
     by_horizon = []
     for h, n in enumerate(data.horizons.tolist()):
         truth = target_states[:, h]
-        row = {"n": n, "model": grid_scores(said["state"][:, h], truth), "copy": grid_scores(data.initial[index], truth),
-               "common": grid_scores(common_grid.expand_as(truth), truth)}
-        row["model"]["count_error"] = (said["count"][:, h] - target_share[:, h]).abs().sum(dim=1).mean().item() * cells / 2
-        row["copy"]["count_error"] = (shares(data.initial[index], data.values) - target_share[:, h]).abs().sum(dim=1).mean().item() * cells / 2
+        row = {"n": n, "model": grid_scores(said["state"][:, h], truth, data.continuous, data.scale),
+               "copy": grid_scores(data.initial[index], truth, data.continuous, data.scale),
+               "common": grid_scores(common_grid.expand_as(truth), truth, data.continuous, data.scale)}
+        if data.continuous:
+            truth_mean = truth.flatten(1).mean(dim=1)
+            row["model"]["count_error"] = (said["count"][:, h].squeeze(-1) - truth_mean).abs().mean().item() * data.scale
+            row["copy"]["count_error"] = (data.initial[index].flatten(1).mean(dim=1) - truth_mean).abs().mean().item() * data.scale
+        else:
+            row["model"]["count_error"] = (said["count"][:, h] - target_share[:, h]).abs().sum(dim=1).mean().item() * cells / 2
+            row["copy"]["count_error"] = (shares(data.initial[index], data.values) - target_share[:, h]).abs().sum(dim=1).mean().item() * cells / 2
         by_horizon.append(row)
     result["by_horizon"] = by_horizon
     if kind == "step":

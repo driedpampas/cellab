@@ -42,6 +42,8 @@ class Data:
     group: torch.Tensor          # [S] a number to report results by (the Wolfram class, or 0)
     rule: torch.Tensor           # [S] the rule number (or 0)
     splits: dict[str, torch.Tensor]   # split name -> sample numbers
+    continuous: bool = False     # True for decimal-valued automata (e.g. diffusion)
+    scale: float = 1.0           # divisor used to normalize continuous values into 0..1
 
     @property
     def cells(self) -> int:
@@ -51,17 +53,21 @@ class Data:
 def load(path: str | Path, device: str = "cpu") -> Data:
     arrays, meta = load_dataset(path)
     info, spec = meta["automaton"], meta["spec"]
-    if arrays["states"].dtype.kind == "f":
-        raise ValueError(f"{meta['name']}: decimal cell values are not supported by the networks")
+    continuous = arrays["states"].dtype.kind == "f"
     layers = len(info["layers"])
     initial = arrays["initial"][:, 0] if layers else arrays["initial"]
     extra = arrays["initial"][:, 1:].astype(np.float32) if layers else np.zeros((len(initial), 0, *initial.shape[1:]), np.float32)
     if layers:
         extra /= np.maximum(extra.max(axis=tuple(range(2, extra.ndim)), keepdims=True).max(axis=0, keepdims=True), 1)
-    # Automata whose values cannot be listed (whole numbers without a maximum) use the range seen in the data.
-    seen = [initial, arrays["states"], arrays["queries"]]
-    lowest = info["values"][0] if info["values"] else int(min(a.min() for a in seen))
-    values = len(info["values"]) if info["values"] else int(max(a.max() for a in seen)) - lowest + 1
+    if continuous:
+        lowest, values = 0, 1
+        scale = float(max(initial.max(), arrays["states"].max(), arrays["queries"].max(), 1.0))
+    else:
+        # Automata whose values cannot be listed (whole numbers without a maximum) use the range seen in the data.
+        seen = [initial, arrays["states"], arrays["queries"]]
+        lowest = info["values"][0] if info["values"] else int(min(a.min() for a in seen))
+        values = len(info["values"]) if info["values"] else int(max(a.max() for a in seen)) - lowest + 1
+        scale = 1.0
 
     samples = len(initial)
     setting = arrays["setting"]
@@ -82,15 +88,25 @@ def load(path: str | Path, device: str = "cpu") -> Data:
     def tensor(array, dtype=torch.long):
         return torch.as_tensor(np.asarray(array), dtype=dtype, device=device)
 
+    if continuous:
+        init_t = tensor(initial.astype(np.float32) / scale, torch.float32)
+        states_t = tensor(arrays["states"].astype(np.float32) / scale, torch.float32)
+        queries_t = tensor(arrays["queries"].astype(np.float32) / scale, torch.float32)
+    else:
+        init_t = tensor(initial.astype(np.int64) - lowest)
+        states_t = tensor(arrays["states"].astype(np.int64) - lowest)
+        queries_t = tensor(arrays["queries"].astype(np.int64) - lowest)
+
     return Data(
         name=meta["name"], dims=info["dimensions"], values=values, wrap=info["edges"] == "wrap",
         deterministic=info["deterministic"], horizons=tensor(spec["horizons"]),
-        initial=tensor(initial.astype(np.int64) - lowest), extra=tensor(extra, torch.float32),
-        states=tensor(arrays["states"].astype(np.int64) - lowest), queries=tensor(arrays["queries"].astype(np.int64) - lowest),
+        initial=init_t, extra=tensor(extra, torch.float32),
+        states=states_t, queries=queries_t,
         occurs=tensor(arrays["occurs"]), cycle_start=tensor(arrays["cycle_start"]),
         cycle_length=tensor(arrays["cycle_length"]), stable_from=tensor(arrays["stable_from"]),
         cond=tensor(cond, torch.float32), group=tensor(group), rule=tensor(rules),
         splits={name: tensor(index) for name, index in splits.items()},
+        continuous=continuous, scale=scale,
     )
 
 
