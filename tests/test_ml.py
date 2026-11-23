@@ -155,3 +155,43 @@ def test_gbdt_baseline_and_continuous_diffusion(dataset, tmp_path):
         train("answers", d, str(out_a), epochs=1, batch=64, width=16, device="cpu", limit=64)
         rep_a = evaluate("answers", d, out_a / "best.pt", device="cpu")
         assert "mae" in rep_a["splits"]["test"]["all"]["by_horizon"][0]["model"]
+
+
+def _exact_elementary_step(rules: torch.Tensor):
+    """The true elementary step on rings, as a Stepper-like function (grid, rows) -> next grid."""
+    def step(grid, rows):
+        left, right = grid.roll(1, dims=1), grid.roll(-1, dims=1)
+        pattern = 4 * left + 2 * grid + right
+        return (rules[rows].unsqueeze(1) >> pattern) & 1
+    return step
+
+
+def test_brent_finds_the_cycles_of_the_dataset(dataset):
+    from ml.simulate import find_cycles, visit
+    data = load(dataset)
+    index = torch.nonzero(data.cycle_length >= 0).flatten()
+    step = _exact_elementary_step(data.rule[index])
+    start, length, _ = find_cycles(step, data.initial[index], max_steps=5000)
+    assert torch.equal(length, data.cycle_length[index]) and torch.equal(start, data.cycle_start[index])
+    states, seen = visit(step, data.initial[index], data.queries[index], data.horizons.tolist(), start + length)
+    assert torch.equal(states, data.states[index])
+    known_q = data.occurs[index] >= 0
+    assert torch.equal(seen[known_q], data.occurs[index][known_q] == 1)
+
+
+def test_simulated_answers_of_a_trained_step_network(dataset, tmp_path):
+    from ml.simulate import simulate_and_save
+    data = load(dataset)
+    train("step", data, str(tmp_path / "step"), epochs=40, batch=64)
+    report = simulate_and_save(data, tmp_path / "step" / "best.pt", tmp_path / "sim")
+    assert (tmp_path / "sim" / "metrics.json").exists() and report["kind"] == "simulated"
+    everything = report["splits"]["test"]["all"]
+    assert {"cycle_start", "cycle_length", "stable", "occurs", "by_horizon"} <= set(everything)
+    assert "log_error" in everything["cycle_length"]
+
+
+def test_f1_when_nobody_is_stable():
+    from ml.evaluate import f1_score, yes_no_scores
+    assert f1_score(0, 0, 0) == 1.0 and f1_score(0, 3, 0) == 0.0
+    none = torch.zeros(5, dtype=torch.bool)
+    assert yes_no_scores(none, none)["f1"] == 1.0

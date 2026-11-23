@@ -20,6 +20,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostin
 
 from . import eca
 from .data import Data, known, load
+from .evaluate import f1_score
 
 
 def _grid_features(grids: np.ndarray, values: int, continuous: bool) -> np.ndarray:
@@ -63,11 +64,9 @@ def _query_features(data: Data, idx: np.ndarray, q: int) -> np.ndarray:
 def _yes_no(pred: np.ndarray, truth: np.ndarray) -> dict[str, float]:
     pred, truth = pred.astype(bool), truth.astype(bool)
     hits = int((pred & truth).sum())
-    prec = hits / max(int(pred.sum()), 1)
-    rec = hits / max(int(truth.sum()), 1)
     return {
         "accuracy": float((pred == truth).mean()),
-        "f1": float(2 * prec * rec / max(prec + rec, 1e-9)),
+        "f1": float(f1_score(hits, int(pred.sum()), int(truth.sum()))),
         "share_yes": float(truth.mean()),
     }
 
@@ -79,6 +78,9 @@ def _number(pred_log: np.ndarray, truth: np.ndarray, baseline: float) -> dict[st
         "exactly_right": float((steps == truth).mean()),
         "common_error": float(np.abs(baseline - truth).mean()),
         "samples": int(len(truth)),
+        "log_error": float(np.abs(np.log1p(steps) - np.log1p(truth)).mean()),
+        "common_log_error": float(np.abs(np.log1p(baseline) - np.log1p(truth)).mean()),
+        "common_exactly_right": float((np.round(baseline) == truth).mean()),
     }
 
 

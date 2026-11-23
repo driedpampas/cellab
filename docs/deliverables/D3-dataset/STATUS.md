@@ -4,9 +4,8 @@ Written 23 November 2026. Deliverable 3 (Lab 11) asks for a **dataset of generat
 (or reinforcement-learning) experiment** on it. How the experiment is designed and why is in
 [README.md](README.md); this page is the checklist.
 
-> **Before anything else:** this work is on the local branch `agents-mode` and is **not on GitHub yet**.
-> Until it is pushed to `main`, nobody else can see it, and the Colab notebook (which downloads the code
-> from GitHub) cannot run.
+> **Next step:** run the v2 notebook once (see "3b" below). The results in `results/` come from two code
+> versions, so the shared-vs-separate comparison is not fair yet, and the exact simulated answers are not in yet.
 
 ## Summary
 
@@ -16,13 +15,14 @@ Written 23 November 2026. Deliverable 3 (Lab 11) asks for a **dataset of generat
 | Dataset generator | Done, tested |
 | The datasets (18 of them, 94,380 runs) | Done, in `data/` |
 | Question/answer set for hand-in | Done for the elementary rules; one command for the rest |
-| The two networks, training, evaluation & verification code | Done, tested on Linux (`295 passed`) |
+| The two networks, training, evaluation & verification code | Done, tested on Linux (`299 passed`) |
 | Colab notebook | **Done & verified on L4 GPU (30.8 min total)** |
 | One-step network on the 256 elementary rules | **Done — 100.0% seen, unseen, 32-cell & live engine** |
-| Five-questions network (shared + 5 separate) | **Done — results in `docs/deliverables/D3-dataset/results/`** |
+| Five-questions network (shared + 5 separate) | Trained; **comparison provisional** (the two sides used different code, one seed each) — v2 run pending |
+| All five answers by simulating with the learned step (`ml/simulate.py`) | Code done and checked locally (exact on 650 class-3/4 runs incl. Rule 30); **full run in the v2 notebook** |
 | 2D automata + traffic training | **Done — 8/10 discrete deterministic StepNets at 100.0% N=32 + `diffusion_16` float support (MAE 0.52)** |
-| Gradient-boosting baseline (`HistGradientBoosting`) | **Done — `AnswerNet` beats GBDT on all unseen metrics (unseen stable F1: 0.600 vs 0.365, occurs F1: 0.741 vs 0.661)** |
-| Post-training verification & speed benchmarks | **Done — `PASS: 49 | WARN: 1 | FAIL: 0` across 36 models (L4 + CPU)** |
+| Gradient-boosting baseline (`HistGradientBoosting`) | Done — `AnswerNet` is better on unseen count, stable (F1 0.600 vs 0.365) and occurs (0.741 vs 0.661); neither has skill on chaotic cycle lengths |
+| Post-training verification & speed benchmarks | Done. The checks are now stricter: a model no better than the baseline is a WARN (Brian's Brain, Game of Life and predator-prey five-questions networks are exactly at the baseline) |
 | Presentation for Deliverable 3 | **Not started** (ready — all results & charts archived) |
 
 ## Done
@@ -82,6 +82,19 @@ steps, so it did not learn the step exactly in that short run. Full training is 
 - [x] Optimized `notebooks/D3_train_on_colab.ipynb` + `ml/` for Colab Pro **L4 GPU** (`bf16`, fused AdamW, fused circular `F.pad`, local SSD training + Drive sync, automatic per-model and post-training verification & speed benchmarks).
 - [x] Ran all 34 models end-to-end on L4 (**30.8 minutes** total; `PASS: 47 | WARN: 1 | FAIL: 0`).
 - [x] Downloaded `cellab_results/` into local `results/`, archived all 34 models' `metrics.json`, `accuracy_by_horizon.png`, `summary.csv`, `verification.json`, `verification_report.md`, `cpu_speed_benchmark.json`, `multitask_vs_single.png`, and `speed_benchmark.png` into `docs/deliverables/D3-dataset/results/`.
+
+### 3b. The v2 run on Colab (Matei)
+- [ ] Open `notebooks/D3_train_on_colab.ipynb` in Colab, **L4 GPU**, *Runtime → Run all*. It writes to the new Drive
+      folder `cellab_results_v2`, so everything is retrained on the current code. About an hour with
+      `SEEDS = (0, 1, 2)`; set `SEEDS = (0,)` to halve it. Seed 0 of everything runs first, extra seeds last.
+      The runtime disconnects itself at the end, also after an error in one model.
+- [ ] Copy `metrics.json` / plots / `verification_report.md` from `cellab_results_v2/` into `docs/deliverables/D3-dataset/results/`
+      (replace the old ones) and update the provisional sections of `README.md` (2b, 3).
+
+What to look at in `verification_report.md`:
+- **"StepNet + simulation: exact whole-run answers"** should be PASS for test and unseen (cycles exact, Rule 30 included).
+- **"Cycle length by Wolfram class"**: AnswerNet good on classes 1–2, no skill on 3–4; simulation exact everywhere.
+- **"Shared vs Separate"** with mean ± sd over 3 seeds; "within noise" means do not claim a winner.
 
 ### 4. Hand-in material
 - [ ] Question/answer sets for the other datasets, if the hand-in should include them (about 1 minute each):

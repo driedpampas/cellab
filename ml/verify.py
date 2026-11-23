@@ -83,6 +83,8 @@ def audit_run(folder: Path) -> dict:
     if report.get("kind") == "answers" and best_base is not None and cells_last is not None:
         if cells_last < best_base - 0.01 and not name.startswith("only_"):
             status = "WARN"; notes.append(f"last-horizon cells {cells_last:.3f} below baseline {best_base:.3f}")
+        elif cells_last < best_base + 0.005 and not name.startswith("only_"):
+            status = "WARN"; notes.append(f"last-horizon cells {cells_last:.3f} no better than baseline {best_base:.3f}")
 
     return {
         "model": name,
@@ -108,6 +110,41 @@ def audit_runs(results_dir: Path) -> list[dict]:
 def _read_metrics(results_dir: Path, name: str) -> dict | None:
     p = results_dir / name / "metrics.json"
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+
+
+def _seed_runs(results_dir: Path, name: str) -> list[dict]:
+    """The metrics of a model and of its retrainings with other seeds (folders `<name>_seed<k>`)."""
+    runs = [_read_metrics(results_dir, name)]
+    runs += [_read_metrics(results_dir, p.name) for p in sorted(results_dir.glob(f"{name}_seed*")) if p.name[len(name) + 5:].isdigit()]
+    return [r for r in runs if r is not None]
+
+
+def _mean_sd(values: list[float]) -> tuple[float, float]:
+    mean = sum(values) / len(values)
+    sd = math.sqrt(sum((v - mean) ** 2 for v in values) / (len(values) - 1)) if len(values) > 1 else 0.0
+    return mean, sd
+
+
+def cycles_by_class(results_dir: Path) -> list[dict]:
+    """Cycle-length answers per Wolfram class, for every method that gives them."""
+    rows = []
+    for name, label in (("answers_elementary", "AnswerNet (one pass)"), ("gbdt_elementary", "Gradient boosting"),
+                        ("simulated_elementary", "StepNet + simulation")):
+        rep = _read_metrics(results_dir, name)
+        if rep is None:
+            continue
+        for split, groups in rep["splits"].items():
+            for group, scores in groups.items():
+                c = scores.get("cycle_length")
+                if not c:
+                    continue
+                rows.append({"method": label, "split": split, "class": group, "samples": c["samples"],
+                             "exactly_right": round(c["exactly_right"], 4), "error": round(c["error"], 2),
+                             "median_error": round(c["common_error"], 2),
+                             "median_exactly_right": round(c["common_exactly_right"], 4) if "common_exactly_right" in c else None,
+                             "log_error": round(c["log_error"], 3) if "log_error" in c else None,
+                             "median_log_error": round(c["common_log_error"], 3) if "common_log_error" in c else None})
+    return rows
 
 
 def verify_hypotheses(results_dir: Path) -> tuple[list[dict], list[dict]]:
@@ -170,13 +207,26 @@ def verify_hypotheses(results_dir: Path) -> tuple[list[dict], list[dict]]:
                     c3_first > c3_last + 0.05,
                     f"C3 N=1={c3_first:.3f} -> N=64={c3_last:.3f}",
                 )
-            cyc = groups["all"].get("cycle_length")
-            if cyc:
+            easy = [groups[c]["cycle_length"] for c in ("1 uniform", "2 periodic") if "cycle_length" in groups.get(c, {})]
+            if easy:
                 add(
-                    f"AnswerNet cycle length beats median ({split})",
-                    cyc["error"] < cyc["common_error"],
-                    f"MAE={cyc['error']:.2f} vs common={cyc['common_error']:.2f}",
+                    f"AnswerNet cycle length, classes 1-2 ({split}): error under half the median guess",
+                    all(c["error"] < 0.5 * c["common_error"] for c in easy),
+                    ", ".join(f"MAE={c['error']:.2f} vs median {c['common_error']:.2f}" for c in easy),
                 )
+
+    # 2b. Simulating with the learned step answers the whole-run questions exactly
+    sim = _read_metrics(results_dir, "simulated_elementary")
+    if sim is None:
+        add("StepNet + simulation: exact whole-run answers", None, "simulated_elementary/metrics.json not found")
+    else:
+        for split, groups in sim["splits"].items():
+            a = groups["all"]
+            got = {"cycle length": a["cycle_length"]["exactly_right"], "cycle start": a["cycle_start"]["exactly_right"],
+                   "stable": a["stable"]["accuracy"], "occurs": a["occurs"]["accuracy"],
+                   f"cells N={a['by_horizon'][-1]['n']}": a["by_horizon"][-1]["model"]["cells_correct"]}
+            add(f"StepNet + simulation: exact whole-run answers ({split})", all(v >= 0.999 for v in got.values()),
+                ", ".join(f"{k}={v:.4f}" for k, v in got.items()))
 
     # 3. Multi-task vs single-task comparison
     comparison: list[dict] = []
@@ -188,26 +238,33 @@ def verify_hypotheses(results_dir: Path) -> tuple[list[dict], list[dict]]:
             ("cycle", "cycle_length MAE", lambda s: s["cycle_length"]["error"], False),
             ("occurs", "occurs F1", lambda s: s["occurs"]["f1"], True),
         ]
+        shared_runs = _seed_runs(results_dir, "answers_elementary")
         for split in ("test", "unseen"):
             if split not in ans["splits"]:
                 continue
-            shared_scores = ans["splits"][split]["all"]
             for task, metric_label, getter, higher_better in task_specs:
-                single_rep = _read_metrics(results_dir, f"only_{task}_elementary")
-                if single_rep is None or split not in single_rep["splits"]:
+                single_runs = [r for r in _seed_runs(results_dir, f"only_{task}_elementary") if split in r["splits"]]
+                if not single_runs:
                     continue
-                sv = float(getter(shared_scores))
-                ov = float(getter(single_rep["splits"][split]["all"]))
+                shared_values = [float(getter(r["splits"][split]["all"])) for r in shared_runs if split in r["splits"]]
+                single_values = [float(getter(r["splits"][split]["all"])) for r in single_runs]
+                sv, s_sd = _mean_sd(shared_values)
+                ov, o_sd = _mean_sd(single_values)
                 delta = sv - ov
                 better = "shared" if ((delta > 0) == higher_better) else "single"
                 if abs(delta) < 1e-4:
                     better = "tie"
+                elif min(len(shared_values), len(single_values)) >= 2 and abs(delta) <= s_sd + o_sd:
+                    better = "within noise"
                 comparison.append({
                     "split": split,
                     "task": task,
                     "metric": metric_label,
                     "shared": round(sv, 4),
+                    "shared_sd": round(s_sd, 4),
                     "single": round(ov, 4),
+                    "single_sd": round(o_sd, 4),
+                    "seeds": [len(shared_values), len(single_values)],
                     "delta": round(delta, 4),
                     "winner": better,
                 })
@@ -517,8 +574,8 @@ def plot_verification(report: dict, out_dir: Path) -> list[str]:
 
         if acc_rows:
             x = np.arange(len(acc_rows))
-            axes[0].bar(x - 0.18, [r["shared"] for r in acc_rows], 0.35, label="Shared (5 heads)")
-            axes[0].bar(x + 0.18, [r["single"] for r in acc_rows], 0.35, label="Separate (1 head)")
+            axes[0].bar(x - 0.18, [r["shared"] for r in acc_rows], 0.35, yerr=[r.get("shared_sd", 0) for r in acc_rows], capsize=3, label="Shared (5 heads)")
+            axes[0].bar(x + 0.18, [r["single"] for r in acc_rows], 0.35, yerr=[r.get("single_sd", 0) for r in acc_rows], capsize=3, label="Separate (1 head)")
             axes[0].set_xticks(x, [f"{r['task']}\n({r['metric']})" for r in acc_rows], fontsize=8)
             axes[0].set_ylim(0, 1.05)
             axes[0].set_title("Accuracy / F1 (higher is better)")
@@ -526,8 +583,8 @@ def plot_verification(report: dict, out_dir: Path) -> list[str]:
 
         if err_rows:
             x = np.arange(len(err_rows))
-            axes[1].bar(x - 0.18, [r["shared"] for r in err_rows], 0.35, label="Shared (5 heads)")
-            axes[1].bar(x + 0.18, [r["single"] for r in err_rows], 0.35, label="Separate (1 head)")
+            axes[1].bar(x - 0.18, [r["shared"] for r in err_rows], 0.35, yerr=[r.get("shared_sd", 0) for r in err_rows], capsize=3, label="Shared (5 heads)")
+            axes[1].bar(x + 0.18, [r["single"] for r in err_rows], 0.35, yerr=[r.get("single_sd", 0) for r in err_rows], capsize=3, label="Separate (1 head)")
             axes[1].set_xticks(x, [f"{r['task']}\n({r['metric']})" for r in err_rows], fontsize=8)
             axes[1].set_title("Error / MAE (lower is better)")
             axes[1].legend(fontsize=8)
@@ -581,13 +638,31 @@ def format_markdown_report(report: dict) -> str:
             extra = f"grids={r['grids_match']:.4f}" if "grids_match" in r else (f"N=16={r['cells_match_n16']:.4f}" if "cells_match_n16" in r else "")
             lines.append(f"| {r['status']} | `{r['model']}` | {r['target']} | {r['cells_match']:.4f} | {extra} |")
         lines.append("")
+    if report.get("cycles_by_class"):
+        lines += ["## Cycle length by Wolfram class", "",
+                  "Error is in steps; log error is |log(1 + said) - log(1 + true)|. The median guess is the training median.", "",
+                  "| Method | Split | Class | Runs | Exactly right | Error | Median-guess error | Log error | Median-guess log error |",
+                  "|---|---|---|---|---|---|---|---|---|"]
+        for r in report["cycles_by_class"]:
+            lines.append(f"| {r['method']} | {r['split']} | {r['class']} | {r['samples']} | {r['exactly_right']:.3f} | {r['error']:.2f} | "
+                         f"{r['median_error']:.2f} | {r['log_error'] if r['log_error'] is not None else '—'} | "
+                         f"{r['median_log_error'] if r['median_log_error'] is not None else '—'} |")
+        lines.append("")
     if report["multitask_vs_single"]:
-        lines += ["## Shared (5-head) vs Separate (1-head)", "", "| Split | Task | Metric | Shared | Single | Delta | Winner |", "|---|---|---|---|---|---|---|"]
+        lines += ["## Shared (5-head) vs Separate (1-head)", "",
+                  "Mean ± standard deviation over the seeds trained (count in the last column). "
+                  "\"within noise\": the difference is smaller than the two standard deviations added.", "",
+                  "| Split | Task | Metric | Shared | Single | Delta | Winner | Seeds |", "|---|---|---|---|---|---|---|---|"]
         for r in report["multitask_vs_single"]:
-            lines.append(f"| {r['split']} | `{r['task']}` | {r['metric']} | {r['shared']:.4f} | {r['single']:.4f} | {r['delta']:+.4f} | {r['winner']} |")
+            seeds = r.get("seeds", [1, 1])
+            lines.append(f"| {r['split']} | `{r['task']}` | {r['metric']} | {r['shared']:.4f} ± {r.get('shared_sd', 0):.4f} | "
+                         f"{r['single']:.4f} ± {r.get('single_sd', 0):.4f} | {r['delta']:+.4f} | {r['winner']} | {seeds[0]} / {seeds[1]} |")
         lines.append("")
     if report["speed_benchmarks"]:
-        lines += ["## Inference Speed Benchmarks", "", "| Method | Horizon N | Batch | ms / sample | Samples / s |", "|---|---|---|---|---|"]
+        lines += ["## Inference Speed Benchmarks", "",
+                  "Not a like-for-like race: the simulator runs one grid at a time on the CPU, the networks run batches on "
+                  "the GPU, and AnswerNet's answers are not exact. Compare rows with the same batch and device.", "",
+                  "| Method | Horizon N | Batch | ms / sample | Samples / s |", "|---|---|---|---|---|"]
         for r in report["speed_benchmarks"]:
             lines.append(f"| {r['method']} | {r['horizon_n']} | {r['batch']} | {r['ms_per_sample']:.4f} | {r['samples_per_sec']:,.1f} |")
         lines.append("")
@@ -624,6 +699,7 @@ def run_verification(results_dir: str | Path, datasets_dir: str | Path = "datase
     report = {
         "summary": summary,
         "hypotheses": hypotheses,
+        "cycles_by_class": cycles_by_class(res_path),
         "multitask_vs_single": comparison,
         "live_simulator_checks": live_sim,
         "speed_benchmarks": benchmarks,
@@ -650,10 +726,15 @@ def print_report(report: dict) -> None:
         for r in report["live_simulator_checks"]:
             extra = f", N=16={r['cells_match_n16']:.4f}" if "cells_match_n16" in r else ""
             print(f"[{r['status']:4s}] {r['model']} ({r['target']}): cells={r['cells_match']:.4f}{extra}")
+    if report.get("cycles_by_class"):
+        print("\n--- Cycle length by Wolfram class (exactly right / error vs median guess) ---")
+        for r in report["cycles_by_class"]:
+            print(f"  {r['method']:22s} {r['split']:6s} {r['class']:11s}: exact={r['exactly_right']:.3f}  error={r['error']:.2f}  median-guess={r['median_error']:.2f}")
     if report["multitask_vs_single"]:
         print("\n--- Shared (5-head) vs Separate (1-head) ---")
         for r in report["multitask_vs_single"]:
-            print(f"  {r['split']:6s} | {r['task']:6s} ({r['metric']:20s}): shared={r['shared']:.4f}  single={r['single']:.4f}  delta={r['delta']:+.4f} ({r['winner']})")
+            print(f"  {r['split']:6s} | {r['task']:6s} ({r['metric']:20s}): shared={r['shared']:.4f}±{r.get('shared_sd', 0):.4f}  "
+                  f"single={r['single']:.4f}±{r.get('single_sd', 0):.4f}  delta={r['delta']:+.4f} ({r['winner']})")
     if report["speed_benchmarks"]:
         print("\n--- Inference Speed Benchmarks ---")
         for r in report["speed_benchmarks"]:

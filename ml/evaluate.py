@@ -45,10 +45,19 @@ def grid_scores(prediction: torch.Tensor, target: torch.Tensor, continuous: bool
     return {"cells_correct": right.mean().item(), "grids_correct": (right == 1).float().mean().item()}
 
 
+def f1_score(hits: int, said_yes: int, truly_yes: int) -> float:
+    """F1 of the "yes" answers. With no "yes" in the truth and none said, every answer is right: 1.0
+    (the usual formula would give 0 there, which reads as a failure)."""
+    if not said_yes and not truly_yes:
+        return 1.0
+    precision, recall = hits / max(said_yes, 1), hits / max(truly_yes, 1)
+    return 2 * precision * recall / max(precision + recall, 1e-9)
+
+
 def yes_no_scores(prediction: torch.Tensor, target: torch.Tensor) -> dict[str, float]:
     hits = (prediction & target).sum().item()
-    precision, recall = hits / max(prediction.sum().item(), 1), hits / max(target.sum().item(), 1)
-    return {"accuracy": (prediction == target).float().mean().item(), "f1": 2 * precision * recall / max(precision + recall, 1e-9),
+    return {"accuracy": (prediction == target).float().mean().item(),
+            "f1": f1_score(hits, prediction.sum().item(), target.sum().item()),
             "share_yes": target.float().mean().item()}
 
 
@@ -130,8 +139,13 @@ def score(kind: str, data: Data, index: torch.Tensor, said: dict, train: torch.T
         return torch.expm1(prediction.float()).round().clamp(min=0)
 
     def number_scores(prediction, truth, baseline) -> dict:
-        return {"error": (steps(prediction) - truth).abs().mean().item(), "exactly_right": (steps(prediction) == truth).float().mean().item(),
-                "common_error": (baseline - truth).abs().mean().item(), "samples": len(truth)}
+        said = steps(prediction)
+        return {"error": (said - truth).abs().mean().item(), "exactly_right": (said == truth).float().mean().item(),
+                "common_error": (baseline - truth).abs().mean().item(), "samples": len(truth),
+                # error in log(1 + steps): "how many times too big or too small", not dominated by a few huge cycles
+                "log_error": (torch.log1p(said) - torch.log1p(truth)).abs().mean().item(),
+                "common_log_error": (torch.log1p(baseline) - torch.log1p(truth)).abs().mean().item(),
+                "common_exactly_right": (baseline.round() == truth).float().mean().item()}
 
     is_stable = known(data.stable_from[index])
     stable_known = is_stable | known(data.cycle_length[index]) if data.deterministic else torch.ones_like(is_stable)

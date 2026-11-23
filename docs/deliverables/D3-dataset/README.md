@@ -62,13 +62,26 @@ Numbers and charts: [`results/step_elementary/`](results/step_elementary/metrics
 | **unseen** (new families) | **1 uniform** | 0.985 | 0.940 | 0.977 | **0.978** | 0.952 | — | 0.973 | 0.953 | 0.03 (6.94) |
 | | **2 periodic** | 0.965 | 0.771 | 0.796 | **0.833** | 0.361 | — | 0.319 | 0.783 | 4.26 (9.32) |
 | | **3 chaotic** (incl. Rule 30) | 0.966 | 0.524 | 0.557 | **0.566** | 0.138 | — | 0.880 | 0.538 | 3071.93 (3074.53) |
-| | **4 complex** | 0.944 | 0.579 | 0.580 | **0.593** | 0.020 | — | 0.000 | 0.631 | 61.76 (63.05) |
+| | **4 complex** | 0.944 | 0.579 | 0.580 | **0.593** | 0.020 | — | — ¹ | 0.631 | 61.76 (63.05) |
 | | **All** | 0.964 | 0.720 | 0.745 | **0.773** | 0.321 | 0.657 | **0.600** | **0.741** | **494.46** (498.83) |
+
+¹ No unseen class-4 run becomes stable, and the network says "not stable" for all of them (accuracy 100%). The old F1 formula printed 0.000 there; `ml/evaluate.py` now gives 1.0 when there is no "yes" to find and none is claimed.
+
+**Cycle length, read by class.** Over all classes, the cycle-length error is barely below always guessing the median (42.4 vs 43.8 seen, 494 vs 499 unseen). That average is dominated by a few huge chaotic cycles: Rule 30 on 16 cells has only five cycle lengths (1, 8, 40, 4,144 and 6,016), and which one a row ends in can only be found by running it. By class, the head works where the hypothesis says it should: class 1 is exactly right for 97–98% of runs (error 0.0 vs 7.0 for the median guess), class 2 has error 2.4 vs 9.2 (seen) and 4.3 vs 9.3 (unseen). Classes 3 and 4 have no skill (unseen chaotic: 3,072 vs 3,075). Section 2b shows that simulating with the learned step gets all of them exactly.
 
 **What this confirms:** the Deliverable 1 hypothesis holds cleanly. Skipping the simulation works well for Class 1 (97.8–99.7%) and Class 2 (83.3–90.2%), while accuracy collapses with N on unseen Class 3 chaotic rules (96.6% at N=1 → 56.6% at N=64, a 40-point drop) and Class 4 complex rules (56.9%–59.3%). On 32-cell transfer (`answers_elementary_on_elementary_w32_test`), overall N=64 accuracy stays nearly unchanged: **88.5%** on seen rules and **76.2%** on unseen rules.
 
+### 2b. All five answers by simulating with the learned step (`ml/simulate.py`)
+The one-step network is run until a row repeats (Brent's algorithm, every sample at once on the GPU), which gives the cycle start and length, whether the run becomes stable, whether each configuration occurs, and the rows after every N. Scored with the same code and splits as `AnswerNet`.
+
+> **Pending the v2 Colab run** (`simulated_elementary/`). A local check on every 4th class-3 and class-4 sample (650 runs, Rule 30 included, seen and unseen families) matched the dataset exactly: cycle length, cycle start, stable, occurs and cells at N = 64 all 100%.
+
+This is the cleanest statement of the result: answering in one pass cannot predict chaotic cycles, while simulating with a network that learned the step predicts them exactly.
+
 ### 3. One shared network vs. five separate networks
 Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_single.png).
+
+> **Provisional — not a fair comparison yet.** The five single-question networks were trained before the regularization change (dropout, weight decay 5e-4, shift augmentation, clamped loss weights); only the shared network was retrained with it. Each side is also a single seed, and most differences below are 1–3 points. The v2 Colab run retrains all of them on the same code with 3 seeds and marks differences smaller than the run-to-run spread as "within noise".
 
 | Split | Task | Metric | Shared (5 heads) | Separate (1 head) | Winner |
 |---|---|---|---:|---:|---|
@@ -83,7 +96,7 @@ Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_singl
 | | `cycle` | cycle length MAE | **494.46** | 511.69 | **Shared** |
 | | `occurs` | F1 | **0.7414** | 0.7400 | **Shared** |
 
-**Takeaway:** on rules seen in training, separate networks edge out on `state`, `count`, and `cycle` while the shared network wins `stable` and `occurs`; on **unseen rule families**, the shared multi-task representation beats separate single-task networks on **4 out of 5 tasks** (`count`, `stable`, `cycle`, `occurs`).
+**Takeaway (provisional):** in this run, separate networks are better on `state`, `count` and `cycle` for seen rules, and the shared one is better on `stable` and `occurs`. On unseen families the shared one is ahead on 4 of 5, but the `occurs` difference (0.0014) is noise and both `cycle` errors are at the median-guess level (≈ 499). Wait for the v2 run before drawing a conclusion.
 
 ### 3b. Gradient-boosting tabular baseline vs. `AnswerNet` (`elementary_w16`)
 `HistGradientBoosting` trained on tabular grid features + the 8 rule bits (7.8 s on CPU). Full report: [`results/gbdt_elementary/metrics.json`](results/gbdt_elementary/metrics.json).
@@ -95,7 +108,7 @@ Comparison chart: [`results/multitask_vs_single.png`](results/multitask_vs_singl
 | `unseen` (new families) | `HistGradientBoosting` (GBDT) | 1.88 | 0.365 | 497.70 | 0.661 |
 | | **`AnswerNet` (CNN, 1 pass)** | **1.19** | **0.600** | **494.46** | **0.741** |
 
-**Takeaway:** on **unseen rule families**, `AnswerNet` beats Gradient Boosting on **every single metric** (notably **+23.5 F1 pts** on `stable` and **+8.0 F1 pts** on `occurs`). Tabular GBDT memorises seen rules (`0.958` stable F1) but collapses to `0.365` on unseen rule families.
+**Takeaway:** on **unseen rule families**, `AnswerNet` is clearly better on `count`, `stable` (+23.5 F1 points) and `occurs` (+8.0 F1 points). On `cycle` neither has skill (494 and 498 against 499 for the median guess). On seen rules, gradient boosting has the lower cycle error (38.0 vs 42.4). Tabular GBDT does well on seen rules (`0.958` stable F1) but drops to `0.365` on unseen families.
 
 ### 4. The 2D automata and 1D traffic
 All 16 non-elementary automata (including decimal-valued `diffusion_16`) now have trained models. Summary table: [`results/summary.csv`](results/summary.csv).
@@ -135,6 +148,8 @@ Full reports: [`results/verification_report.md`](results/verification_report.md)
 | 2D Game of Life, `N=32` | `StepNet` rollout | 64 | 0.249 ms · **4,016 /s** | 7.04 ms · 142 /s |
 | 2D Game of Life, `N=32` | **`AnswerNet` 1-pass (all 5 Qs)** | 64 | **0.077 ms · 13,068 /s** | **3.72 ms · 269 /s** |
 
+**Read with care:** this is not a like-for-like race. The simulator here runs one grid at a time on the CPU and is not batched or vectorised; the networks run batches on the GPU; and `AnswerNet`'s answers are not exact (77% of cells at N = 64 on unseen rules). At batch 1, `StepNet` is about 5× slower than the simulator. Present it as the price of exactness, not as "the network is faster".
+
 Even on a laptop CPU with no GPU, `AnswerNet` answers all 5 questions in **2.64 ms** (`batch=1`, 2× faster than simulating 64 steps) and **7,313 samples/s** batched (38× faster). On an L4 GPU it reaches **56,217 samples/s** (**365×** faster than the simulator, **7×** faster than batched `StepNet` rollout) — quantifying the exact speed-vs-exactness trade-off.
 
 ## Encoding (as planned in Deliverable 1)
@@ -151,15 +166,17 @@ Even on a laptop CPU with no GPU, `AnswerNet` answers all 5 questions in **2.64 
 
 ## How to reproduce
 
-1. Open [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb) in Google Colab, select **L4 GPU** (or T4), and click **Runtime → Run all** (~31 min on L4; results and verification reports auto-sync to Drive).
+1. Open [`notebooks/D3_train_on_colab.ipynb`](../../../notebooks/D3_train_on_colab.ipynb) in Google Colab, select **L4 GPU** (or T4), and click **Runtime → Run all** (about an hour on L4 with 3 seeds, about half with `SEEDS = (0,)`; results go to the Drive folder `cellab_results_v2`, and the runtime disconnects itself at the end).
 2. Or run locally with PyTorch (`pip install -r requirements-ml.txt`):
 
 ```bash
 python -m ml.train step data/elementary_w16.npz --out results/step_elementary --epochs 40
 python -m ml.evaluate step data/elementary_w16.npz results/step_elementary/best.pt --out results/step_elementary
+python -m ml.simulate data/elementary_w16.npz results/step_elementary/best.pt --out results/simulated_elementary
 python -m ml.verify results/
 ```
 
 ## Remaining for Deliverable 3
+- Run the v2 notebook (one code version for every model, 3 seeds, simulated answers) and replace the provisional numbers above.
 - Put the results and plots from [`results/`](results/) into the Lab 11 presentation slides.
 - Optional extra: direct LLM baseline on a sample of `data/qa_sample.jsonl`.
