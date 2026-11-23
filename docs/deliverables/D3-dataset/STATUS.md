@@ -1,0 +1,138 @@
+# Deliverable 3: what is done and what is left
+
+Written 23 November 2026. Deliverable 3 (Lab 11) asks for a **dataset of generations** and a **neural-network
+(or reinforcement-learning) experiment** on it. How the experiment is designed and why is in
+[README.md](README.md); this page is the checklist.
+
+> **Before anything else:** this work is on the local branch `agents-mode` and is **not on GitHub yet**.
+> Until it is pushed to `main`, nobody else can see it, and the Colab notebook (which downloads the code
+> from GitHub) cannot run.
+
+## Summary
+
+| Part | State |
+|---|---|
+| All 15 automata from the brief | Done |
+| Dataset generator | Done, tested |
+| The datasets (18 of them, 94,380 runs) | Done, in `data/` |
+| Question/answer set for hand-in | Done for the elementary rules; one command for the rest |
+| The two networks, training and evaluation code | Done, tested on a laptop |
+| Colab notebook | Written; **never run on Colab yet** |
+| One-step network on the 256 elementary rules | **Trained, result below** |
+| Five-questions network | Code works; **full training not done** (needs a GPU) |
+| 2D automata training | **Not done** (needs a GPU) |
+| Presentation for Deliverable 3 | **Not started** (needs the results) |
+
+## Done
+
+### Automata (needed before the dataset)
+- The **agents mode** (`src/cellab/agents.py`): a rule can change one other cell, cells can carry extra
+  numbers ("layers") such as energy or heading, and each automaton chooses the order in which cells act.
+- The 5 automata that needed it: `langtons_ant`, `falling_sand`, `schelling`, `predator_prey`, `ecosystem`,
+  each with an experiment file. Langton's ant and falling sand are checked step by step against
+  independent implementations.
+- Fingerprints of the older automata are unchanged, so every number on the Deliverable 2 slides still holds
+  (a test checks this).
+
+### Dataset
+- `cellab dataset datasets/<name>.json` generates a dataset; `cellab qa data/<name>.npz` writes it as
+  questions and answers in words. Format: [docs/FILE_FORMATS.md](../../FILE_FORMATS.md#dataset-file).
+- 18 datasets in `data/`, listed with their statistics in [docs/DATASETS.md](../../DATASETS.md):
+  - `elementary_w16`: all 256 elementary rules, 200 runs each, 16 cells. Every run is followed until its
+    cycle is found, so all five answers are exact. It reproduces the Deliverable 1 numbers (Rule 30's cycle of 4,144).
+  - `elementary_w32_test`: the same rules on 32 cells, to test other grid sizes.
+  - One dataset for each of the other 16 automata (16 x 16 grids, 1,000 to 3,000 runs each).
+- Every sample has its own seed, so the data is identical each time it is generated.
+- `data/elementary_w16_qa.jsonl.gz`: 1,280,000 questions and answers in words (9 MB), for the hand-in.
+  `data/qa_sample.jsonl` is a small readable sample.
+- Tests check that every label equals the answer of an ordinary `cellab run` (`tests/test_dataset.py`).
+
+### Networks and training code (`ml/`)
+- `ml/eca.py`: the 88 families of equivalent rules and Wolfram's 4 classes. 15% of the families of each
+  class are never shown in training (Rule 30's family is among them), to test rules the network never saw.
+- `ml/models.py`: two networks.
+  - **StepNet** learns one step and is applied N times.
+  - **AnswerNet** answers all five questions in one pass, with a shared encoder and five heads.
+- `ml/train.py`: training with resume after a disconnect. `--tasks` trains single-question networks, for
+  the "one network or five?" comparison from the lab notes.
+- `ml/evaluate.py`: the metrics announced in Deliverable 1, by Wolfram class and by steps ahead, with
+  baselines (copy the start; the most common answer).
+- `notebooks/D3_train_on_colab.ipynb`: runs all of the training and evaluation, saving to Google Drive.
+- Tests (`tests/test_ml.py`, 35 of the 293 tests; they need PyTorch).
+
+### First result
+The one-step network (10,434 parameters, 26 seconds on a laptop CPU) gets **every grid completely right
+64 steps ahead**, also for the 7,600 runs from rule families it never saw, and also on rows of 32 cells
+after training on 16. Numbers and chart: [results/step_elementary/](results/step_elementary/metrics.json).
+
+A quick 10-epoch check on Brian's Brain (2D) reached 100% of cells after 1 step and 88–90% after 16–32
+steps, so it did not learn the step exactly in that short run. Full training is on the to-do list.
+
+## To do
+
+### 1. Push the work to GitHub (blocks everything else)
+- [ ] Refresh the published AI log: `python tools/publish_ai_logs.py`. The redaction list stays local.
+- [ ] Push `agents-mode` to `main` (`git push origin agents-mode:main`). Never push the local branch `main`:
+      it still contains the unredacted logs.
+
+### 2. Set up and check on Linux (Matei)
+Nothing has ever run outside Windows yet.
+
+```bash
+git pull
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt -r requirements-ml.txt
+pip install -e .
+python -m pytest
+```
+
+- [ ] All 293 tests pass. If any fail, it is most likely a path or line-ending difference; fix it in a
+      commit of your own.
+
+### 3. Run the training on Colab (Matei)
+- [ ] Open `notebooks/D3_train_on_colab.ipynb` in Colab, choose *Runtime → Change runtime type → T4 GPU*, run all cells.
+- [ ] My estimate is about 75 minutes, but the notebook has never run on Colab, so expect to fix small things
+      (package versions, paths). Results are saved to Google Drive after every epoch; running the cells
+      again continues where it stopped.
+- [ ] If Colab's free GPU time runs out, run parts 2 and 3 first (the elementary rules: the main result)
+      and part 4 (2D automata) in another session.
+- [ ] Download the results folder from Drive into `results/` (git-ignored), then copy the `metrics.json`
+      and `accuracy_by_horizon.png` of the models you want to keep into `docs/deliverables/D3-dataset/results/`
+      and commit them.
+
+What to look for in the results:
+- **Five-questions network by Wolfram class and steps ahead.** The expectation from Deliverable 1:
+  good on classes 1 and 2, getting worse with N on class 3 (chaotic, Rule 30). This is the main research result.
+- **One network vs five separate ones** (`answers_elementary` vs `only_*_elementary`).
+- **Unseen rule families** and **32-cell rows**.
+- Every model next to the "copy the start" and "most common answer" baselines.
+
+### 4. Hand-in material
+- [ ] Question/answer sets for the other datasets, if the hand-in should include them (about 1 minute each):
+      `cellab qa data/<name>.npz`.
+- [ ] Update `docs/deliverables/D3-dataset/README.md` with the real results (replace "expected" with what happened).
+
+### 5. Presentation for Lab 11 (both)
+Same style as the Deliverable 2 deck: plain, descriptive titles; real numbers only.
+- [ ] What was asked and our answer (dataset + experiment).
+- [ ] The dataset: how it is made, sizes, splits, why the labels are exact.
+- [ ] Encoding and the two networks (with the "one step = a 3-wide convolution" link to the engine's shifted views).
+- [ ] Results: one-step network (exact, also on unseen rules); five-questions network by class and N;
+      one network vs five; baselines.
+- [ ] What it means: a network can learn the rules exactly, but skipping the simulation fails where the
+      automaton is chaotic.
+- [ ] Live demo: `cellab dataset` on a small file, `cellab qa`, and the evaluation of a trained model.
+- [ ] Short mention of the new agents-mode automata (all 15 from the brief now exist).
+
+### 6. Optional extras, by value
+- [ ] A gradient-boosting baseline for the counts and yes/no questions. It was announced on the
+      Deliverable 1 metrics slide, so the professor may ask about it (scikit-learn, about 30 lines).
+- [ ] Asking a language model the same questions directly, as the "why we simulate" comparison.
+- [ ] Support for decimal values (`diffusion_16` is generated but the networks skip it).
+- [ ] A reinforcement-learning agent that edits the starting grid towards a goal. The deliverable says
+      "neural network **or** reinforcement learning", so this is not required.
+
+### Reminders for both
+- Every conversation with an AI assistant must be saved (course rule). Claude Code sessions in this folder
+  are saved automatically; other assistants: export into `docs/ai-logs/raw/`.
+- Commit your own work under your own name: individual contribution can change the final grade.
